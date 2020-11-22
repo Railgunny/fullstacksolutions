@@ -24,4 +24,16 @@ import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
 import com.appspot.datastore.PMF;
-import com.appspot.datastore.Sp
+import com.appspot.datastore.SphereInfo;
+import com.appspot.datastore.SphereName;
+import com.appspot.datastore.UserProfile;
+import com.appspot.datastore.UserProfileStore;
+
+//Main class returning suggestions based on user's google calendar
+
+@RunWith(Enclosed.class)
+public class Analyser {
+	//constants used in optimization process
+	public static final double CONFIDENCE = 0.1;
+	static final double ALTERNATIVE = 0.3;
+	static final int 
