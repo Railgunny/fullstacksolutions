@@ -46,4 +46,8 @@ public class Analyser {
 	public Analyser() {
 		//certain proposals to populate our database
 		proposals = new HashMap<SphereName, List<Proposal>>();
-		Calendar sta
+		Calendar startDate = new GregorianCalendar(2000, 0, 3, 7, 0, 0);
+		Calendar endDate = new GregorianCalendar(2000, 0, 3, 8, 30, 0);
+		Pair<Calendar, Calendar> possibleSlot = new Pair<Calendar, Calendar>(startDate, endDate);
+		Map<SphereName, Double> sphereInfluences = Utilities.generateSpheres(new double[] { 1.0 });
+		Proposal p1 = new Proposal("Gym", "Nie ma upierdalania sja", null, null, 20
