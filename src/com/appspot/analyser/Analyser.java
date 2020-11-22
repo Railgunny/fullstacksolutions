@@ -36,4 +36,14 @@ public class Analyser {
 	//constants used in optimization process
 	public static final double CONFIDENCE = 0.1;
 	static final double ALTERNATIVE = 0.3;
-	static final int 
+	static final int TRIES = 20;
+	private int maxDepth = 3;
+	private int maxSuggestions = 3;
+	private Map<SphereName, List<Proposal>> proposals;
+	private List<IEvent> events;
+	private static final Logger log = Logger.getLogger("EventStore");
+
+	public Analyser() {
+		//certain proposals to populate our database
+		proposals = new HashMap<SphereName, List<Proposal>>();
+		Calendar sta
