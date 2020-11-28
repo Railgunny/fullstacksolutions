@@ -50,4 +50,13 @@ public class Analyser {
 		Calendar endDate = new GregorianCalendar(2000, 0, 3, 8, 30, 0);
 		Pair<Calendar, Calendar> possibleSlot = new Pair<Calendar, Calendar>(startDate, endDate);
 		Map<SphereName, Double> sphereInfluences = Utilities.generateSpheres(new double[] { 1.0 });
-		Proposal p1 = new Proposal("Gym", "Nie ma upierdalania sja", null, null, 20
+		Proposal p1 = new Proposal("Gym", "Nie ma upierdalania sja", null, null, 20, 60, false, true, sphereInfluences);
+		p1.setPossibleTimeSlot(possibleSlot);
+		p1.makePersistent();
+		LinkedList<Proposal> health = new LinkedList<Proposal>();
+		health.add(p1);
+		proposals.put(SphereName.HEALTH, health);
+
+		Calendar startWorkDate = new GregorianCalendar(2000, 0, 3, 17, 0, 0);
+		Calendar endWorkDate = new GregorianCalendar(2000, 0, 3, 18, 30, 0);
+		Pair<Calendar, Cal
