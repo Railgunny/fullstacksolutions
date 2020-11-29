@@ -72,4 +72,8 @@ public class Analyser {
 
 		Calendar startFamilyDate = new GregorianCalendar(2000, 0, 3, 15, 0, 0);
 		Calendar endFamilyDate = new GregorianCalendar(2000, 0, 3, 16, 0, 0);
-		Pair<Calendar, Calendar> possibleFa
+		Pair<Calendar, Calendar> possibleFamilySlot = new Pair<Calendar, Calendar>(startFamilyDate, endFamilyDate);
+		Map<SphereName, Double> sphereFamilyInfluences = Utilities.generateSpheres(new double[] { 0.0, 0.0, 1.0 });
+		Proposal family = new Proposal("Family dinner", "Steaks - all that matters", null, null, 20, 60, false, true, sphereFamilyInfluences);
+		family.setPossibleTimeSlot(possibleFamilySlot);
+		family.makePersistent();
