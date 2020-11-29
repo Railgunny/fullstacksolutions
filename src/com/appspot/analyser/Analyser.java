@@ -59,4 +59,8 @@ public class Analyser {
 
 		Calendar startWorkDate = new GregorianCalendar(2000, 0, 3, 17, 0, 0);
 		Calendar endWorkDate = new GregorianCalendar(2000, 0, 3, 18, 30, 0);
-		Pair<Calendar, Cal
+		Pair<Calendar, Calendar> possibleWorkSlot = new Pair<Calendar, Calendar>(startWorkDate, endWorkDate);
+		Map<SphereName, Double> sphereWorkInfluences = Utilities.generateSpheres(new double[] { 0, 1.0 });
+		Proposal work = new Proposal("Meeting at work", "Szanuj szefa swego bo mozesz miec gorszego", null, null, 20, 60, false, true,
+				sphereWorkInfluences);
+		work.setPossi
