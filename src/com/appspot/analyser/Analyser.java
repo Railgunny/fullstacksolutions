@@ -63,4 +63,13 @@ public class Analyser {
 		Map<SphereName, Double> sphereWorkInfluences = Utilities.generateSpheres(new double[] { 0, 1.0 });
 		Proposal work = new Proposal("Meeting at work", "Szanuj szefa swego bo mozesz miec gorszego", null, null, 20, 60, false, true,
 				sphereWorkInfluences);
-		work.setPossi
+		work.setPossibleTimeSlot(possibleWorkSlot);
+		work.makePersistent();
+		
+		LinkedList<Proposal> works = new LinkedList<Proposal>();
+		works.add(work);
+		proposals.put(SphereName.WORK, works);
+
+		Calendar startFamilyDate = new GregorianCalendar(2000, 0, 3, 15, 0, 0);
+		Calendar endFamilyDate = new GregorianCalendar(2000, 0, 3, 16, 0, 0);
+		Pair<Calendar, Calendar> possibleFa
