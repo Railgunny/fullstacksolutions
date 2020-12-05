@@ -77,3 +77,10 @@ public class Analyser {
 		Proposal family = new Proposal("Family dinner", "Steaks - all that matters", null, null, 20, 60, false, true, sphereFamilyInfluences);
 		family.setPossibleTimeSlot(possibleFamilySlot);
 		family.makePersistent();
+		LinkedList<Proposal> families = new LinkedList<Proposal>();
+		families.add(family);
+		proposals.put(SphereName.FAMILY, families);
+
+		Calendar startRecreationDate = new GregorianCalendar(2000, 0, 3, 22, 0, 0);
+		Calendar endRecreationDate = new GregorianCalendar(2000, 0, 3, 23, 30, 0);
+		Pair<Calendar, Calendar> possibleRecreationSlot = new Pair<Calendar, Calendar>
