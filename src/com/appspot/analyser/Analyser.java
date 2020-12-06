@@ -83,4 +83,7 @@ public class Analyser {
 
 		Calendar startRecreationDate = new GregorianCalendar(2000, 0, 3, 22, 0, 0);
 		Calendar endRecreationDate = new GregorianCalendar(2000, 0, 3, 23, 30, 0);
-		Pair<Calendar, Calendar> possibleRecreationSlot = new Pair<Calendar, Calendar>
+		Pair<Calendar, Calendar> possibleRecreationSlot = new Pair<Calendar, Calendar>(startRecreationDate, endRecreationDate);
+		Map<SphereName, Double> sphereRecreationInfluences = Utilities.generateSpheres(new double[] { 0.0, 0.0, 0.0, 1.0 });
+		Proposal recreation = new Proposal("Watching a movie", "Robert Burneika box set!", null, null, 20, 60, false, true, sphereRecreationInfluences);
+		recreation.setPossibleTimeSlot(possibleRe
