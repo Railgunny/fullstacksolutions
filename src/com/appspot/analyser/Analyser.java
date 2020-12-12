@@ -101,4 +101,9 @@ public class Analyser {
 		Calendar endRecreationDate3 = new GregorianCalendar(2000, 0, 3, 22, 30, 0);
 		Pair<Calendar, Calendar> possibleRecreationSlot3 = new Pair<Calendar, Calendar>(startRecreationDate3, endRecreationDate3);
 		Map<SphereName, Double> sphereRecreationInfluences3 = Utilities.generateSpheres(new double[] { 0.0, 0.0, 0.0, 1.0 });
-		P
+		Proposal recreation3 = new Proposal("Poker session", "Royal flush - here I come", null, null, 20, 60, false, true, sphereRecreationInfluences3);
+		recreation3.setPossibleTimeSlot(possibleRecreationSlot3);
+		recreation3.makePersistent();
+		
+		Calendar startRecreationDate4 = new GregorianCalendar(2000, 0, 3, 20, 0, 0);
+		Calendar endRecreationDate4 = new GregorianCalendar(2000, 0, 3, 
