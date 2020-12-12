@@ -121,3 +121,7 @@ public class Analyser {
 		recreation5.setPossibleTimeSlot(possibleRecreationSlot5);
 		recreation5.makePersistent();
 		
+		Calendar startRecreationDate6 = new GregorianCalendar(2000, 0, 3, 19, 0, 0);
+		Calendar endRecreationDate6 = new GregorianCalendar(2000, 0, 3, 20, 30, 0);
+		Pair<Calendar, Calendar> possibleRecreationSlot6 = new Pair<Calendar, Calendar>(startRecreationDate6, endRecreationDate6);
+		Map<SphereName, Double> sphereRecreationInfluences6 = Utilities.generateSpheres(new dou
