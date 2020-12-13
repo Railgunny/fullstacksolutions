@@ -124,4 +124,12 @@ public class Analyser {
 		Calendar startRecreationDate6 = new GregorianCalendar(2000, 0, 3, 19, 0, 0);
 		Calendar endRecreationDate6 = new GregorianCalendar(2000, 0, 3, 20, 30, 0);
 		Pair<Calendar, Calendar> possibleRecreationSlot6 = new Pair<Calendar, Calendar>(startRecreationDate6, endRecreationDate6);
-		Map<SphereName, Double> sphereRecreationInfluences6 = Utilities.generateSpheres(new dou
+		Map<SphereName, Double> sphereRecreationInfluences6 = Utilities.generateSpheres(new double[] { 0.0, 0.0, 0.0, 1.0 });
+		Proposal recreation6 = new Proposal("Have a smoke", "Co mowi palma do palmy? Za palmy!", null, null, 20, 60, false, true, sphereRecreationInfluences6);
+		recreation6.setPossibleTimeSlot(possibleRecreationSlot6);
+		recreation6.makePersistent();
+		
+		
+		LinkedList<Proposal> recreations = new LinkedList<Proposal>();
+		recreations.add(recreation);
+		r
