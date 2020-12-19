@@ -132,4 +132,14 @@ public class Analyser {
 		
 		LinkedList<Proposal> recreations = new LinkedList<Proposal>();
 		recreations.add(recreation);
-		r
+		recreations.add(recreation2);
+		recreations.add(recreation3);
+		//recreations.add(recreation4);
+		//recreations.add(recreation5);
+		//recreations.add(recreation6);
+		proposals.put(SphereName.RECREATION, recreations);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<List<Suggestion>> getSuggestions(List<? extends IEvent> events, String currentUserId) throws IOException {
+		U
