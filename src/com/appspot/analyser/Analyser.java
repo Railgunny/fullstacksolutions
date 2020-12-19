@@ -150,4 +150,14 @@ public class Analyser {
 	}
 	
 	//Method returning sets of sugestions to the user
-	private List<List<CalendarStatus>> getSuggestions(Map<SphereName, Double> spherePreferences
+	private List<List<CalendarStatus>> getSuggestions(Map<SphereName, Double> spherePreferences, boolean optimizeFull) throws IOException {
+		//no events in calendar...
+		if (events.size() == 0)
+			return null;
+		LinkedList<List<CalendarStatus>> result = new LinkedList<List<CalendarStatus>>();
+		//Generate initial calendar status
+		CalendarStatus start = checkGoals(events, spherePreferences);
+		//Already within our goals...
+		if (isCloseEnough(start, optimizeFull))
+			return result;
+		removeStaticEve
