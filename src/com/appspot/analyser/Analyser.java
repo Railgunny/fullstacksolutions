@@ -142,4 +142,12 @@ public class Analyser {
 
 	@SuppressWarnings("unchecked")
 	public List<List<Suggestion>> getSuggestions(List<? extends IEvent> events, String currentUserId) throws IOException {
-		U
+		UserProfile profile = UserProfileStore.getUserProfile(currentUserId);
+		this.events = (List<IEvent>) events;
+		return
+		 convertToSuggestions(this.getSuggestions(profile.getSpherePreferences(),
+		 profile.isFullyOptimized()));
+	}
+	
+	//Method returning sets of sugestions to the user
+	private List<List<CalendarStatus>> getSuggestions(Map<SphereName, Double> spherePreferences
