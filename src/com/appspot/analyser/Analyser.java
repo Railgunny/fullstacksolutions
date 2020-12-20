@@ -160,4 +160,11 @@ public class Analyser {
 		//Already within our goals...
 		if (isCloseEnough(start, optimizeFull))
 			return result;
-		removeStaticEve
+		removeStaticEvents(events);
+		//generate virtual calendars for each event and proposal in our database
+		List<CalendarStatus> statuses = Utilities.merge( generateProposalStatuses(start.getDeficitSpheres(optimizeFull), start, true) , 
+				generateEventStatuses(events, start)
+				);
+		if (statuses.isEmpty())
+			return result;
+		for (int i = 0; result.size() < maxSuggestions && i < statuses.size(); 
