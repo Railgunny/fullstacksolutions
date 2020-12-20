@@ -167,4 +167,14 @@ public class Analyser {
 				);
 		if (statuses.isEmpty())
 			return result;
-		for (int i = 0; result.size() < maxSuggestions && i < statuses.size(); 
+		for (int i = 0; result.size() < maxSuggestions && i < statuses.size(); i++) {
+			LinkedList<CalendarStatus> list = new LinkedList<CalendarStatus>();
+			CalendarStatus nextMin = statuses.get(i);
+			CalendarStatus nextStatus = nextMin;
+			//remove event form our list, so that we won't schedule same thing twice
+			removeEvent(nextMin);
+			int count = 1;
+			int k = i + 1;
+			List<CalendarStatus> alternatives = new LinkedList<CalendarStatus>();
+			alternatives.add(nextStatus);
+			/* Check if any of the n
