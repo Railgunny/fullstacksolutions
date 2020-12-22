@@ -177,4 +177,10 @@ public class Analyser {
 			int k = i + 1;
 			List<CalendarStatus> alternatives = new LinkedList<CalendarStatus>();
 			alternatives.add(nextStatus);
-			/* Check if any of the n
+			/* Check if any of the neighbours can become an alternative for our min event
+			 * It needs to have almost same influence on the calendar and belong to same sphere
+			 */
+			while (k < statuses.size() && count < 3) {
+				CalendarStatus next = statuses.get(k);
+				if (next.compareTo(start) > 0
+						|| (next.getCoefficient() > 0.05 && next.getCoefficient() > nextMin.getCoefficien
