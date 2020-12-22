@@ -183,4 +183,14 @@ public class Analyser {
 			while (k < statuses.size() && count < 3) {
 				CalendarStatus next = statuses.get(k);
 				if (next.compareTo(start) > 0
-						|| (next.getCoefficient() > 0.05 && next.getCoefficient() > nextMin.getCoefficien
+						|| (next.getCoefficient() > 0.05 && next.getCoefficient() > nextMin.getCoefficient() * (1 + Analyser.ALTERNATIVE)))
+					break;
+				SphereName mine;
+				SphereName nextSphere;
+				//checking of major spheres
+				if (nextStatus.containsProposal())
+					mine = ((Proposal) nextStatus.getEvent()).getMajorSphere();
+				else
+					mine = Utilities.calculateMajorSphere(nextStatus.getEvent());
+				if(next.containsProposal())
+					nextSphere = ((Proposal) 
