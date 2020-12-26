@@ -193,4 +193,15 @@ public class Analyser {
 				else
 					mine = Utilities.calculateMajorSphere(nextStatus.getEvent());
 				if(next.containsProposal())
-					nextSphere = ((Proposal) 
+					nextSphere = ((Proposal) next.getEvent()).getMajorSphere();
+				else
+					nextSphere = Utilities.calculateMajorSphere(next.getEvent());
+				if(!mine.equals(nextSphere)){
+					k++;
+					continue;
+				}
+				removeEvent(next);
+				statuses.remove(next);
+				alternatives.add(next);
+				//Our next status to be passed down will contain proposal
+				if (!nextStatus.containsProposal() && next.containsProposal
