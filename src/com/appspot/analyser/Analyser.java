@@ -214,4 +214,14 @@ public class Analyser {
 			List<CalendarStatus> rest = getSuggestions(nextStatus, optimizeFull, maxDepth);
 			if (rest != null) {
 				//peroform recalculation to improve our calendar based on what we have just scheduled
-				CalendarStatus toChan
+				CalendarStatus toChange = rest.remove(0);
+				CalendarStatus changed = rest.remove(0);
+				int reps = 0;
+				do {
+					Pair<List<CalendarStatus>, List<CalendarStatus>> res = toChange.recalculate(changed);
+					List<CalendarStatus> successes = res.getFirst();
+					CalendarStatus best = successes.remove(0);
+					best.addAlternatives(successes);
+					toChange = best;
+					CalendarStatus tmp = toChange;
+					toChange = change
