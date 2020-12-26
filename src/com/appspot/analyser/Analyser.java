@@ -204,4 +204,14 @@ public class Analyser {
 				statuses.remove(next);
 				alternatives.add(next);
 				//Our next status to be passed down will contain proposal
-				if (!nextStatus.containsProposal() && next.containsProposal
+				if (!nextStatus.containsProposal() && next.containsProposal())
+					nextStatus = next;
+				count++;
+			}
+			alternatives.remove(nextStatus);
+			nextStatus.addAlternatives(alternatives);
+			nextStatus.updateSlots();
+			List<CalendarStatus> rest = getSuggestions(nextStatus, optimizeFull, maxDepth);
+			if (rest != null) {
+				//peroform recalculation to improve our calendar based on what we have just scheduled
+				CalendarStatus toChan
