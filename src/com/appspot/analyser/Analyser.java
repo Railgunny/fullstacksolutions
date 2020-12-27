@@ -224,4 +224,21 @@ public class Analyser {
 					best.addAlternatives(successes);
 					toChange = best;
 					CalendarStatus tmp = toChange;
-					toChange = change
+					toChange = changed;
+					changed = tmp;
+					reps++;
+				} while (changed.hasImproved());
+				list.addAll(rest);
+				//return events in the correct order
+				if (reps % 2 == 1) {
+					list.addFirst(toChange);
+					list.addFirst(changed);
+					restoreEvents(changed);
+				} else {
+					list.addFirst(changed);
+					list.addFirst(toChange);
+					restoreEvents(toChange);
+				}
+			}
+			else {
+				list.add(nextStat
