@@ -251,4 +251,11 @@ public class Analyser {
 	
 	//Recursive function generating new suggestion considering what we chose before
 	private List<CalendarStatus> getSuggestions(CalendarStatus currentStatus, boolean optimizeFull, int depth) throws IOException {
-		if (isCloseEnough(currentStatus, optimizeFull) || (events.size() == 0 && 
+		if (isCloseEnough(currentStatus, optimizeFull) || (events.size() == 0 && !haveAnyProposals()) || depth <= 0)
+			return null;
+		//generate calendars with virtually scheduled events again, pick minimum and find its alternatives
+		List<CalendarStatus> statuses = Utilities.merge(generateProposalStatuses(currentStatus.getDeficitSpheres(optimizeFull), currentStatus, false) ,
+				generateEventStatuses(events,currentStatus) );
+
+		if (statuses.isEmpty())
+			
