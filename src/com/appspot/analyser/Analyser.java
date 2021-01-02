@@ -241,4 +241,14 @@ public class Analyser {
 				}
 			}
 			else {
-				list.add(nextStat
+				list.add(nextStatus);
+				restoreEvents(nextStatus);
+			}
+			result.add(list);
+		}
+		return result;
+	}
+	
+	//Recursive function generating new suggestion considering what we chose before
+	private List<CalendarStatus> getSuggestions(CalendarStatus currentStatus, boolean optimizeFull, int depth) throws IOException {
+		if (isCloseEnough(currentStatus, optimizeFull) || (events.size() == 0 && 
