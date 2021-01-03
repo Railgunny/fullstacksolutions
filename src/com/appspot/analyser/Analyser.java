@@ -258,4 +258,15 @@ public class Analyser {
 				generateEventStatuses(events,currentStatus) );
 
 		if (statuses.isEmpty())
-			
+			return null;
+		LinkedList<CalendarStatus> list = new LinkedList<CalendarStatus>();
+		CalendarStatus nextMin = statuses.get(0);
+
+		CalendarStatus nextStatus = nextMin;
+		removeEvent(nextMin);
+		int i = 1;
+		int count = 1;
+		List<CalendarStatus> alternatives = new LinkedList<CalendarStatus>();
+		alternatives.add(nextStatus);
+		//Find alternatives
+		
