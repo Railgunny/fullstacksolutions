@@ -269,4 +269,12 @@ public class Analyser {
 		List<CalendarStatus> alternatives = new LinkedList<CalendarStatus>();
 		alternatives.add(nextStatus);
 		//Find alternatives
-		
+		while (i < statuses.size() && count < 3) {
+			CalendarStatus next = statuses.get(i);
+			if (next.compareTo(currentStatus) > 0
+					|| (next.getCoefficient() > 0.05 && next.getCoefficient() > nextMin.getCoefficient() * (1 + Analyser.ALTERNATIVE)))
+				break;
+			SphereName mine;
+			SphereName nextSphere;
+			if (nextStatus.containsProposal())
+				mine = ((Proposal) nextStatus.getEvent()).getM
