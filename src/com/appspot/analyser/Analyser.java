@@ -277,4 +277,16 @@ public class Analyser {
 			SphereName mine;
 			SphereName nextSphere;
 			if (nextStatus.containsProposal())
-				mine = ((Proposal) nextStatus.getEvent()).getM
+				mine = ((Proposal) nextStatus.getEvent()).getMajorSphere();
+			else
+				mine = Utilities.calculateMajorSphere(nextStatus.getEvent());
+			if(next.containsProposal())
+				nextSphere = ((Proposal) next.getEvent()).getMajorSphere();
+			else
+				nextSphere = Utilities.calculateMajorSphere(next.getEvent());
+			if(!mine.equals(nextSphere)){
+				i++;
+				continue;
+			}
+			removeEvent(next);
+			statuses.remov
