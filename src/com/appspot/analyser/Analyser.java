@@ -301,4 +301,14 @@ public class Analyser {
 		
 		CalendarStatus toChange = currentStatus;
 		CalendarStatus changed = nextStatus;
-		List<CalendarStatus> removed = new LinkedList<Calendar
+		List<CalendarStatus> removed = new LinkedList<CalendarStatus>();
+		int reps = 0;
+		CalendarStatus current;
+		//Perform recalculation based on what we scheduled BEFORE our current min
+		do {
+			Pair<List<CalendarStatus>, List<CalendarStatus>> res = toChange.recalculate(changed);
+			List<CalendarStatus> successes = res.getFirst();
+			CalendarStatus best = successes.remove(0);
+			best.addAlternatives(successes);
+			toChange = best;
+			Calenda
