@@ -289,4 +289,16 @@ public class Analyser {
 				continue;
 			}
 			removeEvent(next);
-			statuses.remov
+			statuses.remove(next);
+			alternatives.add(next);
+			if(!nextStatus.containsProposal() && next.containsProposal())
+			 nextStatus = next;
+			count++;
+		}
+		alternatives.remove(nextStatus);
+		nextStatus.addAlternatives(alternatives);
+		nextStatus.updateSlots();
+		
+		CalendarStatus toChange = currentStatus;
+		CalendarStatus changed = nextStatus;
+		List<CalendarStatus> removed = new LinkedList<Calendar
