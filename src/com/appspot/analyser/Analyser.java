@@ -334,4 +334,18 @@ public class Analyser {
 				Pair<List<CalendarStatus>, List<CalendarStatus>> res = toChange.recalculate(changed);
 				List<CalendarStatus> successes = res.getFirst();
 				CalendarStatus best = successes.remove(0);
-				best.
+				best.addAlternatives(successes);
+				toChange = best;
+				CalendarStatus tmp = toChange;
+				toChange = changed;
+				changed = tmp;
+				reps++;
+			} while (changed.hasImproved());
+			if (reps % 2 == 1) {
+				removed.add(changed);
+				removed.add(toChange);
+				restoreEvents(changed);
+			} else {
+				removed.add(toChange);
+				removed.add(changed);
+				restoreEvents(toChange);
