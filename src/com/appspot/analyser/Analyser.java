@@ -326,3 +326,12 @@ public class Analyser {
 		removed.add(current);
 		List<CalendarStatus> rest = getSuggestions(nextStatus, optimizeFull, depth - 1);
 		if (rest != null) {
+			toChange = rest.remove(0);
+			changed = rest.remove(0);
+			reps = 0;
+			//Another recalculation based on what we scheduled AFTER choosing our current min event
+			do {
+				Pair<List<CalendarStatus>, List<CalendarStatus>> res = toChange.recalculate(changed);
+				List<CalendarStatus> successes = res.getFirst();
+				CalendarStatus best = successes.remove(0);
+				best.
