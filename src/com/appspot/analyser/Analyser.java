@@ -311,4 +311,18 @@ public class Analyser {
 			CalendarStatus best = successes.remove(0);
 			best.addAlternatives(successes);
 			toChange = best;
-			Calenda
+			CalendarStatus tmp = toChange;
+			toChange = changed;
+			changed = tmp;
+			reps++;
+		} while (changed.hasImproved());
+		if (reps % 2 == 1) {
+			current = changed;
+			nextStatus = toChange;
+		} else {
+			current = toChange;
+			nextStatus = changed;
+		}		
+		removed.add(current);
+		List<CalendarStatus> rest = getSuggestions(nextStatus, optimizeFull, depth - 1);
+		if (rest != null) {
