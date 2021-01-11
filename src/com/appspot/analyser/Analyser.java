@@ -349,3 +349,17 @@ public class Analyser {
 				removed.add(toChange);
 				removed.add(changed);
 				restoreEvents(toChange);
+			}
+			list.addAll(removed);
+			list.addAll(rest);
+		} else {
+			list.addAll(removed);
+			list.add(nextStatus);
+			restoreEvents(nextStatus);
+		}
+		return list;
+	}
+
+	/* Test if we have reached the confidence interval for spheres */
+	private boolean isCloseEnough(CalendarStatus currentStatus, boolean optimizeFull) {
+		return currentStatus.getCoefficient() < Math.pow(Analyser.CONFIDEN
