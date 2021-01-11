@@ -362,4 +362,17 @@ public class Analyser {
 
 	/* Test if we have reached the confidence interval for spheres */
 	private boolean isCloseEnough(CalendarStatus currentStatus, boolean optimizeFull) {
-		return currentStatus.getCoefficient() < Math.pow(Analyser.CONFIDEN
+		return currentStatus.getCoefficient() < Math.pow(Analyser.CONFIDENCE, 2) || (!optimizeFull && currentStatus.isWithinConfidenceInterval());
+	}
+	//Check if we have any proposals left
+	private boolean haveAnyProposals() {
+		List<Proposal> next;
+		for (SphereName sphere : SphereName.values()) {
+			next = proposals.get(sphere);
+			if (next != null && !next.isEmpty())
+				return true;
+		}
+		return false;
+	}
+
+	/* If event is a proposal, remove from proposals, else from e
