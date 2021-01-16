@@ -375,4 +375,17 @@ public class Analyser {
 		return false;
 	}
 
-	/* If event is a proposal, remove from proposals, else from e
+	/* If event is a proposal, remove from proposals, else from events */
+	private void removeEvent(CalendarStatus status) {
+		if (status.containsProposal())
+			proposals.get(((Proposal) status.getEvent()).getMajorSphere()).remove(status.getEvent());
+		else
+			events.remove(status.getEvent());
+	}
+
+	/*
+	 * If event or its alternative is a proposal, add to proposals, else to
+	 * events
+	 */
+	private void restoreEvents(CalendarStatus status) {
+		if (status.containsProposal
