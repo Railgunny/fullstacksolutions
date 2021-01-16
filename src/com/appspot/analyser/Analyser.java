@@ -388,4 +388,11 @@ public class Analyser {
 	 * events
 	 */
 	private void restoreEvents(CalendarStatus status) {
-		if (status.containsProposal
+		if (status.containsProposal())
+			proposals.get(((Proposal) status.getEvent()).getMajorSphere()).add((Proposal) status.getEvent());
+		else
+			events.add(status.getEvent());
+		if (status.hasAlternatives()) {
+			for (CalendarStatus alternative : status.getAlternatives()) {
+				if (alternative.containsProposal())
+					proposals.get(((Proposal) alternative.getEvent()).getMajorSph
