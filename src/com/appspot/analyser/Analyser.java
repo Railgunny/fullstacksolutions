@@ -395,4 +395,16 @@ public class Analyser {
 		if (status.hasAlternatives()) {
 			for (CalendarStatus alternative : status.getAlternatives()) {
 				if (alternative.containsProposal())
-					proposals.get(((Proposal) alternative.getEvent()).getMajorSph
+					proposals.get(((Proposal) alternative.getEvent()).getMajorSphere()).add((Proposal) alternative.getEvent());
+				else
+					events.add(alternative.getEvent());
+			}
+		}
+	}
+
+	/*
+	 * Create calendar statuses for all events, order them in terms of how well
+	 * they match to targets for spheres (the coefficient of accuracy)
+	 */
+	private List<CalendarStatus> generateEventStatuses(List<? extends IEvent> events, CalendarStatus currentStatus) {
+		List<C
