@@ -407,4 +407,19 @@ public class Analyser {
 	 * they match to targets for spheres (the coefficient of accuracy)
 	 */
 	private List<CalendarStatus> generateEventStatuses(List<? extends IEvent> events, CalendarStatus currentStatus) {
-		List<C
+		List<CalendarStatus> result = new LinkedList<CalendarStatus>();
+		CalendarStatus newStatus;
+		for (IEvent event : events) {
+			newStatus = new CalendarStatus(event, currentStatus);
+			if (newStatus.hasImproved())
+				result.add(newStatus);
+		}
+		Collections.sort(result);
+		return result;
+	}
+
+	/*
+	 * Get proposals for spheres which are not on target Either from memory or
+	 * pull from dataStore
+	 */
+	@SuppressWarnings("unche
