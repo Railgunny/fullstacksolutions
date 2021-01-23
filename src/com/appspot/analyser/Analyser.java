@@ -422,4 +422,10 @@ public class Analyser {
 	 * Get proposals for spheres which are not on target Either from memory or
 	 * pull from dataStore
 	 */
-	@SuppressWarnings("unche
+	@SuppressWarnings("unchecked")
+	private List<CalendarStatus> generateProposalStatuses(List<SphereName> deficitSpheres, CalendarStatus currentStatus, boolean truncateProposals) {
+		List<CalendarStatus> result = new LinkedList<CalendarStatus>();
+		PersistenceManager pmf = PMF.get().getPersistenceManager();
+		List<Proposal> cache;
+		for (SphereName sphere : deficitSpheres) {
+			cache = proposals.get(sphere
