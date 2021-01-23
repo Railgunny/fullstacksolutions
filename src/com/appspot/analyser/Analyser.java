@@ -428,4 +428,17 @@ public class Analyser {
 		PersistenceManager pmf = PMF.get().getPersistenceManager();
 		List<Proposal> cache;
 		for (SphereName sphere : deficitSpheres) {
-			cache = proposals.get(sphere
+			cache = proposals.get(sphere);
+			if (cache == null) {
+				cache = new LinkedList<Proposal>();
+
+				Collection<Proposal> res = (Collection<Proposal>) pmf.newQuery(
+						"select from " + Proposal.class.getName() + " where majorSphere =='" + sphere + "'").execute();
+				for (Proposal p : res) {
+
+					cache.add(p);
+				}
+				permute(cache);
+				proposals.put(sphere, cache);
+			}
+			CalendarStatus n
