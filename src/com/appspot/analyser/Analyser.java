@@ -468,4 +468,14 @@ public class Analyser {
 	 * Convert from calendar statuses to suggestions which will be passed to
 	 * front end
 	 */
-	private LinkedList<List<Suggestion>> convertToSuggestions(List<List<CalendarStatus>> sta
+	private LinkedList<List<Suggestion>> convertToSuggestions(List<List<CalendarStatus>> statuses) {
+		LinkedList<List<Suggestion>> listSuggestions = new LinkedList<List<Suggestion>>();
+		Iterator<List<CalendarStatus>> it = statuses.iterator();
+		while (it.hasNext()) {
+			listSuggestions.add(convert(it.next()));
+		}
+		return listSuggestions;
+	}
+
+	/* Convert system's statuses into Suggestions */
+	public List<Suggestion> convert(List<CalendarStatus> stat
