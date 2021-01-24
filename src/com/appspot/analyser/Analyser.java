@@ -441,4 +441,19 @@ public class Analyser {
 				permute(cache);
 				proposals.put(sphere, cache);
 			}
-			CalendarStatus n
+			CalendarStatus next;
+			Iterator<Proposal> it = cache.iterator();
+			while (it.hasNext()) {
+				next = currentStatus.checkProposal(it.next());
+				if (next != null && next.hasImproved())
+					result.add(next);
+				else if (truncateProposals)
+					it.remove();
+			}
+			Collections.sort(result);
+		}
+		return result;
+	}
+	//Permute list
+	private void permute(List<Proposal> list) {
+		List<Proposal> 
