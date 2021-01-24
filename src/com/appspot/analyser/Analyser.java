@@ -478,4 +478,13 @@ public class Analyser {
 	}
 
 	/* Convert system's statuses into Suggestions */
-	public List<Suggestion> convert(List<CalendarStatus> stat
+	public List<Suggestion> convert(List<CalendarStatus> statuses) {
+		List<Suggestion> suggestions = new LinkedList<Suggestion>();
+		Iterator<CalendarStatus> iterator = statuses.iterator();
+		while (iterator.hasNext()) {
+			CalendarStatus status = iterator.next();
+			IEvent event = status.getEvent();
+			double additionalTime = status.getAdditionalEventTime();
+			Suggestion result;
+			if (event.getDuration() + additionalTime == 0) {
+				result = new DeleteSu
