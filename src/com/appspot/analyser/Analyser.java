@@ -487,4 +487,11 @@ public class Analyser {
 			double additionalTime = status.getAdditionalEventTime();
 			Suggestion result;
 			if (event.getDuration() + additionalTime == 0) {
-				result = new DeleteSu
+				result = new DeleteSuggestion(event);
+			} else if (status.containsProposal()) {
+				Calendar end = Utilities.copyCalendar(event.getStartDate(), (int) (additionalTime + event.getDuration()));
+				event.setEndDate(end);
+				result = new InsertSuggestion(event);
+			} else {
+				Calendar end = Utilities.copyCalendar(event.getEndDate(), (int) additionalTime);
+				result = new RescheduleSuggestion(event, event.getStartDate(), 
