@@ -456,4 +456,16 @@ public class Analyser {
 	}
 	//Permute list
 	private void permute(List<Proposal> list) {
-		List<Proposal> 
+		List<Proposal> newList = new LinkedList<Proposal>();
+		Random rand = new Random();
+		while (!list.isEmpty()) {
+			newList.add(list.remove(rand.nextInt(list.size())));
+		}
+		list.addAll(newList);
+	}
+
+	/*
+	 * Convert from calendar statuses to suggestions which will be passed to
+	 * front end
+	 */
+	private LinkedList<List<Suggestion>> convertToSuggestions(List<List<CalendarStatus>> sta
