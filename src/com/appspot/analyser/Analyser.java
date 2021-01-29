@@ -494,4 +494,17 @@ public class Analyser {
 				result = new InsertSuggestion(event);
 			} else {
 				Calendar end = Utilities.copyCalendar(event.getEndDate(), (int) additionalTime);
-				result = new RescheduleSuggestion(event, event.getStartDate(), 
+				result = new RescheduleSuggestion(event, event.getStartDate(), end);
+			}
+			if (status.hasAlternatives()) {
+				/* Convert any alternative statuses also */
+				result.setAlternativeSuggetions(convert(status.getAlternatives()));
+			}
+			suggestions.add(result);
+		}
+		return suggestions;
+	}
+
+	/* Remove user events which cannot be rescheduled */
+	private void removeStaticEvents(List<? extends IEvent> events) {
+		Iterator<? extends IEvent> it = events.
