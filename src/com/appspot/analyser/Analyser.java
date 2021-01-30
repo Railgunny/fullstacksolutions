@@ -507,4 +507,16 @@ public class Analyser {
 
 	/* Remove user events which cannot be rescheduled */
 	private void removeStaticEvents(List<? extends IEvent> events) {
-		Iterator<? extends IEvent> it = events.
+		Iterator<? extends IEvent> it = events.iterator();
+		while (it.hasNext()) {
+			IEvent current = it.next();
+			if (!current.canReschedule())
+				it.remove();
+		}
+	}
+
+	/*
+	 * Work out overall sphere coefficients considering current events. Create
+	 * SphereInfo's for each sphere Define initial calendar status
+	 */
+	public CalendarStatus checkGoals(List<? extends IEvent> events, Map<SphereName, Double> choices) throw
