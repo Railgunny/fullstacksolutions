@@ -519,4 +519,11 @@ public class Analyser {
 	 * Work out overall sphere coefficients considering current events. Create
 	 * SphereInfo's for each sphere Define initial calendar status
 	 */
-	public CalendarStatus checkGoals(List<? extends IEvent> events, Map<SphereName, Double> choices) throw
+	public CalendarStatus checkGoals(List<? extends IEvent> events, Map<SphereName, Double> choices) throws IOException {
+		List<BaseCalendarSlot> freeSlots = getFreeSlots(events);
+		Map<SphereName, Double> times = new HashMap<SphereName, Double>();
+		initializeTimes(times, choices.keySet());
+		Map<SphereName, Double> currentRatios = new HashMap<SphereName, Double>();
+		double sum = 0;
+		for (IEvent event : events) {
+			double durationInMins = event.getDuration
