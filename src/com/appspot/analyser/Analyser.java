@@ -536,4 +536,13 @@ public class Analyser {
 			sum += durationInMins;
 		}
 		for (SphereName key : times.keySet()) {
-			currentRatios.put(key,
+			currentRatios.put(key, times.get(key) / sum);
+		}
+		Map<SphereName, SphereInfo> sphereResults = generateSphereResults(choices, currentRatios, times);
+		return new CalendarStatus(sum, sphereResults, freeSlots);
+	}
+
+	/* Find slots of free time in between events */
+	private List<BaseCalendarSlot> getFreeSlots(List<? extends IEvent> events) {
+		LinkedList<BaseCalendarSlot> ret = new LinkedList<BaseCalendarSlot>();
+		Collections
