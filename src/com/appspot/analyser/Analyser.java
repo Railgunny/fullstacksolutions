@@ -526,4 +526,14 @@ public class Analyser {
 		Map<SphereName, Double> currentRatios = new HashMap<SphereName, Double>();
 		double sum = 0;
 		for (IEvent event : events) {
-			double durationInMins = event.getDuration
+			double durationInMins = event.getDuration();
+			Map<SphereName, Double> sphereInfluences = event.getSpheres();
+			Set<SphereName> keys = sphereInfluences.keySet();
+			for (SphereName key : keys) {
+				double time = Math.round(sphereInfluences.get(key) * durationInMins);
+				times.put(key, times.get(key) + time);
+			}
+			sum += durationInMins;
+		}
+		for (SphereName key : times.keySet()) {
+			currentRatios.put(key,
