@@ -545,4 +545,15 @@ public class Analyser {
 	/* Find slots of free time in between events */
 	private List<BaseCalendarSlot> getFreeSlots(List<? extends IEvent> events) {
 		LinkedList<BaseCalendarSlot> ret = new LinkedList<BaseCalendarSlot>();
-		Collections
+		Collections.sort(events);
+		Iterator<? extends IEvent> it = events.iterator();
+		IEvent beginning = it.next();
+		/* Remove begin event */
+		it.remove();
+		IEvent curr = beginning;
+		while (it.hasNext()) {
+			IEvent next = it.next();
+			if (curr.getEndDate().compareTo(next.getStartDate()) < 0) {
+				BaseCalendarSlot newSlot = new BaseCalendarSlot("Free Slot", null, curr.getEndDate(), next.getStartDate());
+				ret.add(newSlot);
+				Pair
