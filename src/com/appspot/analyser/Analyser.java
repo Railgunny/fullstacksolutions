@@ -556,4 +556,12 @@ public class Analyser {
 			if (curr.getEndDate().compareTo(next.getStartDate()) < 0) {
 				BaseCalendarSlot newSlot = new BaseCalendarSlot("Free Slot", null, curr.getEndDate(), next.getStartDate());
 				ret.add(newSlot);
-				Pair
+				Pair<Double, Double> durationInterval = curr.getDurationInterval();
+				/*
+				 * If the free slot is less than 1h long, adjust curr's duration
+				 * interval to include this shorter time, not 1h
+				 */
+				durationInterval.setSecond(Math.min(durationInterval.getSecond(), curr.getDuration() + newSlot.getDuration()));
+				curr = next;
+			} else {
+				if (curr.getEndDate().compare
