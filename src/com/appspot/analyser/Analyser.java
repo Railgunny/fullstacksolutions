@@ -576,4 +576,14 @@ public class Analyser {
 	}
 
 	private Map<SphereName, SphereInfo> generateSphereResults(Map<SphereName, Double> choices, Map<SphereName, Double> currentRatios,
-			Map<SphereName, Double> tim
+			Map<SphereName, Double> times) {
+		Map<SphereName, SphereInfo> sphereResults = new HashMap<SphereName, SphereInfo>();
+		for (SphereName key : times.keySet()) {
+			SphereInfo info = new SphereInfo(currentRatios.get(key), choices.get(key), times.get(key));
+			sphereResults.put(key, info);
+		}
+		return sphereResults;
+	}
+
+	// private void printEvents(Collection<? extends ICalendarSlot> events) {
+	// for (ICalendarSlot event :
