@@ -564,4 +564,16 @@ public class Analyser {
 				durationInterval.setSecond(Math.min(durationInterval.getSecond(), curr.getDuration() + newSlot.getDuration()));
 				curr = next;
 			} else {
-				if (curr.getEndDate().compare
+				if (curr.getEndDate().compareTo(next.getEndDate()) <= 0) {
+					Pair<Double, Double> durationInterval = curr.getDurationInterval();
+					durationInterval.setSecond(curr.getDuration());
+					curr = next;
+				}
+			}
+		}
+		it.remove();
+		return ret;
+	}
+
+	private Map<SphereName, SphereInfo> generateSphereResults(Map<SphereName, Double> choices, Map<SphereName, Double> currentRatios,
+			Map<SphereName, Double> tim
