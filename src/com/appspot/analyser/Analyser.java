@@ -586,4 +586,12 @@ public class Analyser {
 	}
 
 	// private void printEvents(Collection<? extends ICalendarSlot> events) {
-	// for (ICalendarSlot event :
+	// for (ICalendarSlot event : events)
+	// System.out.println(event.getTitle() + "  " +
+	// printDate(event.getStartDate()) + "  " + printDate(event.getEndDate()));
+	// }
+	//
+	// private String printDate(Calendar cal) {
+	// return cal.get(Calendar.DAY_OF_MONTH) + "/" + cal.get(Calendar.MONTH) +
+	// "/" + cal.get(Calendar.YEAR) + "  " + cal.get(Calendar.HOUR_OF_DAY)
+	// + ":" + cal.get(Calendar.MINUTE) + ":" + cal.
