@@ -594,4 +594,20 @@ public class Analyser {
 	// private String printDate(Calendar cal) {
 	// return cal.get(Calendar.DAY_OF_MONTH) + "/" + cal.get(Calendar.MONTH) +
 	// "/" + cal.get(Calendar.YEAR) + "  " + cal.get(Calendar.HOUR_OF_DAY)
-	// + ":" + cal.get(Calendar.MINUTE) + ":" + cal.
+	// + ":" + cal.get(Calendar.MINUTE) + ":" + cal.get(Calendar.SECOND);
+	// }
+
+	private static void initializeTimes(Map<SphereName, Double> times, Set<SphereName> keys) {
+		for (SphereName key : keys)
+			times.put(key, 0.0);
+	}
+
+	public static class AlgoTest extends TestCase {
+
+		private Analyser a = new Analyser();
+		private List<? extends IEvent> events;
+
+		@Test
+		public void testConvert() {
+			events = sampleEvents();
+			List<CalendarSt
