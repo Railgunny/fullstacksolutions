@@ -610,4 +610,12 @@ public class Analyser {
 		@Test
 		public void testConvert() {
 			events = sampleEvents();
-			List<CalendarSt
+			List<CalendarStatus> statuses = new LinkedList<CalendarStatus>();
+			Map<SphereName, SphereInfo> sphereInfos = generateSphereInfos(new double[] { 2.5, 4.5, 0.5, 7.5 });
+			CalendarStatus other = new CalendarStatus(10.0, sphereInfos, a.getFreeSlots(events));
+			for (IEvent event : events) {
+				CalendarStatus c1 = new CalendarStatus(event, other);
+				statuses.add(c1);
+			}
+			List<Suggestion> suggestions = a.convert(statuses);
+			assert
