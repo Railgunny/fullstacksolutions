@@ -626,4 +626,13 @@ public class Analyser {
 		}
 
 		@Test
-		public void testGetFr
+		public void testGetFreeSlotsBaseCase() {
+			events = sampleEvents();
+			IEvent reschedule1 = events.get(1);
+			double oldIntervalReschedule1 = reschedule1.getDurationInterval().getSecond();
+			List<BaseCalendarSlot> freeSlots = a.getFreeSlots(events);
+
+			BaseCalendarSlot fs1 = freeSlots.get(0);
+			double fs1Duration = fs1.getDuration();
+			boolean size1 = fs1Duration == 780;
+			boo
