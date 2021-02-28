@@ -618,4 +618,12 @@ public class Analyser {
 				statuses.add(c1);
 			}
 			List<Suggestion> suggestions = a.convert(statuses);
-			assert
+			assertTrue("Not all conversions successful", statuses.size() == suggestions.size());
+			boolean s1 = suggestions.get(0) instanceof RescheduleSuggestion;
+			boolean s2 = suggestions.get(1) instanceof DeleteSuggestion;
+			boolean s3 = suggestions.get(2) instanceof RescheduleSuggestion;
+			assertTrue("Converting statuses into suggestions broken", s1 & s2 & s3);
+		}
+
+		@Test
+		public void testGetFr
