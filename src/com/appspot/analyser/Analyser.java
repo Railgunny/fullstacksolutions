@@ -635,4 +635,11 @@ public class Analyser {
 			BaseCalendarSlot fs1 = freeSlots.get(0);
 			double fs1Duration = fs1.getDuration();
 			boolean size1 = fs1Duration == 780;
-			boo
+			boolean startFS1 = fs1.getStartDate().equals(new GregorianCalendar(2000, 3, 3, 0, 0, 0));
+			boolean endFS1 = fs1.getEndDate().equals(new GregorianCalendar(2000, 3, 3, 13, 0, 0));
+
+			BaseCalendarSlot fs2 = freeSlots.get(1);
+			double fs2Duration = fs2.getDuration();
+			boolean size2 = fs2Duration == 45;
+			boolean startFS2 = fs2.getStartDate().equals(new GregorianCalendar(2000, 3, 3, 14, 45, 0));
+			
