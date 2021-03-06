@@ -655,4 +655,8 @@ public class Analyser {
 			events = sampleEvents();
 			List<BaseCalendarSlot> freeSlots = a.getFreeSlots(events);
 			boolean size = freeSlots.size() == 5;
-			boolean startFS3 = freeSlots.get(2).getStartDate().equals(new GregorianCalendar(2000, 3,
+			boolean startFS3 = freeSlots.get(2).getStartDate().equals(new GregorianCalendar(2000, 3, 3, 15, 30, 0));
+			boolean endFS3 = freeSlots.get(2).getEndDate().equals(new GregorianCalendar(2000, 3, 3, 16, 0, 0));
+			boolean startFS4 = freeSlots.get(3).getStartDate().equals(new GregorianCalendar(2000, 3, 3, 18, 30, 0));
+			boolean endFS4 = freeSlots.get(3).getEndDate().equals(new GregorianCalendar(2000, 3, 3, 19, 30, 0));
+			assertTrue("Case where one eve
