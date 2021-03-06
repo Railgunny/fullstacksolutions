@@ -647,4 +647,12 @@ public class Analyser {
 			double newIntervalFs2 = reschedule1.getDurationInterval().getSecond();
 			double reschedule1Duration = reschedule1.getDuration();
 			boolean interval2 = newIntervalFs2 == Math.min(oldIntervalReschedule1, reschedule1Duration + fs2Duration);
-			assertTrue("Basic case where
+			assertTrue("Basic case where curr.end < next.start does not work", size1 & startFS1 & endFS1 & size2 & startFS2 & endFS2 & interval2);
+		}
+
+		@Test
+		public void testGetFreeSlotsSwallows() {
+			events = sampleEvents();
+			List<BaseCalendarSlot> freeSlots = a.getFreeSlots(events);
+			boolean size = freeSlots.size() == 5;
+			boolean startFS3 = freeSlots.get(2).getStartDate().equals(new GregorianCalendar(2000, 3,
