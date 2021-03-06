@@ -642,4 +642,9 @@ public class Analyser {
 			double fs2Duration = fs2.getDuration();
 			boolean size2 = fs2Duration == 45;
 			boolean startFS2 = fs2.getStartDate().equals(new GregorianCalendar(2000, 3, 3, 14, 45, 0));
-			
+			boolean endFS2 = fs2.getEndDate().equals(new GregorianCalendar(2000, 3, 3, 15, 30, 0));
+
+			double newIntervalFs2 = reschedule1.getDurationInterval().getSecond();
+			double reschedule1Duration = reschedule1.getDuration();
+			boolean interval2 = newIntervalFs2 == Math.min(oldIntervalReschedule1, reschedule1Duration + fs2Duration);
+			assertTrue("Basic case where
