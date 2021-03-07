@@ -659,4 +659,14 @@ public class Analyser {
 			boolean endFS3 = freeSlots.get(2).getEndDate().equals(new GregorianCalendar(2000, 3, 3, 16, 0, 0));
 			boolean startFS4 = freeSlots.get(3).getStartDate().equals(new GregorianCalendar(2000, 3, 3, 18, 30, 0));
 			boolean endFS4 = freeSlots.get(3).getEndDate().equals(new GregorianCalendar(2000, 3, 3, 19, 30, 0));
-			assertTrue("Case where one eve
+			assertTrue("Case where one event entirely overlaps another does not work", size & startFS3 & endFS3 & startFS4 & endFS4);
+		}
+
+		@Test
+		public void testGetFreeSlotsExtendsBeyond() {
+			events = sampleEvents();
+			IEvent reschedule5 = events.get(6);
+			a.getFreeSlots(events);
+			Pair<Double, Double> newIntervalFs5 = reschedule5.getDurationInterval();
+			double reschedule5Duration = reschedule5.getDuration();
+			boolea
