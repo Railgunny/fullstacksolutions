@@ -669,4 +669,14 @@ public class Analyser {
 			a.getFreeSlots(events);
 			Pair<Double, Double> newIntervalFs5 = reschedule5.getDurationInterval();
 			double reschedule5Duration = reschedule5.getDuration();
-			boolea
+			boolean setIntervalToDuration = newIntervalFs5.getSecond() == reschedule5Duration;
+			assertTrue("Case where one event entirely overlaps another does not work", setIntervalToDuration);
+		}
+
+		@Test
+		public void testRemoveStaticEvents() {
+			events = sampleEvents();
+			double sizeBefore = events.size();
+			a.removeStaticEvents(events);
+			double sizeAfter = events.size();
+			boolean siz
