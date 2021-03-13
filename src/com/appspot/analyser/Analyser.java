@@ -679,4 +679,14 @@ public class Analyser {
 			double sizeBefore = events.size();
 			a.removeStaticEvents(events);
 			double sizeAfter = events.size();
-			boolean siz
+			boolean size = sizeBefore != sizeAfter + 1;
+			for (IEvent event : events) {
+				assertTrue("An event that cannot be rescheduled is not removed properly", !event.getTitle().equals("reschedule 6"));
+			}
+			assertTrue("A rescheduable event might have been removed", size);
+		}
+
+		@Test
+		public void testIsCloseEnough() {
+			/*
+			 * Not sure what figures
