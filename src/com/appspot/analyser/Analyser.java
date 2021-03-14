@@ -689,4 +689,10 @@ public class Analyser {
 		@Test
 		public void testIsCloseEnough() {
 			/*
-			 * Not sure what figures
+			 * Not sure what figures I need for si1 and si2! events =
+			 * sampleEvents(); Map<SphereName, SphereInfo> si1 =
+			 * generateSphereInfos(new double[]{0.1, 0.3, 0.3, 0.4});
+			 * Map<SphereName, SphereInfo> si2 = generateSphereInfos(new
+			 * double[]{0.3, 0.3, 0.3, 0.1}); CalendarStatus c1 = new
+			 * CalendarStatus(events.get(1), new CalendarStatus(100.0, si1));
+			 * CalendarStatus c2 = new Ca
