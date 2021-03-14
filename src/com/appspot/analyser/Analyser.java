@@ -695,4 +695,16 @@ public class Analyser {
 			 * Map<SphereName, SphereInfo> si2 = generateSphereInfos(new
 			 * double[]{0.3, 0.3, 0.3, 0.1}); CalendarStatus c1 = new
 			 * CalendarStatus(events.get(1), new CalendarStatus(100.0, si1));
-			 * CalendarStatus c2 = new Ca
+			 * CalendarStatus c2 = new CalendarStatus(events.get(2), new
+			 * CalendarStatus(100.0, si2)); assertTrue("", !a.isCloseEnough(c1,
+			 * true)); assertTrue("", a.isCloseEnough(c2, true)); assertTrue("",
+			 * !a.isCloseEnough(c1, false)); assertTrue("", a.isCloseEnough(c2,
+			 * false));
+			 */
+		}
+
+		@Test
+		public void testGetSortedStatuses() {
+			events = sampleEvents();
+			events.remove(0);
+			e
