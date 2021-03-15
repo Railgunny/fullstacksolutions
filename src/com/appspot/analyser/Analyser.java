@@ -707,4 +707,11 @@ public class Analyser {
 		public void testGetSortedStatuses() {
 			events = sampleEvents();
 			events.remove(0);
-			e
+			events.remove(events.size() - 1);
+			Map<SphereName, Double> times = new HashMap<SphereName, Double>();
+			times.put(SphereName.HEALTH, 11.0);
+			times.put(SphereName.WORK, 492.0);
+			times.put(SphereName.FAMILY, 32.0);
+			times.put(SphereName.RECREATION, 42.0);
+			Map<SphereName, Double> currentRatios = new HashMap<SphereName, Double>();
+			currentRatios.put(SphereName.HEA
