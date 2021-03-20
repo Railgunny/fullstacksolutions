@@ -737,4 +737,10 @@ public class Analyser {
 			times.put(SphereName.HEALTH, 11.0);
 			times.put(SphereName.WORK, 492.0);
 			times.put(SphereName.FAMILY, 32.0);
-			times
+			times.put(SphereName.RECREATION, 42.0);
+			Map<SphereName, Double> currentRatios = new HashMap<SphereName, Double>();
+			currentRatios.put(SphereName.HEALTH, 0.019469026548672566);
+			currentRatios.put(SphereName.WORK, 0.8707964601769912);
+			currentRatios.put(SphereName.FAMILY, 0.05663716814159292);
+			currentRatios.put(SphereName.RECREATION, 0.0743362831858407);
+			double sum = 565.0;
