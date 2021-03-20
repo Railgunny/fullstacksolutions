@@ -720,4 +720,9 @@ public class Analyser {
 			currentRatios.put(SphereName.RECREATION, 0.0743362831858407);
 			double sum = 565.0;
 			Map<SphereName, SphereInfo> results = a.generateSphereResults(generateSpheres(new double[] { 0.1, 0.3, 0.3, 0.4 }), currentRatios, times);
-			
+			CalendarStatus start = new CalendarStatus(sum, results, a.getFreeSlots(events));
+			List<CalendarStatus> sortedStatuses = a.generateEventStatuses(events, start);
+			assertTrue("Not all events translated into statuses correctly", sortedStatuses.size() == events.size());
+			double min = 0.0;
+			for (CalendarStatus status : sortedStatuses) {
+				assertTrue("Get sorted status
