@@ -725,4 +725,16 @@ public class Analyser {
 			assertTrue("Not all events translated into statuses correctly", sortedStatuses.size() == events.size());
 			double min = 0.0;
 			for (CalendarStatus status : sortedStatuses) {
-				assertTrue("Get sorted status
+				assertTrue("Get sorted statuses orders events incorectly", status.getCoefficient() >= min);
+				min = status.getCoefficient();
+			}
+		}
+
+		@Test
+		public void testCheckGoals() {
+			events = sampleEvents();
+			Map<SphereName, Double> times = new HashMap<SphereName, Double>();
+			times.put(SphereName.HEALTH, 11.0);
+			times.put(SphereName.WORK, 492.0);
+			times.put(SphereName.FAMILY, 32.0);
+			times
