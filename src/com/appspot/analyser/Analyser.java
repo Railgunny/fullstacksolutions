@@ -780,4 +780,9 @@ public class Analyser {
 		}
 
 		private List<? extends IEvent> sampleEvents() {
-		
+			Suggestion begin = new RescheduleSuggestion("begin", null, new GregorianCalendar(2000, 3, 3, 0, 0, 0), new GregorianCalendar(2000, 3, 3,
+					0, 0, 0));
+			begin.setDeurationInterval(0, 0);
+			Suggestion end = new RescheduleSuggestion("end", null, new GregorianCalendar(2000, 3, 3, 23, 59, 59), new GregorianCalendar(2000, 3, 3,
+					23, 59, 59));
+			end.setDeurationInterval(0
