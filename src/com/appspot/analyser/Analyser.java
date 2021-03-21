@@ -744,3 +744,9 @@ public class Analyser {
 			currentRatios.put(SphereName.FAMILY, 0.05663716814159292);
 			currentRatios.put(SphereName.RECREATION, 0.0743362831858407);
 			double sum = 565.0;
+			Map<SphereName, Double> choices = generateSpheres(new double[] { 0.1, 0.3, 0.3, 0.4 });
+			try {
+				CalendarStatus start = a.checkGoals(events, choices);
+				assertTrue("Incorrect coefficient in sphere info creation", start.getCoefficient() == 122035.3982300885);
+				assertTrue("Incorrect userBusyTime in sphere info creation", start.getUserBusyTime() == sum);
+				for (SphereName sn : start.getSphereResults().keySet
