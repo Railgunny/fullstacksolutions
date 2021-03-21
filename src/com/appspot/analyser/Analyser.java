@@ -755,4 +755,14 @@ public class Analyser {
 					assertTrue("Sphere current ratio incorrect in sphere info creation", si.getCurrentRatio() == currentRatios.get(sn));
 				}
 			} catch (Exception e) {
-				fail("Checking goals failed - exception thrown: " + e.getLoc
+				fail("Checking goals failed - exception thrown: " + e.getLocalizedMessage());
+			}
+		}
+
+		/* Testing utils */
+		private HashMap<SphereName, SphereInfo> generateSphereInfos(double[] values) {
+			SphereName[] names = SphereName.values();
+			HashMap<SphereName, SphereInfo> res = new HashMap<SphereName, SphereInfo>();
+			for (int i = 0; i < names.length; i++) {
+				SphereInfo si = new SphereInfo(values[i], values[i], 10.0);
+				res.put(names[i],
