@@ -749,4 +749,10 @@ public class Analyser {
 				CalendarStatus start = a.checkGoals(events, choices);
 				assertTrue("Incorrect coefficient in sphere info creation", start.getCoefficient() == 122035.3982300885);
 				assertTrue("Incorrect userBusyTime in sphere info creation", start.getUserBusyTime() == sum);
-				for (SphereName sn : start.getSphereResults().keySet
+				for (SphereName sn : start.getSphereResults().keySet()) {
+					SphereInfo si = start.getSphereResults().get(sn);
+					assertTrue("Sphere time incorrect in sphere info creation", si.getSphereTotalTime() == times.get(sn));
+					assertTrue("Sphere current ratio incorrect in sphere info creation", si.getCurrentRatio() == currentRatios.get(sn));
+				}
+			} catch (Exception e) {
+				fail("Checking goals failed - exception thrown: " + e.getLoc
