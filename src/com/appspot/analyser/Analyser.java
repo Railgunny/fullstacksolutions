@@ -765,4 +765,19 @@ public class Analyser {
 			HashMap<SphereName, SphereInfo> res = new HashMap<SphereName, SphereInfo>();
 			for (int i = 0; i < names.length; i++) {
 				SphereInfo si = new SphereInfo(values[i], values[i], 10.0);
-				res.put(names[i],
+				res.put(names[i], si);
+			}
+			return res;
+		}
+
+		private HashMap<SphereName, Double> generateSpheres(double[] values) {
+			SphereName[] names = SphereName.values();
+			HashMap<SphereName, Double> res = new HashMap<SphereName, Double>();
+			for (int i = 0; i < names.length; i++) {
+				res.put(names[i], values[i]);
+			}
+			return res;
+		}
+
+		private List<? extends IEvent> sampleEvents() {
+		
