@@ -785,4 +785,11 @@ public class Analyser {
 			begin.setDeurationInterval(0, 0);
 			Suggestion end = new RescheduleSuggestion("end", null, new GregorianCalendar(2000, 3, 3, 23, 59, 59), new GregorianCalendar(2000, 3, 3,
 					23, 59, 59));
-			end.setDeurationInterval(0
+			end.setDeurationInterval(0, 0);
+			/* Should remain a RescheduleSuggestion */
+			Suggestion s1 = new RescheduleSuggestion("reschedule 1", null, new GregorianCalendar(2000, 3, 3, 13, 0, 0), new GregorianCalendar(2000,
+					3, 3, 14, 45, 0));
+			s1.setSpheres(generateSpheres(new double[] { 0.1, 0.3, 0.3, 0.4 }));
+			s1.setDeurationInterval(30, 151);
+			s1.setReschedule(true);
+			/* Should get converted to a DeleteSuggestion */
