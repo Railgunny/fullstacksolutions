@@ -799,4 +799,10 @@ public class Analyser {
 			s2.setDeurationInterval(0, 40);
 			s2.setReschedule(true);
 			/* Should get converted to a RescheduleSuggestion */
-			Suggestion s3 = new InsertSu
+			Suggestion s3 = new InsertSuggestion("reschedule 2", null, new GregorianCalendar(2000, 3, 3, 16, 00, 0), new GregorianCalendar(2000, 3,
+					3, 18, 30, 0));
+			s3.setSpheres(generateSpheres(new double[] { 0.0, 1.0, 0.0, 0.0 }));
+			s3.setDeurationInterval(0, 170);
+			s3.setReschedule(true);
+			/* Special case - s4 and s5 fits inside s3 */
+			Suggestion s4 = new InsertSuggestion("reschedule 3", null, new Gregori
