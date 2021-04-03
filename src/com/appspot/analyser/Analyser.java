@@ -805,4 +805,11 @@ public class Analyser {
 			s3.setDeurationInterval(0, 170);
 			s3.setReschedule(true);
 			/* Special case - s4 and s5 fits inside s3 */
-			Suggestion s4 = new InsertSuggestion("reschedule 3", null, new Gregori
+			Suggestion s4 = new InsertSuggestion("reschedule 3", null, new GregorianCalendar(2000, 3, 3, 16, 30, 0), new GregorianCalendar(2000, 3,
+					3, 17, 20, 0));
+			s4.setSpheres(generateSpheres(new double[] { 0.0, 1.0, 0.0, 0.0 }));
+			s4.setDeurationInterval(0, 100);
+			s4.setReschedule(true);
+			Suggestion s5 = new InsertSuggestion("reschedule 4", null, new GregorianCalendar(2000, 3, 3, 16, 30, 0), new GregorianCalendar(2000, 3,
+					3, 18, 20, 0));
+			s5.setSpheres(
