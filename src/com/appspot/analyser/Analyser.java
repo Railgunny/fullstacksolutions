@@ -812,4 +812,11 @@ public class Analyser {
 			s4.setReschedule(true);
 			Suggestion s5 = new InsertSuggestion("reschedule 4", null, new GregorianCalendar(2000, 3, 3, 16, 30, 0), new GregorianCalendar(2000, 3,
 					3, 18, 20, 0));
-			s5.setSpheres(
+			s5.setSpheres(generateSpheres(new double[] { 0.0, 1.0, 0.0, 0.0 }));
+			s5.setDeurationInterval(0, 61);
+			s5.setReschedule(true);
+			/* s6 ends before s7 does */
+			Suggestion s6 = new InsertSuggestion("reschedule 5", null, new GregorianCalendar(2000, 3, 3, 19, 30, 0), new GregorianCalendar(2000, 3,
+					3, 20, 20, 0));
+			s6.setSpheres(generateSpheres(new double[] { 0.0, 1.0, 0.0, 0.0 }));
+			s
