@@ -827,3 +827,17 @@ public class Analyser {
 			s7.setDeurationInterval(0, 180);
 			s7.setReschedule(false);
 			List<Suggestion> list = new LinkedList<Suggestion>();
+			list.add(begin);
+			list.add(s1);
+			list.add(s2);
+			list.add(s3);
+			list.add(s4);
+			list.add(s5);
+			list.add(s6);
+			list.add(s7);
+			list.add(end);
+			Collections.sort(list);
+			return list;
+		}
+	}
+}
