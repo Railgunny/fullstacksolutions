@@ -819,4 +819,11 @@ public class Analyser {
 			Suggestion s6 = new InsertSuggestion("reschedule 5", null, new GregorianCalendar(2000, 3, 3, 19, 30, 0), new GregorianCalendar(2000, 3,
 					3, 20, 20, 0));
 			s6.setSpheres(generateSpheres(new double[] { 0.0, 1.0, 0.0, 0.0 }));
-			s
+			s6.setDeurationInterval(0, 60);
+			s6.setReschedule(true);
+			Suggestion s7 = new InsertSuggestion("reschedule 6", null, new GregorianCalendar(2000, 3, 3, 19, 40, 0), new GregorianCalendar(2000, 3,
+					3, 21, 20, 0));
+			s7.setSpheres(generateSpheres(new double[] { 0.0, 1.0, 0.0, 0.0 }));
+			s7.setDeurationInterval(0, 180);
+			s7.setReschedule(false);
+			List<Suggestion> list = new LinkedList<Suggestion>();
