@@ -51,4 +51,19 @@ public class DeleteSuggestion extends Suggestion {
 			clientCopy.delete(deleteUrl);
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (S
+		} catch (ServiceException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public CalendarEventEntry getCalendarEvent() {
+		return null;
+	}
+
+	public String toString() {
+		SimpleDateFormat date = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
+		return getType() + " " + title 
+		    + " which is currently scheduled for "
+		    + date.format(new Date(startDate));
+	}
+}
