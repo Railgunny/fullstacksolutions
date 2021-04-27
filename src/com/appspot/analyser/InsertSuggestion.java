@@ -30,4 +30,18 @@ public class InsertSuggestion extends Suggestion {
 			Calendar startDate, Calendar endDate, double minDuration,
 			double maxDuration, boolean isRecurring, boolean canReschedule,
 			Map<SphereName, Double> s) {
-		super(title, description, startDate, endDate, 
+		super(title, description, startDate, endDate, minDuration, maxDuration,
+				isRecurring, canReschedule, s);
+	}
+
+	public InsertSuggestion(String title, String description,
+			Calendar startDate, Calendar endDate) {
+		super(title, description, startDate, endDate);
+	}
+
+	public String getType() {
+		return "NewEvent";
+	}
+
+	protected void makePersistentInternal() {
+		CalendarEventEntry newEntry = new Ca
