@@ -56,4 +56,17 @@ public class InsertSuggestion extends Suggestion {
 		eventTimes.setEndTime(endTime);
 		newEntry.addTime(eventTimes);
 
-		URL postU
+		URL postUrl = null;
+		try {
+			postUrl = new URL(CalendarUtils.DEFAULT_FULL_FEED_REQUEST_URL);
+			CalendarUtils.client.insert(postUrl, newEntry);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ServiceException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public CalendarEventEntry
