@@ -44,4 +44,16 @@ public class InsertSuggestion extends Suggestion {
 	}
 
 	protected void makePersistentInternal() {
-		CalendarEventEntry newEntry = new Ca
+		CalendarEventEntry newEntry = new CalendarEventEntry();
+
+		newEntry.setTitle(new PlainTextConstruct(title));
+		newEntry.setContent(new PlainTextConstruct(description));
+
+		DateTime startTime = new DateTime(startDate);
+		DateTime endTime = new DateTime(endDate);
+		When eventTimes = new When();
+		eventTimes.setStartTime(startTime);
+		eventTimes.setEndTime(endTime);
+		newEntry.addTime(eventTimes);
+
+		URL postU
