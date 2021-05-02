@@ -69,4 +69,14 @@ public class InsertSuggestion extends Suggestion {
 		}
 	}
 
-	public CalendarEventEntry
+	public CalendarEventEntry getCalendarEvent() {
+		return null;
+	}
+
+	public String toString() {
+		SimpleDateFormat date = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
+		return "Schedule " + title 
+		    + " for "
+		    + date.format(new Date(startDate));
+	}
+}
