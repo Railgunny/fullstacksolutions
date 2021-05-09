@@ -36,4 +36,15 @@ public class Proposal extends BaseCalendarSlot implements IEvent  {
 	@Persistent(serialized="true", defaultFetchGroup = "true")
 	private Pair<Integer, Integer> possibleAge;
 
-	public Proposal(
+	public Proposal(String title, String desc){
+		this.title = title;
+		this.description = desc;
+		key = KeyFactory.createKey(Proposal.class.getSimpleName(), title + description);
+	}
+	
+	public Proposal(Calendar startDate, Calendar endDate, User user) {
+		super(startDate, endDate);
+		key = KeyFactory.createKey(Proposal.class.getSimpleName(), title + description);
+	}
+
+	public Proposal(String title, String description, Ca
