@@ -47,4 +47,12 @@ public class Proposal extends BaseCalendarSlot implements IEvent  {
 		key = KeyFactory.createKey(Proposal.class.getSimpleName(), title + description);
 	}
 
-	public Proposal(String title, String description, Ca
+	public Proposal(String title, String description, Calendar startDate,
+			Calendar endDate) {
+		super(title, description, startDate, endDate);
+		key = KeyFactory.createKey(Proposal.class.getSimpleName(), title + description);
+	}
+
+	public Proposal(String title, String description, Calendar startDate,
+			Calendar endDate, double minDuration, double maxDuration,
+			boolean isRecurring, boolean canReschedule, M
