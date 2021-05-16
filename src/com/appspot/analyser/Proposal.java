@@ -55,4 +55,14 @@ public class Proposal extends BaseCalendarSlot implements IEvent  {
 
 	public Proposal(String title, String description, Calendar startDate,
 			Calendar endDate, double minDuration, double maxDuration,
-			boolean isRecurring, boolean canReschedule, M
+			boolean isRecurring, boolean canReschedule, Map<SphereName, Double> s) {
+		this(title, description, startDate, endDate);
+		durationInterval = new Pair<Double, Double>(minDuration, maxDuration);
+		setRecurring(isRecurring);
+		setReschedule(canReschedule);
+		setSpheres(s);
+	}
+
+	public Proposal(IEvent e) {
+		this(e.getTitle(), e.getDescription(), e.getStartDate(), e.getEndDate(), 
+				e.getDurationInterval().getFir
