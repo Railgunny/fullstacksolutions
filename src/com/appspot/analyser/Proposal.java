@@ -65,4 +65,21 @@ public class Proposal extends BaseCalendarSlot implements IEvent  {
 
 	public Proposal(IEvent e) {
 		this(e.getTitle(), e.getDescription(), e.getStartDate(), e.getEndDate(), 
-				e.getDurationInterval().getFir
+				e.getDurationInterval().getFirst(), e.getDurationInterval().getSecond(),
+				e.isRecurring(), e.canReschedule(), e.getSpheres());
+	}
+
+	public double getDuration(){
+		return this.getDurationInterval().getFirst();
+	}
+	
+	public void setRecurring(boolean isRecurring) {
+		this.isRecurring = isRecurring;
+	}
+
+	public boolean canReschedule() {
+		return canReschedule;
+	}
+
+	public void setReschedule(boolean schedule) {
+		canReschedule = schedule
