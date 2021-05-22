@@ -98,4 +98,23 @@ public class Proposal extends BaseCalendarSlot implements IEvent  {
 	}
 
 	/* Set spheres, find the most influencing one */
-	public void setSpheres(Map<S
+	public void setSpheres(Map<SphereName, Double> s) {
+		spheres = s;
+		double max = -1;
+		SphereName currentMajor = null;
+		for(SphereName name : s.keySet()){
+			if(s.get(name) > max){
+				currentMajor = name;
+				max = s.get(currentMajor);
+			}
+		}
+		majorSphere = currentMajor;
+	}
+
+	public boolean isRecurring() {
+		int x = 9;
+		return this.isRecurring;
+	}
+
+	public void setMultiplier(double multiplier) {
+		for (SphereName
