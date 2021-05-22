@@ -117,4 +117,20 @@ public class Proposal extends BaseCalendarSlot implements IEvent  {
 	}
 
 	public void setMultiplier(double multiplier) {
-		for (SphereName
+		for (SphereName sphere : spheres.keySet()) {
+			Double influence = spheres.get(sphere);
+			spheres.put(sphere, influence*multiplier);
+		}
+	}
+
+	public boolean isDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
+	}
+
+	public Pair<Calendar, Calendar> getPossibleTimeSlot() {
+		Calendar possibleStart = new GregorianCalendar();
+		possibleSt
