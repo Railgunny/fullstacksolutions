@@ -82,4 +82,20 @@ public class Proposal extends BaseCalendarSlot implements IEvent  {
 	}
 
 	public void setReschedule(boolean schedule) {
-		canReschedule = schedule
+		canReschedule = schedule;
+	}
+
+	public Pair<Double, Double> getDurationInterval() {
+		return this.durationInterval;
+	}
+
+	public void setDurationInterval(Double min, Double max){
+		durationInterval = new Pair<Double, Double>(min, max);
+	}
+
+	public Map<SphereName, Double> getSpheres() {
+		return this.spheres;
+	}
+
+	/* Set spheres, find the most influencing one */
+	public void setSpheres(Map<S
