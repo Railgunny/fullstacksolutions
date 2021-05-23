@@ -133,4 +133,12 @@ public class Proposal extends BaseCalendarSlot implements IEvent  {
 
 	public Pair<Calendar, Calendar> getPossibleTimeSlot() {
 		Calendar possibleStart = new GregorianCalendar();
-		possibleSt
+		possibleStart.setTimeInMillis(possibleTimeSlot.getFirst());
+		Calendar possibleEnd = new GregorianCalendar();
+		possibleEnd.setTimeInMillis(possibleTimeSlot.getSecond());
+		Pair<Calendar, Calendar> possibleTimeSlot = new Pair<Calendar, Calendar>(possibleStart, possibleEnd);
+		return possibleTimeSlot;
+	}
+
+	public void setPossibleTimeSlot(Pair<Calendar, Calendar> possibleTimeSlot) {
+		Long possibleStart = possibleTimeSlot.
