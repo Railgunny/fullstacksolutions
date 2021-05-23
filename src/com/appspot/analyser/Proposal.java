@@ -171,4 +171,7 @@ public class Proposal extends BaseCalendarSlot implements IEvent  {
 	}
 	
 	public boolean equals(Object o){
-		ICalendarSlot 
+		ICalendarSlot other = (ICalendarSlot) o;
+		return title.equals(other.getTitle()) && description.equals(other.getDescription());
+	}
+}
