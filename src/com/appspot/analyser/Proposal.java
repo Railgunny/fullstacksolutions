@@ -154,4 +154,21 @@ public class Proposal extends BaseCalendarSlot implements IEvent  {
 		this.possibleAge = possibleAge;
 	}
 
-	public void setDurationInterval(P
+	public void setDurationInterval(Pair<Double, Double> durationInterval) {
+		this.durationInterval = durationInterval;
+	}
+
+	public void makePersistent(int alternative) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+	}
+
+	public CalendarEventEntry getCalendarEvent() {
+		return null;
+	}
+
+	public SphereName getMajorSphere() {
+		return majorSphere;
+	}
+	
+	public boolean equals(Object o){
+		ICalendarSlot 
