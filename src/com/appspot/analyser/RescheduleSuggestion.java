@@ -19,4 +19,16 @@ public class RescheduleSuggestion extends Suggestion {
 	private Pair<Long, Long> newDates;
 	private CalendarEventEntry event;
 
-	public RescheduleSuggestion(BaseCal
+	public RescheduleSuggestion(BaseCalendarSlot slot) {
+		super(slot);
+	}
+
+	public RescheduleSuggestion(String title, String description,
+			Calendar startDate, Calendar endDate, double minDuration,
+			double maxDuration, boolean isRecurring, boolean canReschedule,
+			Map<SphereName, Double> s) {
+		super(title, description, startDate, endDate, minDuration, maxDuration,
+				isRecurring, canReschedule, s);
+	}
+
+	public 
