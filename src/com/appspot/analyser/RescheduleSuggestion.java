@@ -8,4 +8,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
-import com.appspo
+import com.appspot.datastore.SphereName;
+import com.appspot.iclifeplanning.authentication.CalendarUtils;
+import com.google.gdata.data.DateTime;
+import com.google.gdata.data.calendar.CalendarEventEntry;
+import com.google.gdata.util.ServiceException;
+
+public class RescheduleSuggestion extends Suggestion {
+
+	private Pair<Long, Long> newDates;
+	private CalendarEventEntry event;
+
+	public RescheduleSuggestion(BaseCal
