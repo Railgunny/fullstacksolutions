@@ -42,4 +42,19 @@ public class RescheduleSuggestion extends Suggestion {
 		event = e.getCalendarEvent();
 	}
 
-	public RescheduleSuggest
+	public RescheduleSuggestion(IEvent e) {
+		super(e);
+		event = e.getCalendarEvent();
+		setNewDates(e.getStartDate().getTimeInMillis(), e.getEndDate().getTimeInMillis()+ (long)60*60*1000);
+	}
+
+	public void setNewDates(long newStart, long newEnd){
+		newDates = new Pair<Long, Long>(newStart, newEnd);
+	}
+
+	public Pair<Long, Long> getNewDates(){
+		return newDates;
+	}
+
+	public String getType() {
+		return "Res
