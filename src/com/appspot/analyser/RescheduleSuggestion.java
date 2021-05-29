@@ -31,4 +31,15 @@ public class RescheduleSuggestion extends Suggestion {
 				isRecurring, canReschedule, s);
 	}
 
-	public 
+	public RescheduleSuggestion(String title, String description,
+			Calendar startDate, Calendar endDate) {
+		super(title, description, startDate, endDate);
+	}
+
+	public RescheduleSuggestion(IEvent e, Calendar newStart, Calendar newEnd){
+		super(e);
+		setNewDates(newStart.getTimeInMillis(), newEnd.getTimeInMillis());
+		event = e.getCalendarEvent();
+	}
+
+	public RescheduleSuggest
