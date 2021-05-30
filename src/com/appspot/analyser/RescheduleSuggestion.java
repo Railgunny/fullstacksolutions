@@ -69,4 +69,14 @@ public class RescheduleSuggestion extends Suggestion {
 			CalendarUtils.client.update(editUrl, event);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
-		
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ServiceException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public CalendarEventEntry getCalendarEvent() {
+		return null;
+	}
+}
