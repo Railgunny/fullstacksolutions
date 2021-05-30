@@ -57,4 +57,16 @@ public class RescheduleSuggestion extends Suggestion {
 	}
 
 	public String getType() {
-		return "Res
+		return "Reschedule";
+	}
+
+	protected void makePersistentInternal() {
+		event.getTimes().get(0).setStartTime(new DateTime(newDates.getFirst()));
+		event.getTimes().get(0).setEndTime(new DateTime(newDates.getSecond()));
+		URL editUrl;
+		try {
+			editUrl = new URL(event.getEditLink().getHref());
+			CalendarUtils.client.update(editUrl, event);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		
