@@ -10,4 +10,7 @@ public final class PMF {
     private PMF() {
     }
 
-    public static PersistenceManagerFactory get
+    public static PersistenceManagerFactory get() {
+        return pmfInstance;
+    }
+}
