@@ -9,4 +9,10 @@ public abstract class BaseDataObject {
 	public void makePersistent() {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try {
-			pm.makePersis
+			pm.makePersistent(this);
+		}
+		finally {
+			pm.close();
+		}
+	}
+}
