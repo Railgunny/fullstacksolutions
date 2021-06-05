@@ -34,4 +34,9 @@ public enum SphereName {
 		if (name.toUpperCase().equals("WORK"))
 			return SphereName.WORK;
 		if (name.toUpperCase().equals("FAMILY"))
-			r
+			return SphereName.FAMILY;
+		if (name.toUpperCase().equals("RECREATION"))
+			return SphereName.RECREATION;
+		return null;
+	}
+}
