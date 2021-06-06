@@ -31,4 +31,16 @@ public class TokenStore {
 		}
 	}
 
-	public static void deleteTokend(St
+	public static void deleteTokend(String id) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		try {
+			Token token = pm.getObjectById(Token.class, id);
+			pm.deletePersistent(token);
+		} 
+		catch (JDOObjectNotFoundException e) {
+		} 
+		finally {
+			pm.close();
+		}
+	}
+}
