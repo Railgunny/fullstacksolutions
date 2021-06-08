@@ -46,3 +46,66 @@ public class UserProfile extends BaseDataObject {
 	public Long getStartOptimizing() {
 		return startOptimizing;
 	}
+
+	public void setStartOptimizing(Long startOptimizing) {
+		this.startOptimizing = startOptimizing;
+	}
+
+	public Long getFinishOptimizing() {
+		return finishOptimizing;
+	}
+
+	public void setFinishOptimizing(Long finishOptimizing) {
+		this.finishOptimizing = finishOptimizing;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		//add checks and throw exception
+		this.email = email;
+	}
+
+	public boolean isFullyOptimized() {
+		return fullyOptimized;
+	}
+
+	public void setFullyOptimized(boolean fullyOptimized) {
+		this.fullyOptimized = fullyOptimized;
+	}
+
+	public String getUserID() {
+		return userID;
+	}
+
+	public String getName() {
+		return nickname;
+	}
+
+	public long getJoinTime() {
+		return joinTime;
+	}
+
+	public HashMap<SphereName, Double> getSpherePreferences() {
+		return spherePreferences;
+	}	
+
+	public String toString() {
+		String res = getUserID() + " nick: " + nickname + " email: " + getEmail() +"\n";
+		res = res.concat("Sphere Choices: \n");
+		for(SphereName name : spherePreferences.keySet()){
+			res = res.concat(name.toString() + " : " + spherePreferences.get(name) + "\n");
+		}
+		return res;
+	}
+
+	public void setSpherePreferences(HashMap<SphereName, Double> spherePreferences2) {
+		spherePreferences = spherePreferences2;
+	}
+
+	public boolean wantsFullOpt(){
+		return fullyOptimized;
+	}
+}
