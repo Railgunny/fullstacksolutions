@@ -20,4 +20,16 @@ import com.appspot.datastore.UserProfile;
 import com.appspot.datastore.UserProfileStore;
 import com.appspot.iclifeplanning.authentication.AuthService;
 import com.appspot.iclifeplanning.authentication.CalendarUtils;
-import com.google.ap
+import com.google.appengine.repackaged.com.google.protobuf.TextFormat.ParseException;
+import com.google.appengine.repackaged.org.json.JSONArray;
+import com.google.appengine.repackaged.org.json.JSONException;
+import com.google.appengine.repackaged.org.json.JSONObject;
+
+/**
+ * Settings servlet. 
+ * 
+ * @author Agnieszka Magda Madurska (amm208@doc.ic.ac.uk)
+ * 
+ */
+@SuppressWarnings("serial")
+public class SettingsServlet ex
