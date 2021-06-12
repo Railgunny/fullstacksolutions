@@ -32,4 +32,13 @@ import com.google.appengine.repackaged.org.json.JSONObject;
  * 
  */
 @SuppressWarnings("serial")
-public class SettingsServlet ex
+public class SettingsServlet extends HttpServlet {
+	
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+		JSONObject result = new JSONObject();
+		String userID = AuthService.getAuthServiceInstance().getCurrentUserId();
+		try {
+			UserProfile up = UserProfileStore.getUserProfile(userID);
+			HashMap<SphereName, Double> preferences = up.getSpherePreferences();
+			long from = up.ge
