@@ -41,4 +41,15 @@ public class SettingsServlet extends HttpServlet {
 		try {
 			UserProfile up = UserProfileStore.getUserProfile(userID);
 			HashMap<SphereName, Double> preferences = up.getSpherePreferences();
-			long from = up.ge
+			long from = up.getStartOptimizing();
+			long to = up.getFinishOptimizing();
+			Calendar fromDate = new GregorianCalendar();
+			fromDate.setTimeInMillis(from);
+			Calendar toDate = new GregorianCalendar();
+			toDate.setTimeInMillis(to);
+			
+			JSONArray preferencesArray = new JSONArray();
+			JSONObject pref;
+			for (Entry e : preferences.entrySet()) {
+				pref = new JSONObject();
+				pref.put("name",((SphereName) (e.g
