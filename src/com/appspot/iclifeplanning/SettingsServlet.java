@@ -60,4 +60,16 @@ public class SettingsServlet extends HttpServlet {
 			result.put("fullOpt", "" + ((Boolean)up.wantsFullOpt()).toString().toUpperCase()+ "");
 			result.put("spheresSettings", preferencesArray);
 			result.put("fromDate", fromDate.get(Calendar.DAY_OF_MONTH) + "/" + 
-					(int)(toDate.get(Calendar.MONTH) + 1) + "
+					(int)(toDate.get(Calendar.MONTH) + 1) + "/" +
+					fromDate.get(Calendar.YEAR));
+			result.put("toDate", toDate.get(Calendar.DAY_OF_MONTH) + "/" + 
+					(int)(toDate.get(Calendar.MONTH) + 1) + "/" +
+					toDate.get(Calendar.YEAR));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		response.getWriter().print(result);
+	}
+
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
+		throws IOEx
