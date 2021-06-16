@@ -52,4 +52,12 @@ public class SettingsServlet extends HttpServlet {
 			JSONObject pref;
 			for (Entry e : preferences.entrySet()) {
 				pref = new JSONObject();
-				pref.put("name",((SphereName) (e.g
+				pref.put("name",((SphereName) (e.getKey())).name().toLowerCase());
+				pref.put("value","" + ((Double)e.getValue()*100) + "");
+				preferencesArray.put(pref);
+			}
+			//result.put("userID", userID);
+			result.put("fullOpt", "" + ((Boolean)up.wantsFullOpt()).toString().toUpperCase()+ "");
+			result.put("spheresSettings", preferencesArray);
+			result.put("fromDate", fromDate.get(Calendar.DAY_OF_MONTH) + "/" + 
+					(int)(toDate.get(Calendar.MONTH) + 1) + "
