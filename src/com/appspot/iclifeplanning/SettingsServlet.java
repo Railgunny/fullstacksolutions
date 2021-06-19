@@ -72,4 +72,10 @@ public class SettingsServlet extends HttpServlet {
 	}
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
-		throws IOEx
+		throws IOException {
+		try {
+			JSONObject settingsJSON = new JSONObject(request.getReader().readLine());
+			String userID = settingsJSON.getString("userID");
+			boolean fullOpt = Boolean.parseBoolean(settingsJSON.getString("fullOpt"));
+			JSONArray spheres = settingsJSON.getJSONArray("spheresSettings");
+			HashMap<SphereName, Double> spherePreferences = new HashMap<SphereName
