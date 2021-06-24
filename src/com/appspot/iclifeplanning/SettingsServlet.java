@@ -78,4 +78,15 @@ public class SettingsServlet extends HttpServlet {
 			String userID = settingsJSON.getString("userID");
 			boolean fullOpt = Boolean.parseBoolean(settingsJSON.getString("fullOpt"));
 			JSONArray spheres = settingsJSON.getJSONArray("spheresSettings");
-			HashMap<SphereName, Double> spherePreferences = new HashMap<SphereName
+			HashMap<SphereName, Double> spherePreferences = new HashMap<SphereName, Double>();
+			JSONObject preference;
+			String sphere;
+			double value;
+			for (int i = 0 ; i < spheres.length(); i++) {
+				preference = spheres.getJSONObject(i);
+				sphere = preference.getString("name");
+				value = Double.valueOf(preference.getString("value"));
+				spherePreferences.put(SphereName.getSphereName(sphere), value/100);
+			}
+
+			String from = settingsJSON.getString("fromD
