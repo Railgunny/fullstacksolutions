@@ -89,4 +89,15 @@ public class SettingsServlet extends HttpServlet {
 				spherePreferences.put(SphereName.getSphereName(sphere), value/100);
 			}
 
-			String from = settingsJSON.getString("fromD
+			String from = settingsJSON.getString("fromDate");
+			String to = settingsJSON.getString("toDate");
+			DateFormat format = new SimpleDateFormat("DD/MM/yyyy");
+			Date fromDate = null;
+			Date toDate = null;
+			try {
+				fromDate = format.parse(from);
+				toDate = format.parse(to);
+			} catch (java.text.ParseException e) 
+			{System.out.println("Parse Exception!" + e.getStackTrace());}
+			
+			UserProfile userProfile = Use
