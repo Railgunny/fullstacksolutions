@@ -100,4 +100,11 @@ public class SettingsServlet extends HttpServlet {
 			} catch (java.text.ParseException e) 
 			{System.out.println("Parse Exception!" + e.getStackTrace());}
 			
-			UserProfile userProfile = Use
+			UserProfile userProfile = UserProfileStore.getUserProfile(CalendarUtils.getCurrentUserId());
+			userProfile.setFullyOptimized(fullOpt);
+			userProfile.setSpherePreferences(spherePreferences);
+			userProfile.setStartOptimizing(fromDate.getTime());
+			userProfile.setFinishOptimizing(toDate.getTime());
+			userProfile.makePersistent();
+			long now = Calendar.getInstance().getTimeInMillis();
+			UserDesiredLifeBala
