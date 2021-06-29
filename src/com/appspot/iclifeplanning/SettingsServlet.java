@@ -107,4 +107,11 @@ public class SettingsServlet extends HttpServlet {
 			userProfile.setFinishOptimizing(toDate.getTime());
 			userProfile.makePersistent();
 			long now = Calendar.getInstance().getTimeInMillis();
-			UserDesiredLifeBala
+			UserDesiredLifeBalanceStore
+			    .addDesiredLifeBalance(new UserDesiredLifeBalance(userID, now, spherePreferences));
+		} catch (JSONException e) {
+			System.out.println("Badly formatted JSON!");
+			e.printStackTrace();
+		}
+	}
+}
