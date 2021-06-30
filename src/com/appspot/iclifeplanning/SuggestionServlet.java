@@ -24,4 +24,15 @@ import com.appspot.iclifeplanning.authentication.CalendarUtils;
 import com.appspot.iclifeplanning.events.Event;
 import com.appspot.iclifeplanning.events.EventStore;
 import com.google.appengine.repackaged.org.json.JSONArray;
-import c
+import com.google.appengine.repackaged.org.json.JSONException;
+import com.google.appengine.repackaged.org.json.JSONObject;
+
+/**
+ * Suggestion servlet. responsible for managing the "optimise button".
+ * Initialises the EventStore and runs the analyser to create suggestions.
+ * 
+ * @author Agnieszka Magda Madurska (amm208@doc.ic.ac.uk)
+ * 
+ */
+@SuppressWarnings("serial")
+public class SuggestionSe
