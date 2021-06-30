@@ -35,4 +35,11 @@ import com.google.appengine.repackaged.org.json.JSONObject;
  * 
  */
 @SuppressWarnings("serial")
-public class SuggestionSe
+public class SuggestionServlet extends HttpServlet {
+	// This should NOT be stored like this. Reimplement to use memcache at some point.
+	private static Map<String, List<List<Suggestion>>> suggestionMap = new HashMap<String, List<List<Suggestion>>>();
+	
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+
+		System.out.println("Map size: " + s
