@@ -42,4 +42,12 @@ public class SuggestionServlet extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 
-		System.out.println("Map size: " + s
+		System.out.println("Map size: " + suggestionMap.size());
+		String token = TokenStore.getToken(CalendarUtils.getCurrentUserId());
+		CalendarUtils.client.setAuthSubToken(token);
+
+		EventStore eventStore = EventStore.getInstance();
+		eventStore.initizalize();
+		List<Event> events = eventStore.getEvents();
+		for(Event e : events) {
+			if (e.getTitle() != null && e.getTitle().equals("Video conference with MTV
