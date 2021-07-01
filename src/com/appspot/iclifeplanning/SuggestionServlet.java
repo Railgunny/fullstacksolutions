@@ -50,4 +50,14 @@ public class SuggestionServlet extends HttpServlet {
 		eventStore.initizalize();
 		List<Event> events = eventStore.getEvents();
 		for(Event e : events) {
-			if (e.getTitle() != null && e.getTitle().equals("Video conference with MTV
+			if (e.getTitle() != null && e.getTitle().equals("Video conference with MTV"))
+				e.setDurationInterval(new Pair(0.0,120.0));
+		}
+		
+		// ------------------- Dummy data
+		Analyser analyser = new Analyser();
+
+		List<List<Suggestion>> suggestions = analyser.getSuggestions(events, CalendarUtils.getCurrentUserId());
+		suggestionMap.put(CalendarUtils.getCurrentUserId(), suggestions);
+		//System.out.println("Returning suggestions for list 1: " +  suggestions.get(0).size());
+		/
