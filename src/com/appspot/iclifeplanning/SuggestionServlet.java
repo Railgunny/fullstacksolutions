@@ -91,4 +91,14 @@ public class SuggestionServlet extends HttpServlet {
 		sug.setAlternativeSuggetions(alternatives);
 		suggestions.get(1).add(sug);
 
-		suggestions.get(1).add
+		suggestions.get(1).add(new DeleteSuggestion(event4));
+		
+		sug = new DeleteSuggestion(event3);
+		alternatives = new ArrayList<Suggestion>();
+		alternatives.add(new DeleteSuggestion(event4));
+		alternatives.add(new DeleteSuggestion(event5));
+		sug.setAlternativeSuggetions(alternatives);
+		suggestions.get(2).add(sug);
+
+		suggestions.get(2).add(new DeleteSuggestion(event5));
+		suggestions.get(2).add(new DeleteSuggestion(event
