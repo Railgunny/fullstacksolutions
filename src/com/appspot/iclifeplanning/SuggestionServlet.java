@@ -78,4 +78,17 @@ public class SuggestionServlet extends HttpServlet {
 		Suggestion sug = new RescheduleSuggestion(event1);
 		List<Suggestion> alternatives = new ArrayList<Suggestion>();
 		alternatives.add(new DeleteSuggestion(event4));
-		alternatives.add(new DeleteSuggestion(event5))
+		alternatives.add(new DeleteSuggestion(event5));
+		sug.setAlternativeSuggetions(alternatives);
+		suggestions.get(0).add(sug);
+
+		suggestions.get(0).add(new DeleteSuggestion(event3));
+		
+		sug = new DeleteSuggestion(event2);
+		alternatives = new ArrayList<Suggestion>();
+		alternatives.add(new DeleteSuggestion(event4));
+		alternatives.add(new DeleteSuggestion(event5));
+		sug.setAlternativeSuggetions(alternatives);
+		suggestions.get(1).add(sug);
+
+		suggestions.get(1).add
