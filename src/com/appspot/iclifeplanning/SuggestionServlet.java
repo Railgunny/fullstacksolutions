@@ -60,4 +60,13 @@ public class SuggestionServlet extends HttpServlet {
 		List<List<Suggestion>> suggestions = analyser.getSuggestions(events, CalendarUtils.getCurrentUserId());
 		suggestionMap.put(CalendarUtils.getCurrentUserId(), suggestions);
 		//System.out.println("Returning suggestions for list 1: " +  suggestions.get(0).size());
-		/
+		/*
+		List<List<Suggestion>> suggestions = new ArrayList<List<Suggestion>>();
+		suggestions.add(new ArrayList<Suggestion>());
+		suggestions.add(new ArrayList<Suggestion>());
+		suggestions.add(new ArrayList<Suggestion>());
+		suggestionMap.put(CalendarUtils.getCurrentUserId(), suggestions);
+
+		
+		IEvent event1 = (IEvent)events.get(1);
+		IEvent event2 = (IEvent)events.
