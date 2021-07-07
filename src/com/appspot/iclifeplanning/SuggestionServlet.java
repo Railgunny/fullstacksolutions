@@ -114,4 +114,15 @@ public class SuggestionServlet extends HttpServlet {
 		try {
 			result.put("userID", CalendarUtils.getCurrentUserId());
 			result.put("lists", suggestionArray);
-		} catch (JSO
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		response.getWriter().print(result);
+	}
+
+	private JSONArray suggestionListToJSONArray(List<Suggestion> suggestionList) {
+		Suggestion suggestion;
+		JSONArray suggestionArray = new JSONArray();
+		for (int i = 0; i < suggestionList.size(); i++) {
+			suggestion = suggestionList.get(i);
+			suggestionArray.put(suggestionToJSONArray(suggestion));		
