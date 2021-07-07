@@ -101,4 +101,17 @@ public class SuggestionServlet extends HttpServlet {
 		suggestions.get(2).add(sug);
 
 		suggestions.get(2).add(new DeleteSuggestion(event5));
-		suggestions.get(2).add(new DeleteSuggestion(event
+		suggestions.get(2).add(new DeleteSuggestion(event6));*/
+		// ------------------- Dummy data
+		JSONArray suggestionArray = new JSONArray();
+		List<Suggestion> s;
+		for (int i = 0; i < suggestions.size(); i++) {
+			s = suggestions.get(i);
+			suggestionArray.put(suggestionListToJSONArray(s));
+		}
+
+		JSONObject result = new JSONObject();
+		try {
+			result.put("userID", CalendarUtils.getCurrentUserId());
+			result.put("lists", suggestionArray);
+		} catch (JSO
