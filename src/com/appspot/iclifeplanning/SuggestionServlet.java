@@ -125,4 +125,14 @@ public class SuggestionServlet extends HttpServlet {
 		JSONArray suggestionArray = new JSONArray();
 		for (int i = 0; i < suggestionList.size(); i++) {
 			suggestion = suggestionList.get(i);
-			suggestionArray.put(suggestionToJSONArray(suggestion));		
+			suggestionArray.put(suggestionToJSONArray(suggestion));			
+		}
+		return suggestionArray;
+	}
+
+	private JSONArray suggestionToJSONArray(Suggestion suggestion) {
+		JSONArray suggestionArray = new JSONArray();
+		Suggestion alternativeSuggestion;
+		List<Suggestion> alternativeSuggestions = suggestion.getAlternativeSuggestions();
+		SimpleDateFormat date = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
+		suggestionArray.pu
