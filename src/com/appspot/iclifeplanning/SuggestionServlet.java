@@ -146,4 +146,10 @@ public class SuggestionServlet extends HttpServlet {
 	private JSONObject suggestionToJSONObject(Suggestion suggestion) {
 		JSONObject suggestionObject = new JSONObject();
 		try {
-			suggestionObje
+			suggestionObject.put("title", suggestion.getTitle());
+			suggestionObject.put("description", suggestion.getDescription());
+			suggestionObject.put("repeating", "");
+			
+			SimpleDateFormat date = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
+			suggestionObject.put("startDateTime", date.format(suggestion.getStartDate().getTime()));
+			suggestionObject.put("endDateTime", date.format(suggestion.getEn
