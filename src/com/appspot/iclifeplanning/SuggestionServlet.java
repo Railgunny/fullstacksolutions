@@ -158,3 +158,18 @@ public class SuggestionServlet extends HttpServlet {
 				suggestionObject.put("newEndDateTime", date.format(((RescheduleSuggestion)suggestion).getNewDates().getSecond()));
 			}
 			suggestionObject.put("type", suggestion.getType());
+
+			List<String> spheres = new ArrayList<String>();
+			for (SphereName sphere : suggestion.getSpheres().keySet()) {
+				if (suggestion.getSpheres().get(sphere) > 0.05) {
+					spheres.add(sphere.name());
+				}
+			}
+			suggestionObject.put("spheres", spheres);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return suggestionObject;
+	}
+
+	public voi
