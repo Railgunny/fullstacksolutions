@@ -172,4 +172,13 @@ public class SuggestionServlet extends HttpServlet {
 		return suggestionObject;
 	}
 
-	public voi
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
+		throws IOException {
+
+		JSONObject suggestionsJSON = null;
+
+		try {
+			suggestionsJSON = new JSONObject(request.getReader().readLine());
+			String userID = CalendarUtils.getCurrentUserId();//suggestionsJSON.getString("userID");
+			int list = suggestionsJSON.getInt("setID");
+			JSONArray acceptedSuggestio
