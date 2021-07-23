@@ -191,4 +191,14 @@ public class SuggestionServlet extends HttpServlet {
 			for(int i = 0; i < lenght; i++) {
 				suggestionJSON = acceptedSuggestions.getJSONArray(i);
 				suggestion = (Integer) suggestionJSON.get(0);
-				al
+				alternative = (Integer) suggestionJSON.get(1);
+				List<Suggestion> l = suggestions.get(list);
+				Suggestion s = l.get(suggestion);
+				s.makePersistent(alternative);
+			}
+		} catch (JSONException e) {
+			System.out.println("Badly formatted JSON!");
+			e.printStackTrace();
+		}
+	}
+}
