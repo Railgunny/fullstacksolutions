@@ -181,4 +181,14 @@ public class SuggestionServlet extends HttpServlet {
 			suggestionsJSON = new JSONObject(request.getReader().readLine());
 			String userID = CalendarUtils.getCurrentUserId();//suggestionsJSON.getString("userID");
 			int list = suggestionsJSON.getInt("setID");
-			JSONArray acceptedSuggestio
+			JSONArray acceptedSuggestions = suggestionsJSON.getJSONArray("suggestions");
+			int lenght = acceptedSuggestions.length();
+			JSONArray suggestionJSON;
+			int suggestion;
+			int alternative;
+			List<List<Suggestion>> suggestions = suggestionMap.get(userID);
+
+			for(int i = 0; i < lenght; i++) {
+				suggestionJSON = acceptedSuggestions.getJSONArray(i);
+				suggestion = (Integer) suggestionJSON.get(0);
+				al
