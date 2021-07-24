@@ -117,3 +117,10 @@ public class AuthService {
 	}
 
 	public void revokeToken() {
+		TokenStore.deleteTokend(userService.getCurrentUser().getUserId());
+	}
+
+	public String getCurrentUserId() {
+		return userService.getCurrentUser().getUserId();
+	}
+}
