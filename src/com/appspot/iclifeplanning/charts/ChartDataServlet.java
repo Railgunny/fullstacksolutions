@@ -32,4 +32,16 @@ import com.appspot.iclifeplanning.events.EventStore;
  * the users calendar and sending notifications about the changes.
  * 
  * @author Agnieszka Magda Madurska (amm208@doc.ic.ac.uk)
- 
+ *
+ */
+@SuppressWarnings("serial")
+public class ChartDataServlet extends HttpServlet {
+	private static long startTime = 0;
+	private static long endTime = 0;
+	private static int weekNumber = 0;
+
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		Query query = pm.newQuery
