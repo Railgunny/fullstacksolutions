@@ -53,4 +53,10 @@ public class ChartDataServlet extends HttpServlet {
 		for (String userID : userIDs) {
 			System.out.println("Analyzing user: " + userID);
 			userProfile = UserProfileStore.getUserProfile(userID);
-			currentDesired
+			currentDesiredBalance = userProfile.getSpherePreferences();
+			endTime = Calendar.getInstance().getTimeInMillis();
+			startTime = endTime - (long)7*24*60*60*1000;
+			//startTime = Math.max(startTime, userProfile.getJoinTime());
+			token = TokenStore.getToken(userID);
+			CalendarUtils.client.setAuthSubToken(token);
+			List<Event> events = EventStore.getInstance().getEventsFromTimeRa
