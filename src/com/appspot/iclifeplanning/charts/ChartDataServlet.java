@@ -44,4 +44,13 @@ public class ChartDataServlet extends HttpServlet {
 			throws IOException {
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		Query query = pm.newQuery
+		Query query = pm.newQuery("SELECT userID FROM " + UserProfile.class.getName());
+		List<String> userIDs = (List<String>) query.execute();
+		HashMap<SphereName, Double> currentDesiredBalance;
+		UserProfile userProfile;
+		String token;
+
+		for (String userID : userIDs) {
+			System.out.println("Analyzing user: " + userID);
+			userProfile = UserProfileStore.getUserProfile(userID);
+			currentDesired
