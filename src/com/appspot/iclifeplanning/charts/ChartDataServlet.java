@@ -59,4 +59,12 @@ public class ChartDataServlet extends HttpServlet {
 			//startTime = Math.max(startTime, userProfile.getJoinTime());
 			token = TokenStore.getToken(userID);
 			CalendarUtils.client.setAuthSubToken(token);
-			List<Event> events = EventStore.getInstance().getEventsFromTimeRa
+			List<Event> events = EventStore.getInstance().getEventsFromTimeRange(startTime, endTime);
+			if (events != null) {
+				System.out.println("Saving data");
+				HashMap<SphereName, Double> sphereResults = Utilities.analyseEvents(events, currentDesiredBalance);
+				WeeklyDataProfile profile = new WeeklyDataProfile(userID, weekNumber, sphereResults, currentDesiredBalance);
+				WeeklyDataProfileStore.addWeeklyDataProfile(profile);
+			}
+		}
+		we
