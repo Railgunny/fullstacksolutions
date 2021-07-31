@@ -67,4 +67,6 @@ public class ChartDataServlet extends HttpServlet {
 				WeeklyDataProfileStore.addWeeklyDataProfile(profile);
 			}
 		}
-		we
+		weekNumber++;
+	}
+}
