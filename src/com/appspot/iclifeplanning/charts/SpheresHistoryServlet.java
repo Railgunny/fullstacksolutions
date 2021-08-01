@@ -59,4 +59,14 @@ public class SpheresHistoryServlet extends HttpServlet
 		for(WeeklyDataProfile wdp : listOfAllWeeks)
 		{
 			Map<SphereName, Double> sphereResults = wdp.getSphereResults();
-			for(int s
+			for(int s=0; s<numberOfSpheres; s++)
+			{
+				spheresArray[s][wdp.getWeekNumber()] = sphereResults.get(sphereNames[s]);
+			}
+		}
+		
+		// Array of maps holding series that will be sent to JS
+		HashMap<String, Object>[] sphereMaps = new HashMap[numberOfSpheres];
+		for(int sphereNumber = 0; sphereNumber<numberOfSpheres; sphereNumber++)
+		{
+			HashMap<String, Object> currentSphere = new HashMap<String, Object>(5);
