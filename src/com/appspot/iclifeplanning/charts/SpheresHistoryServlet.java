@@ -88,4 +88,10 @@ public class SpheresHistoryServlet extends HttpServlet
 		}
 		
 		Map<String, Object> allData = new TreeMap<String, Object>();
-		allData.
+		allData.put("series", seriesList);
+		
+		JSONObject reply = DataToJSONConverter.convertMapToMap(allData); 
+		
+		response_.getWriter().print(reply);
+	}
+}
