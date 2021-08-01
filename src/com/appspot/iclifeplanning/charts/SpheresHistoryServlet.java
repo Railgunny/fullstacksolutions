@@ -29,4 +29,16 @@ public class SpheresHistoryServlet extends HttpServlet
 			throws IOException
 	{
 		String userID = request_.getParameter("userName");
-		UserProfile userProfile = UserProfileStore.
+		UserProfile userProfile = UserProfileStore.getUserProfile(userID);
+		if(userProfile==null)
+		{
+			return;
+		}
+		// Get data for all weeks
+		List<WeeklyDataProfile> listOfAllWeeks = WeeklyDataProfileStore.getUserWeeklyDataProfiles(userID);
+		if(listOfAllWeeks == null || listOfAllWeeks.size()==0)
+		{
+			return;
+		}
+		// Extract names of spheres from the first week entry
+		Set<SphereName> sphereNamesSet = listOfAllWeeks
