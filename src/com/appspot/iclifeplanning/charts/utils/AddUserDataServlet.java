@@ -245,3 +245,8 @@ public class AddUserDataServlet extends HttpServlet
 	}
 	
 	private static Double getRandomBetween(double lower_, double upper_)
+	{
+		return lower_ + Math.random() * (upper_-lower_);
+	}
+
+}
