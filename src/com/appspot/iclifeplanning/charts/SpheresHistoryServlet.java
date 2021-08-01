@@ -76,4 +76,16 @@ public class SpheresHistoryServlet extends HttpServlet
 			currentSphere.put("pointStart", userProfile.getJoinTime());
 			currentSphere.put("data", spheresArray[sphereNumber]);
 			// put the current map in the array of all sphere maps
-			sphereMaps[sphereNumber] = 
+			sphereMaps[sphereNumber] = currentSphere;
+		}
+		
+		// convert the array to a list
+		// TODO: is there a built-in java method for array -> list conversion?
+		List<Map<String, Object>> seriesList = new ArrayList<Map<String, Object>>(numberOfSpheres);
+		for(int s=0; s<numberOfSpheres; s++)
+		{
+			seriesList.add(sphereMaps[s]);
+		}
+		
+		Map<String, Object> allData = new TreeMap<String, Object>();
+		allData.
