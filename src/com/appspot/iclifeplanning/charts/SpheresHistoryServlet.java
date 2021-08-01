@@ -53,4 +53,10 @@ public class SpheresHistoryServlet extends HttpServlet
 		}
 
 		// Two-dimensional array holding weekly data for each sphere. Data for sphere with name
-		/
+		// in sphereNames[x] is placed in spheresArray[x]
+		Double[][] spheresArray = new Double[numberOfSpheres][listOfAllWeeks.size()];
+		// Iterate through the list of weekly data and put appropriate numbers in the spheresArray
+		for(WeeklyDataProfile wdp : listOfAllWeeks)
+		{
+			Map<SphereName, Double> sphereResults = wdp.getSphereResults();
+			for(int s
