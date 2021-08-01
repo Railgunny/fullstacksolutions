@@ -41,4 +41,16 @@ public class SpheresHistoryServlet extends HttpServlet
 			return;
 		}
 		// Extract names of spheres from the first week entry
-		Set<SphereName> sphereNamesSet = listOfAllWeeks
+		Set<SphereName> sphereNamesSet = listOfAllWeeks.get(0).getSphereResults().keySet();
+		int numberOfSpheres = sphereNamesSet.size();
+		SphereName[] sphereNames = new SphereName[numberOfSpheres];
+		// Put names of spheres in an array
+		int pos = 0;
+		for(SphereName s : sphereNamesSet)
+		{
+			sphereNames[pos] = s;
+			pos++;
+		}
+
+		// Two-dimensional array holding weekly data for each sphere. Data for sphere with name
+		/
