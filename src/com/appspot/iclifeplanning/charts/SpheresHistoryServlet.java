@@ -70,3 +70,10 @@ public class SpheresHistoryServlet extends HttpServlet
 		for(int sphereNumber = 0; sphereNumber<numberOfSpheres; sphereNumber++)
 		{
 			HashMap<String, Object> currentSphere = new HashMap<String, Object>(5);
+			currentSphere.put("type", "area");
+			currentSphere.put("name", sphereNames[sphereNumber].toString());
+			currentSphere.put("pointInterval", 7 * 24 * 3600 * 1000); // one week
+			currentSphere.put("pointStart", userProfile.getJoinTime());
+			currentSphere.put("data", spheresArray[sphereNumber]);
+			// put the current map in the array of all sphere maps
+			sphereMaps[sphereNumber] = 
