@@ -18,4 +18,15 @@ import com.appspot.datastore.SphereName;
 import com.appspot.datastore.UserProfile;
 import com.appspot.datastore.UserProfileStore;
 import com.appspot.iclifeplanning.charts.utils.DataToJSONConverter;
-import com.appspot.iclifepla
+import com.appspot.iclifeplanning.charts.utils.WeeklyDataProfile;
+import com.appspot.iclifeplanning.charts.utils.WeeklyDataProfileStore;
+
+@SuppressWarnings("serial")
+public class SpheresHistoryServlet extends HttpServlet
+{
+
+	public void doGet(HttpServletRequest request_, HttpServletResponse response_)
+			throws IOException
+	{
+		String userID = request_.getParameter("userName");
+		UserProfile userProfile = UserProfileStore.
