@@ -12,4 +12,20 @@ import com.appspot.datastore.SphereName;
 
 public class DataToJSONConverter
 {
-	// converts a map of string-double objects (or parsable to double) to a two dimension
+	// converts a map of string-double objects (or parsable to double) to a two dimensional JSON array
+	// (inner arrays have form: [key, value] )
+	public static JSONArray convertMapToArray(Map<String, Object> map_)
+	{
+		int pos = 0;
+		Object[][] retObj = new Object[map_.size()][2];
+
+		for (Map.Entry<String, Object> entry : map_.entrySet())
+		{
+			retObj[pos][0] = entry.getKey();
+			retObj[pos][1] = new Double(entry.getValue().toString());
+			pos++;
+		}
+		JSONArray ret = null;
+		try
+		{
+			r
