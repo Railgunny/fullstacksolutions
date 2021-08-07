@@ -45,4 +45,6 @@ public class WeeklyDataProfile {
 	}
 
 	public int getWeekNumber() {
-		return weekNumbe
+		return weekNumber;
+	}
+}
