@@ -18,4 +18,12 @@ public class WeeklyDataProfile {
 	@Persistent
 	private Integer weekNumber;
 	@Persistent(serialized="true", defaultFetchGroup = "true")
-	private HashMap<SphereName, Doub
+	private HashMap<SphereName, Double> sphereResults;
+	@Persistent(serialized="true", defaultFetchGroup = "true")
+	private HashMap<SphereName, Double> desiredSphereResults;
+	
+	public WeeklyDataProfile(String userID, Integer weekNumber, HashMap<SphereName, Double> sphereResults, 
+			HashMap<SphereName, Double> desiredSphereResults) {
+		super();
+		this.userID = userID;
+		this.sphereResults = sph
