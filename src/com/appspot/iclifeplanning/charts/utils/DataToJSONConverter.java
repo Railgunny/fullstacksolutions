@@ -28,4 +28,20 @@ public class DataToJSONConverter
 		JSONArray ret = null;
 		try
 		{
-			r
+			ret = new JSONArray(retObj);
+		}
+		catch (JSONException e)
+		{
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
+	public static JSONArray convertSphereMapToArray(HashMap<SphereName, Double> map_)
+	{
+		int pos = 0;
+		Object[][] retObj = new Object[map_.size()][2];
+
+		for (Map.Entry<SphereName, Double> entry : map_.entrySet())
+		{
+			retObj[pos][0] = entry.getKey().toString()
