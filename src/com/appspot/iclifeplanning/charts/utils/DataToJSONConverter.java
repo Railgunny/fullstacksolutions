@@ -44,4 +44,29 @@ public class DataToJSONConverter
 
 		for (Map.Entry<SphereName, Double> entry : map_.entrySet())
 		{
-			retObj[pos][0] = entry.getKey().toString()
+			retObj[pos][0] = entry.getKey().toString();
+			retObj[pos][1] = entry.getValue();
+			pos++;
+		}
+		JSONArray ret = null;
+		try
+		{
+			ret = new JSONArray(retObj);
+		}
+		catch (JSONException e)
+		{
+			e.printStackTrace();
+		}
+		return ret;
+	}
+
+	public static JSONArray convertListToHistoricObject(List datas)
+	{
+		return new JSONArray(datas);
+	}
+	
+	public static JSONObject convertMapToMap(Map map_)
+	{
+		return new JSONObject(map_);
+	}
+}
