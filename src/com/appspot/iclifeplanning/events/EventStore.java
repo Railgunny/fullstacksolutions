@@ -23,4 +23,17 @@ import com.google.gdata.util.ServiceException;
 
 public class EventStore {
 
-	p
+	private static EventStore eventStore = null;
+	private List<Event> allEvents = new ArrayList<Event>();
+	private static final Logger log = Logger.getLogger("EventStore");
+	
+	private EventStore() {}
+	
+	public static EventStore getInstance() {
+		if (eventStore == null)
+				eventStore = new EventStore();
+		return eventStore;
+	}
+	
+	public void initizalize() throws IOException {
+	    String userID = CalendarUtils.getCurrentUserId();
