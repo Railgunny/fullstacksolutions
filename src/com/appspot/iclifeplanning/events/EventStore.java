@@ -37,3 +37,15 @@ public class EventStore {
 	
 	public void initizalize() throws IOException {
 	    String userID = CalendarUtils.getCurrentUserId();
+	    UserProfile profile = UserProfileStore.getUserProfile(userID);
+	    long from = profile.getStartOptimizing();
+	    long to = profile.getFinishOptimizing();
+		allEvents = getEventsFromTimeRange(from, to);
+	}
+
+	public List<Event> getEvents() {
+		return allEvents;	
+	}
+
+	public List<Event> getEventsFromTimeRange(long startTime, long endTime) throws IOException{
+		List<Event> events = 
