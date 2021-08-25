@@ -58,4 +58,17 @@ public class EventStore {
 			calendarResultFeed = CalendarUtils.client.getFeed(calendarFeedUrl, CalendarFeed.class);
 		} catch (ServiceException e) {
 			log.severe("SERVICE EXCEPTION: " + e.getStackTrace());
-			re
+			return null;
+		}
+
+		CalendarEntry calendarEntry;
+		Link eventFeedLink;
+		URL eventFeedUrl;
+		CalendarQuery query;
+		CalendarEventFeed eventResultFeed;
+		Event event;
+		List<CalendarEventEntry> allCalendarEvents;
+
+		// temporary default values. Should really be set by user through UI
+		long now = System.currentTimeMillis();
+		long future = now + (long)30*24*60*60*1000;//2592000000l; // month in milisec
