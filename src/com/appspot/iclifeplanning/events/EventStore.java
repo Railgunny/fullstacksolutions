@@ -78,4 +78,12 @@ public class EventStore {
 	  	  eventFeedLink = calendarEntry.getLink( "http://schemas.google.com/gCal/2005#eventFeed", null);
 		  eventFeedUrl = new URL(eventFeedLink.getHref());
 		  query = new CalendarQuery(eventFeedUrl);
-		  query.addCustomParameter(new Cus
+		  query.addCustomParameter(new CustomParameter("singleevents", "true"));
+		  query.addCustomParameter(new CustomParameter("orderby", "starttime"));
+		  query.addCustomParameter(new CustomParameter("sortorde", "ascending"));
+
+		  query.setMinimumStartTime(new DateTime(startTime));
+		  query.setMaximumStartTime(new DateTime(endTime));
+
+  		  try {
+			  eventResultFeed = CalendarUtils.client.g
