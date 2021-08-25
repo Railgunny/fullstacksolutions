@@ -86,4 +86,17 @@ public class EventStore {
 		  query.setMaximumStartTime(new DateTime(endTime));
 
   		  try {
-			  eventResultFeed = CalendarUtils.client.g
+			  eventResultFeed = CalendarUtils.client.getFeed(query, CalendarEventFeed.class);
+		  } catch (ServiceException e) {
+			  return null;
+		  }
+
+		  allCalendarEvents = eventResultFeed.getEntries();
+		  for (int j = 0; j < allCalendarEvents.size(); j++) {
+			  event = new Event(allCalendarEvents.get(j));
+			  events.add(event);
+		  }
+        }
+
+		Event firstDummyEvent = new Event(now, now);
+		Event lastDummyEvent = new Event(future, future)
