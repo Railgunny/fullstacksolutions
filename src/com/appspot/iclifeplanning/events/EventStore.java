@@ -48,4 +48,14 @@ public class EventStore {
 	}
 
 	public List<Event> getEventsFromTimeRange(long startTime, long endTime) throws IOException{
-		List<Event> events = 
+		List<Event> events = new ArrayList<Event>();
+
+        URL calendarFeedUrl = new URL(AuthService.CALENDAR_FULL_FEED_REQUEST_URL);
+		CalendarFeed calendarResultFeed = null;
+
+		// Connect to Google Calendar and gather data
+		try {
+			calendarResultFeed = CalendarUtils.client.getFeed(calendarFeedUrl, CalendarFeed.class);
+		} catch (ServiceException e) {
+			log.severe("SERVICE EXCEPTION: " + e.getStackTrace());
+			re
