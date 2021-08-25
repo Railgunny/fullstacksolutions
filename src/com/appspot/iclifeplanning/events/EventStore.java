@@ -71,4 +71,11 @@ public class EventStore {
 
 		// temporary default values. Should really be set by user through UI
 		long now = System.currentTimeMillis();
-		long future = now + (long)30*24*60*60*1000;//2592000000l; // month in milisec
+		long future = now + (long)30*24*60*60*1000;//2592000000l; // month in miliseconds
+        
+		for (int i = 0; i < calendarResultFeed.getEntries().size(); i++) {
+          calendarEntry = calendarResultFeed.getEntries().get(i);
+	  	  eventFeedLink = calendarEntry.getLink( "http://schemas.google.com/gCal/2005#eventFeed", null);
+		  eventFeedUrl = new URL(eventFeedLink.getHref());
+		  query = new CalendarQuery(eventFeedUrl);
+		  query.addCustomParameter(new Cus
