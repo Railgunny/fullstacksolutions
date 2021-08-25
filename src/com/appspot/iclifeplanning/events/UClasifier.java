@@ -22,4 +22,13 @@ public class UClasifier {
 		String desc = description;
 		Map<String, Classification> resultMap = client.classify(USER_NAME, SPHERES_CLASIFIER, Arrays.asList(desc));
 		Classification c = resultMap.get(desc);
-		List<Class> cz = c.
+		List<Class> cz = c.getClazz();
+		Map<String, Double> result = new HashMap<String, Double>();
+		double percentage;
+		for (Class cls : cz) {
+			percentage = (cls.getP());
+			result.put(cls.getClassName(), percentage);
+		}
+		return result;
+	}
+}
