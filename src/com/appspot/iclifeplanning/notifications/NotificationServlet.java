@@ -23,4 +23,16 @@ import com.appspot.datastore.SphereName;
 import com.appspot.datastore.TokenStore;
 import com.appspot.datastore.UserProfile;
 import com.appspot.iclifeplanning.authentication.AuthService;
-import com.appspot.iclifeplanning
+import com.appspot.iclifeplanning.authentication.CalendarUtils;
+import com.appspot.iclifeplanning.events.Event;
+import com.appspot.iclifeplanning.events.EventStore;
+
+/**
+ * Notification servlet. Responsible for checking for new events in
+ * the users calendar and sending notifications about the changes.
+ * 
+ * @author Agnieszka Magda Madurska (amm208@doc.ic.ac.uk)
+ *
+ */
+@SuppressWarnings("serial")
+public class
