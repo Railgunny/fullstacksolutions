@@ -35,4 +35,13 @@ import com.appspot.iclifeplanning.events.EventStore;
  *
  */
 @SuppressWarnings("serial")
-public class
+public class NotificationServlet extends HttpServlet {
+	private static long timer = 0;
+	private static final Logger log = Logger.getLogger("EventStore");
+
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+		
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		// Does this work?
+	    Query qu
