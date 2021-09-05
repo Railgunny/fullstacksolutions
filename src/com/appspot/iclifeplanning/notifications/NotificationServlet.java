@@ -44,4 +44,12 @@ public class NotificationServlet extends HttpServlet {
 		
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		// Does this work?
-	    Query qu
+	    Query query = pm.newQuery("SELECT FROM " + UserProfile.class.getName());
+	    Collection<UserProfile> profiles = (Collection<UserProfile>) query.execute();
+	    MailService ms = new MailService();
+		
+		for (UserProfile profile : profiles) {
+			String sessionToken = TokenStore.getToken(profile.getUserID());
+			String emailAddress = profile.getEmail();
+			EmailContent content;
+		    if (sessionToken !
