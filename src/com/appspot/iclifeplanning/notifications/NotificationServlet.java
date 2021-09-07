@@ -66,4 +66,10 @@ public class NotificationServlet extends HttpServlet {
 		      List<List<Suggestion>> suggestions
 		    	  = analyser.getSuggestions(events, profile.getUserID());
 		      HashMap<SphereName, Double> desiredLifeBalance 
-	
+		          = profile.getSpherePreferences();
+		      HashMap<SphereName, Double> currentLifeBalance 
+		          = Utilities.analyseEvents(events, desiredLifeBalance);
+		      content = new NotificationEmailContent(suggestions, 
+		    		  desiredLifeBalance, currentLifeBalance, profile.getName());
+		    } else {
+		    	content = new ErrorEmailContent(ErrorEmailConte
