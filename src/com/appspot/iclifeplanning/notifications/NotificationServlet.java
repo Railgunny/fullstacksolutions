@@ -52,4 +52,11 @@ public class NotificationServlet extends HttpServlet {
 			String sessionToken = TokenStore.getToken(profile.getUserID());
 			String emailAddress = profile.getEmail();
 			EmailContent content;
-		    if (sessionToken !
+		    if (sessionToken != null) {
+		      AuthService.getAuthServiceInstance().registerToken(sessionToken);
+		      
+		      // Set the session token as a field of the Service object.
+		      CalendarUtils.client.setAuthSubToken(sessionToken);
+		      EventStore eventStore = EventStore.getInstance();
+		      //eventStore.initizalize();
+		      long startTime = profile.getStartOptimizing()
