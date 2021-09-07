@@ -59,4 +59,11 @@ public class NotificationServlet extends HttpServlet {
 		      CalendarUtils.client.setAuthSubToken(sessionToken);
 		      EventStore eventStore = EventStore.getInstance();
 		      //eventStore.initizalize();
-		      long startTime = profile.getStartOptimizing()
+		      long startTime = profile.getStartOptimizing();
+		      long endTime = profile.getFinishOptimizing();
+		      List<Event> events = eventStore.getEventsFromTimeRange(startTime, endTime);
+		      Analyser analyser = new Analyser();
+		      List<List<Suggestion>> suggestions
+		    	  = analyser.getSuggestions(events, profile.getUserID());
+		      HashMap<SphereName, Double> desiredLifeBalance 
+	
