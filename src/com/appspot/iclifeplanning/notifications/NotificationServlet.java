@@ -72,4 +72,9 @@ public class NotificationServlet extends HttpServlet {
 		      content = new NotificationEmailContent(suggestions, 
 		    		  desiredLifeBalance, currentLifeBalance, profile.getName());
 		    } else {
-		    	content = new ErrorEmailContent(ErrorEmailConte
+		    	content = new ErrorEmailContent(ErrorEmailContent.TOKEN_PROBLEM);
+		    }
+		    ms.sendEmail(emailAddress, content);
+		}
+	}
+}
