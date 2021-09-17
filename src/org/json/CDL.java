@@ -50,4 +50,19 @@ public class CDL {
      * be empty.
      * @param x A JSONTokener of the source text.
      * @return The value string, or null if empty.
-     * @throws JSONException if the quote
+     * @throws JSONException if the quoted string is badly formed.
+     */
+    private static String getValue(JSONTokener x) throws JSONException {
+        char c;
+        char q;
+        StringBuffer sb;
+        do {
+            c = x.next();
+        } while (c == ' ' || c == '\t');
+        switch (c) {
+        case 0:
+            return null;
+        case '"':
+        case '\'':
+        	q = c;
+        	sb = new StringB
