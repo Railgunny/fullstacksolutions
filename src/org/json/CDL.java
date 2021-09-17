@@ -38,4 +38,16 @@ SOFTWARE.
  * The first row usually contains the names of the columns.
  * <p>
  * A comma delimited list can be converted into a JSONArray of JSONObjects.
- * The names
+ * The names for the elements in the JSONObjects can be taken from the names
+ * in the first row.
+ * @author JSON.org
+ * @version 2009-09-11
+ */
+public class CDL {
+
+    /**
+     * Get the next value. The value can be wrapped in quotes. The value can
+     * be empty.
+     * @param x A JSONTokener of the source text.
+     * @return The value string, or null if empty.
+     * @throws JSONException if the quote
