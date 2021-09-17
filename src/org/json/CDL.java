@@ -65,4 +65,19 @@ public class CDL {
         case '"':
         case '\'':
         	q = c;
-        	sb = new StringB
+        	sb = new StringBuffer();
+        	for (;;) {
+        		c = x.next();
+        		if (c == q) {
+        			break;
+        		}
+                if (c == 0 || c == '\n' || c == '\r') {
+                    throw x.syntaxError("Missing close quote '" + q + "'.");
+                }
+                sb.append(c);
+        	}
+            return sb.toString();
+        case ',':
+            x.back();
+            return "";
+        de
