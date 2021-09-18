@@ -95,4 +95,16 @@ public class CDL {
     public static JSONArray rowToJSONArray(JSONTokener x) throws JSONException {
         JSONArray ja = new JSONArray();
         for (;;) {
-    
+            String value = getValue(x);
+            char c = x.next();
+            if (value == null || 
+            		(ja.length() == 0 && value.length() == 0 && c != ',')) {
+                return null;
+            }
+            ja.put(value);
+            for (;;) {                
+                if (c == ',') {
+                    break;
+                }
+                if (c != ' ') {
+          
