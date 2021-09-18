@@ -119,4 +119,11 @@ public class CDL {
     }
 
     /**
-     * Produce a JSONObject from a row of comma delimited text, usi
+     * Produce a JSONObject from a row of comma delimited text, using a
+     * parallel JSONArray of strings to provides the names of the elements.
+     * @param names A JSONArray of names. This is commonly obtained from the
+     *  first row of a comma delimited text file using the rowToJSONArray
+     *  method.
+     * @param x A JSONTokener of the source text.
+     * @return A JSONObject combining the names and values.
+     * @throws JSONExce
