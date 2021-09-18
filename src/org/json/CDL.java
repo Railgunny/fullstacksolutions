@@ -107,4 +107,16 @@ public class CDL {
                     break;
                 }
                 if (c != ' ') {
-          
+                    if (c == '\n' || c == '\r' || c == 0) {
+                        return ja;
+                    }
+                    throw x.syntaxError("Bad character '" + c + "' (" +
+                            (int)c + ").");
+                }
+                c = x.next();
+            }
+        }
+    }
+
+    /**
+     * Produce a JSONObject from a row of comma delimited text, usi
