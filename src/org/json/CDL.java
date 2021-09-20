@@ -126,4 +126,15 @@ public class CDL {
      *  method.
      * @param x A JSONTokener of the source text.
      * @return A JSONObject combining the names and values.
-     * @throws JSONExce
+     * @throws JSONException
+     */
+    public static JSONObject rowToJSONObject(JSONArray names, JSONTokener x)
+            throws JSONException {
+        JSONArray ja = rowToJSONArray(x);
+        return ja != null ? ja.toJSONObject(names) :  null;
+    }
+
+    /**
+     * Produce a JSONArray of JSONObjects from a comma delimited text string,
+     * using the first row as a source of names.
+     * @pa
