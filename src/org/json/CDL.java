@@ -205,4 +205,13 @@ public class CDL {
      * @return A string ending in NEWLINE.
      */
     public static String rowToString(JSONArray ja) {
-        StringBuffer sb = new Stri
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < ja.length(); i += 1) {
+            if (i > 0) {
+                sb.append(',');
+            }
+            Object o = ja.opt(i);
+            if (o != null) {
+                String s = o.toString();
+                if (s.length() > 0 && (s.indexOf(',') >= 0 || s.indexOf('\n') >= 0 || 
+                		s.indexOf('\r') >= 0 || s.indexOf(0) >= 0 ||
