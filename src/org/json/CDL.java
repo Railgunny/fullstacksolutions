@@ -191,4 +191,18 @@ public class CDL {
             ja.put(jo);
         }
         if (ja.length() == 0) {
- 
+            return null;
+        }
+        return ja;
+    }
+
+
+    /**
+     * Produce a comma delimited text row from a JSONArray. Values containing
+     * the comma character will be quoted. Troublesome characters may be 
+     * removed.
+     * @param ja A JSONArray of strings.
+     * @return A string ending in NEWLINE.
+     */
+    public static String rowToString(JSONArray ja) {
+        StringBuffer sb = new Stri
