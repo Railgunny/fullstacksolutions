@@ -262,4 +262,13 @@ public class CDL {
      * @return A comma delimited text.
      * @throws JSONException
      */
-    public static String toString(JSONArray name
+    public static String toString(JSONArray names, JSONArray ja)
+            throws JSONException {
+        if (names == null || names.length() == 0) {
+            return null;
+        }
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < ja.length(); i += 1) {
+            JSONObject jo = ja.optJSONObject(i);
+            if (jo != null) {
+                sb.append(rowToString(jo.toJSONArray(name
