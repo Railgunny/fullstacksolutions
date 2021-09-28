@@ -271,4 +271,9 @@ public class CDL {
         for (int i = 0; i < ja.length(); i += 1) {
             JSONObject jo = ja.optJSONObject(i);
             if (jo != null) {
-                sb.append(rowToString(jo.toJSONArray(name
+                sb.append(rowToString(jo.toJSONArray(names)));
+            }
+        }
+        return sb.toString();
+    }
+}
