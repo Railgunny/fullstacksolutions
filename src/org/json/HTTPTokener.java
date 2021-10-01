@@ -36,4 +36,20 @@ public class HTTPTokener extends JSONTokener {
      * Construct an HTTPTokener from a string.
      * @param s A source string.
      */
-    public HTTPTokener(
+    public HTTPTokener(String s) {
+        super(s);
+    }
+
+
+    /**
+     * Get the next token or string. This is used in parsing HTTP headers.
+     * @throws JSONException
+     * @return A String.
+     */
+    public String nextToken() throws JSONException {
+        char c;
+        char q;
+        StringBuffer sb = new StringBuffer();
+        do {
+            c = next();
+       
