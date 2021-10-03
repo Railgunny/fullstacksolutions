@@ -551,3 +551,369 @@ public class JSONArray {
      *
      * @param index The index must be between 0 and length() - 1.
      * @param defaultValue     The default value.
+     * @return      A String value.
+     */
+    public String optString(int index, String defaultValue) {
+        Object o = opt(index);
+        return o != null ? o.toString() : defaultValue;
+    }
+
+
+    /**
+     * Append a boolean value. This increases the array's length by one.
+     *
+     * @param value A boolean value.
+     * @return this.
+     */
+    public JSONArray put(boolean value) {
+        put(value ? Boolean.TRUE : Boolean.FALSE);
+        return this;
+    }
+
+
+    /**
+     * Put a value in the JSONArray, where the value will be a
+     * JSONArray which is produced from a Collection.
+     * @param value A Collection value.
+     * @return      this.
+     */
+    public JSONArray put(Collection value) {
+        put(new JSONArray(value));
+        return this;
+    }
+
+
+    /**
+     * Append a double value. This increases the array's length by one.
+     *
+     * @param value A double value.
+     * @throws JSONException if the value is not finite.
+     * @return this.
+     */
+    public JSONArray put(double value) throws JSONException {
+        Double d = new Double(value);
+        JSONObject.testValidity(d);
+        put(d);
+        return this;
+    }
+
+
+    /**
+     * Append an int value. This increases the array's length by one.
+     *
+     * @param value An int value.
+     * @return this.
+     */
+    public JSONArray put(int value) {
+        put(new Integer(value));
+        return this;
+    }
+
+
+    /**
+     * Append an long value. This increases the array's length by one.
+     *
+     * @param value A long value.
+     * @return this.
+     */
+    public JSONArray put(long value) {
+        put(new Long(value));
+        return this;
+    }
+
+
+    /**
+     * Put a value in the JSONArray, where the value will be a
+     * JSONObject which is produced from a Map.
+     * @param value A Map value.
+     * @return      this.
+     */
+    public JSONArray put(Map value) {
+        put(new JSONObject(value));
+        return this;
+    }
+
+
+    /**
+     * Append an object value. This increases the array's length by one.
+     * @param value An object value.  The value should be a
+     *  Boolean, Double, Integer, JSONArray, JSONObject, Long, or String, or the
+     *  JSONObject.NULL object.
+     * @return this.
+     */
+    public JSONArray put(Object value) {
+        this.myArrayList.add(value);
+        return this;
+    }
+
+
+    /**
+     * Put or replace a boolean value in the JSONArray. If the index is greater
+     * than the length of the JSONArray, then null elements will be added as
+     * necessary to pad it out.
+     * @param index The subscript.
+     * @param value A boolean value.
+     * @return this.
+     * @throws JSONException If the index is negative.
+     */
+    public JSONArray put(int index, boolean value) throws JSONException {
+        put(index, value ? Boolean.TRUE : Boolean.FALSE);
+        return this;
+    }
+
+
+    /**
+     * Put a value in the JSONArray, where the value will be a
+     * JSONArray which is produced from a Collection.
+     * @param index The subscript.
+     * @param value A Collection value.
+     * @return      this.
+     * @throws JSONException If the index is negative or if the value is
+     * not finite.
+     */
+    public JSONArray put(int index, Collection value) throws JSONException {
+        put(index, new JSONArray(value));
+        return this;
+    }
+
+
+    /**
+     * Put or replace a double value. If the index is greater than the length of
+     *  the JSONArray, then null elements will be added as necessary to pad
+     *  it out.
+     * @param index The subscript.
+     * @param value A double value.
+     * @return this.
+     * @throws JSONException If the index is negative or if the value is
+     * not finite.
+     */
+    public JSONArray put(int index, double value) throws JSONException {
+        put(index, new Double(value));
+        return this;
+    }
+
+
+    /**
+     * Put or replace an int value. If the index is greater than the length of
+     *  the JSONArray, then null elements will be added as necessary to pad
+     *  it out.
+     * @param index The subscript.
+     * @param value An int value.
+     * @return this.
+     * @throws JSONException If the index is negative.
+     */
+    public JSONArray put(int index, int value) throws JSONException {
+        put(index, new Integer(value));
+        return this;
+    }
+
+
+    /**
+     * Put or replace a long value. If the index is greater than the length of
+     *  the JSONArray, then null elements will be added as necessary to pad
+     *  it out.
+     * @param index The subscript.
+     * @param value A long value.
+     * @return this.
+     * @throws JSONException If the index is negative.
+     */
+    public JSONArray put(int index, long value) throws JSONException {
+        put(index, new Long(value));
+        return this;
+    }
+
+
+    /**
+     * Put a value in the JSONArray, where the value will be a
+     * JSONObject which is produced from a Map.
+     * @param index The subscript.
+     * @param value The Map value.
+     * @return      this.
+     * @throws JSONException If the index is negative or if the the value is
+     *  an invalid number.
+     */
+    public JSONArray put(int index, Map value) throws JSONException {
+        put(index, new JSONObject(value));
+        return this;
+    }
+
+
+    /**
+     * Put or replace an object value in the JSONArray. If the index is greater
+     *  than the length of the JSONArray, then null elements will be added as
+     *  necessary to pad it out.
+     * @param index The subscript.
+     * @param value The value to put into the array. The value should be a
+     *  Boolean, Double, Integer, JSONArray, JSONObject, Long, or String, or the
+     *  JSONObject.NULL object.
+     * @return this.
+     * @throws JSONException If the index is negative or if the the value is
+     *  an invalid number.
+     */
+    public JSONArray put(int index, Object value) throws JSONException {
+        JSONObject.testValidity(value);
+        if (index < 0) {
+            throw new JSONException("JSONArray[" + index + "] not found.");
+        }
+        if (index < length()) {
+            this.myArrayList.set(index, value);
+        } else {
+            while (index != length()) {
+                put(JSONObject.NULL);
+            }
+            put(value);
+        }
+        return this;
+    }
+    
+    
+    /**
+     * Remove an index and close the hole.
+     * @param index The index of the element to be removed.
+     * @return The value that was associated with the index,
+     * or null if there was no value.
+     */
+    public Object remove(int index) {
+    	Object o = opt(index);
+        this.myArrayList.remove(index);
+        return o;
+    }
+
+
+    /**
+     * Produce a JSONObject by combining a JSONArray of names with the values
+     * of this JSONArray.
+     * @param names A JSONArray containing a list of key strings. These will be
+     * paired with the values.
+     * @return A JSONObject, or null if there are no names or if this JSONArray
+     * has no values.
+     * @throws JSONException If any of the names are null.
+     */
+    public JSONObject toJSONObject(JSONArray names) throws JSONException {
+        if (names == null || names.length() == 0 || length() == 0) {
+            return null;
+        }
+        JSONObject jo = new JSONObject();
+        for (int i = 0; i < names.length(); i += 1) {
+            jo.put(names.getString(i), this.opt(i));
+        }
+        return jo;
+    }
+
+
+    /**
+     * Make a JSON text of this JSONArray. For compactness, no
+     * unnecessary whitespace is added. If it is not possible to produce a
+     * syntactically correct JSON text then null will be returned instead. This
+     * could occur if the array contains an invalid number.
+     * <p>
+     * Warning: This method assumes that the data structure is acyclical.
+     *
+     * @return a printable, displayable, transmittable
+     *  representation of the array.
+     */
+    public String toString() {
+        try {
+            return '[' + join(",") + ']';
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+    /**
+     * Make a prettyprinted JSON text of this JSONArray.
+     * Warning: This method assumes that the data structure is acyclical.
+     * @param indentFactor The number of spaces to add to each level of
+     *  indentation.
+     * @return a printable, displayable, transmittable
+     *  representation of the object, beginning
+     *  with <code>[</code>&nbsp;<small>(left bracket)</small> and ending
+     *  with <code>]</code>&nbsp;<small>(right bracket)</small>.
+     * @throws JSONException
+     */
+    public String toString(int indentFactor) throws JSONException {
+        return toString(indentFactor, 0);
+    }
+
+
+    /**
+     * Make a prettyprinted JSON text of this JSONArray.
+     * Warning: This method assumes that the data structure is acyclical.
+     * @param indentFactor The number of spaces to add to each level of
+     *  indentation.
+     * @param indent The indention of the top level.
+     * @return a printable, displayable, transmittable
+     *  representation of the array.
+     * @throws JSONException
+     */
+    String toString(int indentFactor, int indent) throws JSONException {
+        int len = length();
+        if (len == 0) {
+            return "[]";
+        }
+        int i;
+        StringBuffer sb = new StringBuffer("[");
+        if (len == 1) {
+            sb.append(JSONObject.valueToString(this.myArrayList.get(0),
+                    indentFactor, indent));
+        } else {
+            int newindent = indent + indentFactor;
+            sb.append('\n');
+            for (i = 0; i < len; i += 1) {
+                if (i > 0) {
+                    sb.append(",\n");
+                }
+                for (int j = 0; j < newindent; j += 1) {
+                    sb.append(' ');
+                }
+                sb.append(JSONObject.valueToString(this.myArrayList.get(i),
+                        indentFactor, newindent));
+            }
+            sb.append('\n');
+            for (i = 0; i < indent; i += 1) {
+                sb.append(' ');
+            }
+        }
+        sb.append(']');
+        return sb.toString();
+    }
+
+
+    /**
+     * Write the contents of the JSONArray as JSON text to a writer.
+     * For compactness, no whitespace is added.
+     * <p>
+     * Warning: This method assumes that the data structure is acyclical.
+     *
+     * @return The writer.
+     * @throws JSONException
+     */
+    public Writer write(Writer writer) throws JSONException {
+        try {
+            boolean b = false;
+            int     len = length();
+
+            writer.write('[');
+
+            for (int i = 0; i < len; i += 1) {
+                if (b) {
+                    writer.write(',');
+                }
+                Object v = this.myArrayList.get(i);
+                if (v instanceof JSONObject) {
+                    ((JSONObject)v).write(writer);
+                } else if (v instanceof JSONArray) {
+                    ((JSONArray)v).write(writer);
+                } else {
+                    writer.write(JSONObject.valueToString(v));
+                }
+                b = true;
+            }
+            writer.write(']');
+            return writer;
+        } catch (IOException e) {
+           throw new JSONException(e);
+        }
+    }
+}
