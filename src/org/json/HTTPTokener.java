@@ -64,4 +64,14 @@ public class HTTPTokener extends JSONTokener {
                     return sb.toString();
                 }
                 sb.append(c);
-  
+            }
+        } 
+        for (;;) {
+            if (c == 0 || Character.isWhitespace(c)) {
+                return sb.toString();
+            }
+            sb.append(c);
+            c = next();
+        }
+    }
+}
