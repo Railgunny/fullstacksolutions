@@ -151,3 +151,403 @@ public class JSONArray {
      * Construct a JSONArray from a source JSON text.
      * @param source     A string that begins with
      * <code>[</code>&nbsp;<small>(left bracket)</small>
+     *  and ends with <code>]</code>&nbsp;<small>(right bracket)</small>.
+     *  @throws JSONException If there is a syntax error.
+     */
+    public JSONArray(String source) throws JSONException {
+        this(new JSONTokener(source));
+    }
+
+
+    /**
+     * Construct a JSONArray from a Collection.
+     * @param collection     A Collection.
+     */
+    public JSONArray(Collection collection) {
+		this.myArrayList = new ArrayList();
+		if (collection != null) {
+			Iterator iter = collection.iterator();
+			while (iter.hasNext()) {
+			    Object o = iter.next();
+                this.myArrayList.add(JSONObject.wrap(o));  
+			}
+		}
+    }
+
+    
+    /**
+     * Construct a JSONArray from an array
+     * @throws JSONException If not an array.
+     */
+    public JSONArray(Object array) throws JSONException {
+        this();
+        if (array.getClass().isArray()) {
+            int length = Array.getLength(array);
+            for (int i = 0; i < length; i += 1) {
+                this.put(JSONObject.wrap(Array.get(array, i)));
+            }
+        } else {
+            throw new JSONException(
+"JSONArray initial value should be a string or collection or array.");
+        }
+    }
+
+     
+    /**
+     * Get the object value associated with an index.
+     * @param index
+     *  The index must be between 0 and length() - 1.
+     * @return An object value.
+     * @throws JSONException If there is no value for the index.
+     */
+    public Object get(int index) throws JSONException {
+        Object o = opt(index);
+        if (o == null) {
+            throw new JSONException("JSONArray[" + index + "] not found.");
+        }
+        return o;
+    }
+
+
+    /**
+     * Get the boolean value associated with an index.
+     * The string values "true" and "false" are converted to boolean.
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return      The truth.
+     * @throws JSONException If there is no value for the index or if the
+     *  value is not convertable to boolean.
+     */
+    public boolean getBoolean(int index) throws JSONException {
+        Object o = get(index);
+        if (o.equals(Boolean.FALSE) ||
+                (o instanceof String &&
+                ((String)o).equalsIgnoreCase("false"))) {
+            return false;
+        } else if (o.equals(Boolean.TRUE) ||
+                (o instanceof String &&
+                ((String)o).equalsIgnoreCase("true"))) {
+            return true;
+        }
+        throw new JSONException("JSONArray[" + index + "] is not a Boolean.");
+    }
+
+
+    /**
+     * Get the double value associated with an index.
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return      The value.
+     * @throws   JSONException If the key is not found or if the value cannot
+     *  be converted to a number.
+     */
+    public double getDouble(int index) throws JSONException {
+        Object o = get(index);
+        try {
+            return o instanceof Number ?
+                ((Number)o).doubleValue() :
+                Double.valueOf((String)o).doubleValue();
+        } catch (Exception e) {
+            throw new JSONException("JSONArray[" + index +
+                "] is not a number.");
+        }
+    }
+
+
+    /**
+     * Get the int value associated with an index.
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return      The value.
+     * @throws   JSONException If the key is not found or if the value cannot
+     *  be converted to a number.
+     *  if the value cannot be converted to a number.
+     */
+    public int getInt(int index) throws JSONException {
+        Object o = get(index);
+        return o instanceof Number ?
+                ((Number)o).intValue() : (int)getDouble(index);
+    }
+
+
+    /**
+     * Get the JSONArray associated with an index.
+     * @param index The index must be between 0 and length() - 1.
+     * @return      A JSONArray value.
+     * @throws JSONException If there is no value for the index. or if the
+     * value is not a JSONArray
+     */
+    public JSONArray getJSONArray(int index) throws JSONException {
+        Object o = get(index);
+        if (o instanceof JSONArray) {
+            return (JSONArray)o;
+        }
+        throw new JSONException("JSONArray[" + index +
+                "] is not a JSONArray.");
+    }
+
+
+    /**
+     * Get the JSONObject associated with an index.
+     * @param index subscript
+     * @return      A JSONObject value.
+     * @throws JSONException If there is no value for the index or if the
+     * value is not a JSONObject
+     */
+    public JSONObject getJSONObject(int index) throws JSONException {
+        Object o = get(index);
+        if (o instanceof JSONObject) {
+            return (JSONObject)o;
+        }
+        throw new JSONException("JSONArray[" + index +
+            "] is not a JSONObject.");
+    }
+
+
+    /**
+     * Get the long value associated with an index.
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return      The value.
+     * @throws   JSONException If the key is not found or if the value cannot
+     *  be converted to a number.
+     */
+    public long getLong(int index) throws JSONException {
+        Object o = get(index);
+        return o instanceof Number ?
+                ((Number)o).longValue() : (long)getDouble(index);
+    }
+
+
+    /**
+     * Get the string associated with an index.
+     * @param index The index must be between 0 and length() - 1.
+     * @return      A string value.
+     * @throws JSONException If there is no value for the index.
+     */
+    public String getString(int index) throws JSONException {
+        return get(index).toString();
+    }
+
+
+    /**
+     * Determine if the value is null.
+     * @param index The index must be between 0 and length() - 1.
+     * @return true if the value at the index is null, or if there is no value.
+     */
+    public boolean isNull(int index) {
+        return JSONObject.NULL.equals(opt(index));
+    }
+
+
+    /**
+     * Make a string from the contents of this JSONArray. The
+     * <code>separator</code> string is inserted between each element.
+     * Warning: This method assumes that the data structure is acyclical.
+     * @param separator A string that will be inserted between the elements.
+     * @return a string.
+     * @throws JSONException If the array contains an invalid number.
+     */
+    public String join(String separator) throws JSONException {
+        int len = length();
+        StringBuffer sb = new StringBuffer();
+
+        for (int i = 0; i < len; i += 1) {
+            if (i > 0) {
+                sb.append(separator);
+            }
+            sb.append(JSONObject.valueToString(this.myArrayList.get(i)));
+        }
+        return sb.toString();
+    }
+
+
+    /**
+     * Get the number of elements in the JSONArray, included nulls.
+     *
+     * @return The length (or size).
+     */
+    public int length() {
+        return this.myArrayList.size();
+    }
+
+
+    /**
+     * Get the optional object value associated with an index.
+     * @param index The index must be between 0 and length() - 1.
+     * @return      An object value, or null if there is no
+     *              object at that index.
+     */
+    public Object opt(int index) {
+        return (index < 0 || index >= length()) ?
+            null : this.myArrayList.get(index);
+    }
+
+
+    /**
+     * Get the optional boolean value associated with an index.
+     * It returns false if there is no value at that index,
+     * or if the value is not Boolean.TRUE or the String "true".
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return      The truth.
+     */
+    public boolean optBoolean(int index)  {
+        return optBoolean(index, false);
+    }
+
+
+    /**
+     * Get the optional boolean value associated with an index.
+     * It returns the defaultValue if there is no value at that index or if
+     * it is not a Boolean or the String "true" or "false" (case insensitive).
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @param defaultValue     A boolean default.
+     * @return      The truth.
+     */
+    public boolean optBoolean(int index, boolean defaultValue)  {
+        try {
+            return getBoolean(index);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+
+    /**
+     * Get the optional double value associated with an index.
+     * NaN is returned if there is no value for the index,
+     * or if the value is not a number and cannot be converted to a number.
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return      The value.
+     */
+    public double optDouble(int index) {
+        return optDouble(index, Double.NaN);
+    }
+
+
+    /**
+     * Get the optional double value associated with an index.
+     * The defaultValue is returned if there is no value for the index,
+     * or if the value is not a number and cannot be converted to a number.
+     *
+     * @param index subscript
+     * @param defaultValue     The default value.
+     * @return      The value.
+     */
+    public double optDouble(int index, double defaultValue) {
+        try {
+            return getDouble(index);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+
+    /**
+     * Get the optional int value associated with an index.
+     * Zero is returned if there is no value for the index,
+     * or if the value is not a number and cannot be converted to a number.
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return      The value.
+     */
+    public int optInt(int index) {
+        return optInt(index, 0);
+    }
+
+
+    /**
+     * Get the optional int value associated with an index.
+     * The defaultValue is returned if there is no value for the index,
+     * or if the value is not a number and cannot be converted to a number.
+     * @param index The index must be between 0 and length() - 1.
+     * @param defaultValue     The default value.
+     * @return      The value.
+     */
+    public int optInt(int index, int defaultValue) {
+        try {
+            return getInt(index);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+
+    /**
+     * Get the optional JSONArray associated with an index.
+     * @param index subscript
+     * @return      A JSONArray value, or null if the index has no value,
+     * or if the value is not a JSONArray.
+     */
+    public JSONArray optJSONArray(int index) {
+        Object o = opt(index);
+        return o instanceof JSONArray ? (JSONArray)o : null;
+    }
+
+
+    /**
+     * Get the optional JSONObject associated with an index.
+     * Null is returned if the key is not found, or null if the index has
+     * no value, or if the value is not a JSONObject.
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return      A JSONObject value.
+     */
+    public JSONObject optJSONObject(int index) {
+        Object o = opt(index);
+        return o instanceof JSONObject ? (JSONObject)o : null;
+    }
+
+
+    /**
+     * Get the optional long value associated with an index.
+     * Zero is returned if there is no value for the index,
+     * or if the value is not a number and cannot be converted to a number.
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return      The value.
+     */
+    public long optLong(int index) {
+        return optLong(index, 0);
+    }
+
+
+    /**
+     * Get the optional long value associated with an index.
+     * The defaultValue is returned if there is no value for the index,
+     * or if the value is not a number and cannot be converted to a number.
+     * @param index The index must be between 0 and length() - 1.
+     * @param defaultValue     The default value.
+     * @return      The value.
+     */
+    public long optLong(int index, long defaultValue) {
+        try {
+            return getLong(index);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+
+    /**
+     * Get the optional string value associated with an index. It returns an
+     * empty string if there is no value at that index. If the value
+     * is not a string and is not null, then it is coverted to a string.
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return      A String value.
+     */
+    public String optString(int index) {
+        return optString(index, "");
+    }
+
+
+    /**
+     * Get the optional string associated with an index.
+     * The defaultValue is returned if the key is not found.
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @param defaultValue     The default value.
