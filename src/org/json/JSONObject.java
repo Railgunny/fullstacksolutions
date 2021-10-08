@@ -377,3 +377,403 @@ public class JSONObject {
         if (Double.isInfinite(d) || Double.isNaN(d)) {
             return "null";
         }
+
+// Shave off trailing zeros and decimal point, if possible.
+
+        String s = Double.toString(d);
+        if (s.indexOf('.') > 0 && s.indexOf('e') < 0 && s.indexOf('E') < 0) {
+            while (s.endsWith("0")) {
+                s = s.substring(0, s.length() - 1);
+            }
+            if (s.endsWith(".")) {
+                s = s.substring(0, s.length() - 1);
+            }
+        }
+        return s;
+    }
+
+
+    /**
+     * Get the value object associated with a key.
+     *
+     * @param key   A key string.
+     * @return      The object associated with the key.
+     * @throws   JSONException if the key is not found.
+     */
+    public Object get(String key) throws JSONException {
+        Object o = opt(key);
+        if (o == null) {
+            throw new JSONException("JSONObject[" + quote(key) +
+                    "] not found.");
+        }
+        return o;
+    }
+
+
+    /**
+     * Get the boolean value associated with a key.
+     *
+     * @param key   A key string.
+     * @return      The truth.
+     * @throws   JSONException
+     *  if the value is not a Boolean or the String "true" or "false".
+     */
+    public boolean getBoolean(String key) throws JSONException {
+        Object o = get(key);
+        if (o.equals(Boolean.FALSE) ||
+                (o instanceof String &&
+                ((String)o).equalsIgnoreCase("false"))) {
+            return false;
+        } else if (o.equals(Boolean.TRUE) ||
+                (o instanceof String &&
+                ((String)o).equalsIgnoreCase("true"))) {
+            return true;
+        }
+        throw new JSONException("JSONObject[" + quote(key) +
+                "] is not a Boolean.");
+    }
+
+
+    /**
+     * Get the double value associated with a key.
+     * @param key   A key string.
+     * @return      The numeric value.
+     * @throws JSONException if the key is not found or
+     *  if the value is not a Number object and cannot be converted to a number.
+     */
+    public double getDouble(String key) throws JSONException {
+        Object o = get(key);
+        try {
+            return o instanceof Number ?
+                ((Number)o).doubleValue() :
+                Double.valueOf((String)o).doubleValue();
+        } catch (Exception e) {
+            throw new JSONException("JSONObject[" + quote(key) +
+                "] is not a number.");
+        }
+    }
+
+
+    /**
+     * Get the int value associated with a key. 
+     *
+     * @param key   A key string.
+     * @return      The integer value.
+     * @throws   JSONException if the key is not found or if the value cannot
+     *  be converted to an integer.
+     */
+    public int getInt(String key) throws JSONException {
+        Object o = get(key);
+        try {
+            return o instanceof Number ?
+                ((Number)o).intValue() :
+                Integer.parseInt((String)o);
+        } catch (Exception e) {
+            throw new JSONException("JSONObject[" + quote(key) +
+                "] is not an int.");
+        }
+    }
+
+
+    /**
+     * Get the JSONArray value associated with a key.
+     *
+     * @param key   A key string.
+     * @return      A JSONArray which is the value.
+     * @throws   JSONException if the key is not found or
+     *  if the value is not a JSONArray.
+     */
+    public JSONArray getJSONArray(String key) throws JSONException {
+        Object o = get(key);
+        if (o instanceof JSONArray) {
+            return (JSONArray)o;
+        }
+        throw new JSONException("JSONObject[" + quote(key) +
+                "] is not a JSONArray.");
+    }
+
+
+    /**
+     * Get the JSONObject value associated with a key.
+     *
+     * @param key   A key string.
+     * @return      A JSONObject which is the value.
+     * @throws   JSONException if the key is not found or
+     *  if the value is not a JSONObject.
+     */
+    public JSONObject getJSONObject(String key) throws JSONException {
+        Object o = get(key);
+        if (o instanceof JSONObject) {
+            return (JSONObject)o;
+        }
+        throw new JSONException("JSONObject[" + quote(key) +
+                "] is not a JSONObject.");
+    }
+
+
+    /**
+     * Get the long value associated with a key. 
+     *
+     * @param key   A key string.
+     * @return      The long value.
+     * @throws   JSONException if the key is not found or if the value cannot
+     *  be converted to a long.
+     */
+    public long getLong(String key) throws JSONException {
+        Object o = get(key);
+        try {
+            return o instanceof Number ?
+                ((Number)o).longValue() :
+                Long.parseLong((String)o);
+        } catch (Exception e) {
+            throw new JSONException("JSONObject[" + quote(key) +
+                "] is not a long.");
+        }
+    }
+
+
+    /**
+     * Get an array of field names from a JSONObject.
+     *
+     * @return An array of field names, or null if there are no names.
+     */
+    public static String[] getNames(JSONObject jo) {
+        int length = jo.length();
+        if (length == 0) {
+            return null;
+        }
+        Iterator i = jo.keys();
+        String[] names = new String[length];
+        int j = 0;
+        while (i.hasNext()) {
+            names[j] = (String)i.next();
+            j += 1;
+        }
+        return names;
+    }
+
+
+    /**
+     * Get an array of field names from an Object.
+     *
+     * @return An array of field names, or null if there are no names.
+     */
+    public static String[] getNames(Object object) {
+        if (object == null) {
+            return null;
+        }
+        Class klass = object.getClass();
+        Field[] fields = klass.getFields();
+        int length = fields.length;
+        if (length == 0) {
+            return null;
+        }
+        String[] names = new String[length];
+        for (int i = 0; i < length; i += 1) {
+            names[i] = fields[i].getName();
+        }
+        return names;
+    }
+
+
+    /**
+     * Get the string associated with a key.
+     *
+     * @param key   A key string.
+     * @return      A string which is the value.
+     * @throws   JSONException if the key is not found.
+     */
+    public String getString(String key) throws JSONException {
+        return get(key).toString();
+    }
+
+
+    /**
+     * Determine if the JSONObject contains a specific key.
+     * @param key   A key string.
+     * @return      true if the key exists in the JSONObject.
+     */
+    public boolean has(String key) {
+        return this.map.containsKey(key);
+    }
+    
+    
+    /**
+     * Increment a property of a JSONObject. If there is no such property,
+     * create one with a value of 1. If there is such a property, and if
+     * it is an Integer, Long, Double, or Float, then add one to it.
+     * @param key  A key string.
+     * @return this.
+     * @throws JSONException If there is already a property with this name
+     * that is not an Integer, Long, Double, or Float.
+     */
+    public JSONObject increment(String key) throws JSONException {
+    	Object value = opt(key);
+    	if (value == null) {
+    		put(key, 1);
+    	} else {
+    		if (value instanceof Integer) {
+    			put(key, ((Integer)value).intValue() + 1);
+    		} else if (value instanceof Long) {
+    			put(key, ((Long)value).longValue() + 1);    			
+    		} else if (value instanceof Double) {
+	    		put(key, ((Double)value).doubleValue() + 1);    			
+    		} else if (value instanceof Float) {
+	    		put(key, ((Float)value).floatValue() + 1);    			
+		    } else {
+		    	throw new JSONException("Unable to increment [" + key + "].");
+		    }
+	    }
+    	return this;
+    }
+
+
+    /**
+     * Determine if the value associated with the key is null or if there is
+     *  no value.
+     * @param key   A key string.
+     * @return      true if there is no value associated with the key or if
+     *  the value is the JSONObject.NULL object.
+     */
+    public boolean isNull(String key) {
+        return JSONObject.NULL.equals(opt(key));
+    }
+
+
+    /**
+     * Get an enumeration of the keys of the JSONObject.
+     *
+     * @return An iterator of the keys.
+     */
+    public Iterator keys() {
+        return this.map.keySet().iterator();
+    }
+
+
+    /**
+     * Get the number of keys stored in the JSONObject.
+     *
+     * @return The number of keys in the JSONObject.
+     */
+    public int length() {
+        return this.map.size();
+    }
+
+
+    /**
+     * Produce a JSONArray containing the names of the elements of this
+     * JSONObject.
+     * @return A JSONArray containing the key strings, or null if the JSONObject
+     * is empty.
+     */
+    public JSONArray names() {
+        JSONArray ja = new JSONArray();
+        Iterator  keys = keys();
+        while (keys.hasNext()) {
+            ja.put(keys.next());
+        }
+        return ja.length() == 0 ? null : ja;
+    }
+
+    /**
+     * Produce a string from a Number.
+     * @param  n A Number
+     * @return A String.
+     * @throws JSONException If n is a non-finite number.
+     */
+    static public String numberToString(Number n)
+            throws JSONException {
+        if (n == null) {
+            throw new JSONException("Null pointer");
+        }
+        testValidity(n);
+
+// Shave off trailing zeros and decimal point, if possible.
+
+        String s = n.toString();
+        if (s.indexOf('.') > 0 && s.indexOf('e') < 0 && s.indexOf('E') < 0) {
+            while (s.endsWith("0")) {
+                s = s.substring(0, s.length() - 1);
+            }
+            if (s.endsWith(".")) {
+                s = s.substring(0, s.length() - 1);
+            }
+        }
+        return s;
+    }
+
+
+    /**
+     * Get an optional value associated with a key.
+     * @param key   A key string.
+     * @return      An object which is the value, or null if there is no value.
+     */
+    public Object opt(String key) {
+        return key == null ? null : this.map.get(key);
+    }
+
+
+    /**
+     * Get an optional boolean associated with a key.
+     * It returns false if there is no such key, or if the value is not
+     * Boolean.TRUE or the String "true".
+     *
+     * @param key   A key string.
+     * @return      The truth.
+     */
+    public boolean optBoolean(String key) {
+        return optBoolean(key, false);
+    }
+
+
+    /**
+     * Get an optional boolean associated with a key.
+     * It returns the defaultValue if there is no such key, or if it is not
+     * a Boolean or the String "true" or "false" (case insensitive).
+     *
+     * @param key              A key string.
+     * @param defaultValue     The default.
+     * @return      The truth.
+     */
+    public boolean optBoolean(String key, boolean defaultValue) {
+        try {
+            return getBoolean(key);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+
+    /**
+     * Get an optional double associated with a key,
+     * or NaN if there is no such key or if its value is not a number.
+     * If the value is a string, an attempt will be made to evaluate it as
+     * a number.
+     *
+     * @param key   A string which is the key.
+     * @return      An object which is the value.
+     */
+    public double optDouble(String key) {
+        return optDouble(key, Double.NaN);
+    }
+
+
+    /**
+     * Get an optional double associated with a key, or the
+     * defaultValue if there is no such key or if its value is not a number.
+     * If the value is a string, an attempt will be made to evaluate it as
+     * a number.
+     *
+     * @param key   A key string.
+     * @param defaultValue     The default.
+     * @return      An object which is the value.
+     */
+    public double optDouble(String key, double defaultValue) {
+        try {
+            Object o = opt(key);
+            return o instanceof Number ? ((Number)o).doubleValue() :
+                new Double((String)o).doubleValue();
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
