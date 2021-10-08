@@ -427,3 +427,30 @@ public class JSONML {
 		     	
 //Emit content in body
 	
+		ja = jo.optJSONArray("childNodes");
+		if (ja == null) {
+	        sb.append('/');
+	        sb.append('>');
+		} else {
+	        sb.append('>');
+			len = ja.length();
+			for (i = 0; i < len; i += 1) {
+			    e = ja.get(i);
+			    if (e != null) {
+			    	if (e instanceof String) {
+			    		sb.append(XML.escape(e.toString()));
+					} else if (e instanceof JSONObject) {
+						sb.append(toString((JSONObject)e));
+					} else if (e instanceof JSONArray) {
+						sb.append(toString((JSONArray)e));
+					}
+			    }
+			}
+			sb.append('<');
+	        sb.append('/');
+			sb.append(tagName);
+	        sb.append('>');
+	    }
+        return sb.toString();
+    }
+}
