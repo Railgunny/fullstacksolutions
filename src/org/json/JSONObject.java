@@ -1188,3 +1188,391 @@ public class JSONObject {
         if (s.equals("")) {
             return s;
         }
+        if (s.equalsIgnoreCase("true")) {
+            return Boolean.TRUE;
+        }
+        if (s.equalsIgnoreCase("false")) {
+            return Boolean.FALSE;
+        }
+        if (s.equalsIgnoreCase("null")) {
+            return JSONObject.NULL;
+        }
+
+        /*
+         * If it might be a number, try converting it. 
+         * We support the non-standard 0x- convention. 
+         * If a number cannot be produced, then the value will just
+         * be a string. Note that the 0x-, plus, and implied string
+         * conventions are non-standard. A JSON parser may accept
+         * non-JSON forms as long as it accepts all correct JSON forms.
+         */
+
+        char b = s.charAt(0);
+        if ((b >= '0' && b <= '9') || b == '.' || b == '-' || b == '+') {
+            if (b == '0' && s.length() > 2 &&
+                        (s.charAt(1) == 'x' || s.charAt(1) == 'X')) {
+                try {
+                    return new Integer(Integer.parseInt(s.substring(2), 16));
+                } catch (Exception ignore) {
+                }
+            }
+            try {
+                if (s.indexOf('.') > -1 || 
+                		s.indexOf('e') > -1 || s.indexOf('E') > -1) {
+                    return Double.valueOf(s);
+                } else {
+                    Long myLong = new Long(s);
+                    if (myLong.longValue() == myLong.intValue()) {
+                        return new Integer(myLong.intValue());
+                    } else {
+                        return myLong;
+                    }
+                }
+            }  catch (Exception ignore) {
+            }
+        }
+        return s;
+    }
+
+
+    /**
+     * Throw an exception if the object is an NaN or infinite number.
+     * @param o The object to test.
+     * @throws JSONException If o is a non-finite number.
+     */
+    static void testValidity(Object o) throws JSONException {
+        if (o != null) {
+            if (o instanceof Double) {
+                if (((Double)o).isInfinite() || ((Double)o).isNaN()) {
+                    throw new JSONException(
+                        "JSON does not allow non-finite numbers.");
+                }
+            } else if (o instanceof Float) {
+                if (((Float)o).isInfinite() || ((Float)o).isNaN()) {
+                    throw new JSONException(
+                        "JSON does not allow non-finite numbers.");
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Produce a JSONArray containing the values of the members of this
+     * JSONObject.
+     * @param names A JSONArray containing a list of key strings. This
+     * determines the sequence of the values in the result.
+     * @return A JSONArray of values.
+     * @throws JSONException If any of the values are non-finite numbers.
+     */
+    public JSONArray toJSONArray(JSONArray names) throws JSONException {
+        if (names == null || names.length() == 0) {
+            return null;
+        }
+        JSONArray ja = new JSONArray();
+        for (int i = 0; i < names.length(); i += 1) {
+            ja.put(this.opt(names.getString(i)));
+        }
+        return ja;
+    }
+
+    /**
+     * Make a JSON text of this JSONObject. For compactness, no whitespace
+     * is added. If this would not result in a syntactically correct JSON text,
+     * then null will be returned instead.
+     * <p>
+     * Warning: This method assumes that the data structure is acyclical.
+     *
+     * @return a printable, displayable, portable, transmittable
+     *  representation of the object, beginning
+     *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
+     *  with <code>}</code>&nbsp;<small>(right brace)</small>.
+     */
+    public String toString() {
+        try {
+            Iterator     keys = keys();
+            StringBuffer sb = new StringBuffer("{");
+
+            while (keys.hasNext()) {
+                if (sb.length() > 1) {
+                    sb.append(',');
+                }
+                Object o = keys.next();
+                sb.append(quote(o.toString()));
+                sb.append(':');
+                sb.append(valueToString(this.map.get(o)));
+            }
+            sb.append('}');
+            return sb.toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+    /**
+     * Make a prettyprinted JSON text of this JSONObject.
+     * <p>
+     * Warning: This method assumes that the data structure is acyclical.
+     * @param indentFactor The number of spaces to add to each level of
+     *  indentation.
+     * @return a printable, displayable, portable, transmittable
+     *  representation of the object, beginning
+     *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
+     *  with <code>}</code>&nbsp;<small>(right brace)</small>.
+     * @throws JSONException If the object contains an invalid number.
+     */
+    public String toString(int indentFactor) throws JSONException {
+        return toString(indentFactor, 0);
+    }
+
+
+    /**
+     * Make a prettyprinted JSON text of this JSONObject.
+     * <p>
+     * Warning: This method assumes that the data structure is acyclical.
+     * @param indentFactor The number of spaces to add to each level of
+     *  indentation.
+     * @param indent The indentation of the top level.
+     * @return a printable, displayable, transmittable
+     *  representation of the object, beginning
+     *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
+     *  with <code>}</code>&nbsp;<small>(right brace)</small>.
+     * @throws JSONException If the object contains an invalid number.
+     */
+    String toString(int indentFactor, int indent) throws JSONException {
+        int j;
+        int n = length();
+        if (n == 0) {
+            return "{}";
+        }
+        Iterator     keys = sortedKeys();
+        StringBuffer sb = new StringBuffer("{");
+        int          newindent = indent + indentFactor;
+        Object       o;
+        if (n == 1) {
+            o = keys.next();
+            sb.append(quote(o.toString()));
+            sb.append(": ");
+            sb.append(valueToString(this.map.get(o), indentFactor,
+                    indent));
+        } else {
+            while (keys.hasNext()) {
+                o = keys.next();
+                if (sb.length() > 1) {
+                    sb.append(",\n");
+                } else {
+                    sb.append('\n');
+                }
+                for (j = 0; j < newindent; j += 1) {
+                    sb.append(' ');
+                }
+                sb.append(quote(o.toString()));
+                sb.append(": ");
+                sb.append(valueToString(this.map.get(o), indentFactor,
+                        newindent));
+            }
+            if (sb.length() > 1) {
+                sb.append('\n');
+                for (j = 0; j < indent; j += 1) {
+                    sb.append(' ');
+                }
+            }
+        }
+        sb.append('}');
+        return sb.toString();
+    }
+
+
+    /**
+     * Make a JSON text of an Object value. If the object has an
+     * value.toJSONString() method, then that method will be used to produce
+     * the JSON text. The method is required to produce a strictly
+     * conforming text. If the object does not contain a toJSONString
+     * method (which is the most common case), then a text will be
+     * produced by other means. If the value is an array or Collection,
+     * then a JSONArray will be made from it and its toJSONString method
+     * will be called. If the value is a MAP, then a JSONObject will be made
+     * from it and its toJSONString method will be called. Otherwise, the
+     * value's toString method will be called, and the result will be quoted.
+     *
+     * <p>
+     * Warning: This method assumes that the data structure is acyclical.
+     * @param value The value to be serialized.
+     * @return a printable, displayable, transmittable
+     *  representation of the object, beginning
+     *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
+     *  with <code>}</code>&nbsp;<small>(right brace)</small>.
+     * @throws JSONException If the value is or contains an invalid number.
+     */
+    static String valueToString(Object value) throws JSONException {
+        if (value == null || value.equals(null)) {
+            return "null";
+        }
+        if (value instanceof JSONString) {
+            Object o;
+            try {
+                o = ((JSONString)value).toJSONString();
+            } catch (Exception e) {
+                throw new JSONException(e);
+            }
+            if (o instanceof String) {
+                return (String)o;
+            }
+            throw new JSONException("Bad value from toJSONString: " + o);
+        }
+        if (value instanceof Number) {
+            return numberToString((Number) value);
+        }
+        if (value instanceof Boolean || value instanceof JSONObject ||
+                value instanceof JSONArray) {
+            return value.toString();
+        }
+        if (value instanceof Map) {
+            return new JSONObject((Map)value).toString();
+        }
+        if (value instanceof Collection) {
+            return new JSONArray((Collection)value).toString();
+        }
+        if (value.getClass().isArray()) {
+            return new JSONArray(value).toString();
+        }
+        return quote(value.toString());
+    }
+
+
+    /**
+     * Make a prettyprinted JSON text of an object value.
+     * <p>
+     * Warning: This method assumes that the data structure is acyclical.
+     * @param value The value to be serialized.
+     * @param indentFactor The number of spaces to add to each level of
+     *  indentation.
+     * @param indent The indentation of the top level.
+     * @return a printable, displayable, transmittable
+     *  representation of the object, beginning
+     *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
+     *  with <code>}</code>&nbsp;<small>(right brace)</small>.
+     * @throws JSONException If the object contains an invalid number.
+     */
+     static String valueToString(Object value, int indentFactor, int indent)
+            throws JSONException {
+        if (value == null || value.equals(null)) {
+            return "null";
+        }
+        try {
+            if (value instanceof JSONString) {
+                Object o = ((JSONString)value).toJSONString();
+                if (o instanceof String) {
+                    return (String)o;
+                }
+            }
+        } catch (Exception ignore) {
+        }
+        if (value instanceof Number) {
+            return numberToString((Number) value);
+        }
+        if (value instanceof Boolean) {
+            return value.toString();
+        }
+        if (value instanceof JSONObject) {
+            return ((JSONObject)value).toString(indentFactor, indent);
+        }
+        if (value instanceof JSONArray) {
+            return ((JSONArray)value).toString(indentFactor, indent);
+        }
+        if (value instanceof Map) {
+            return new JSONObject((Map)value).toString(indentFactor, indent);
+        }
+        if (value instanceof Collection) {
+            return new JSONArray((Collection)value).toString(indentFactor, indent);
+        }
+        if (value.getClass().isArray()) {
+            return new JSONArray(value).toString(indentFactor, indent);
+        }
+        return quote(value.toString());
+    }
+
+
+     /**
+      * Wrap an object, if necessary. If the object is null, return the NULL 
+      * object. If it is an array or collection, wrap it in a JSONArray. If 
+      * it is a map, wrap it in a JSONObject. If it is a standard property 
+      * (Double, String, et al) then it is already wrapped. Otherwise, if it 
+      * comes from one of the java packages, turn it into a string. And if 
+      * it doesn't, try to wrap it in a JSONObject. If the wrapping fails,
+      * then null is returned.
+      *
+      * @param object The object to wrap
+      * @return The wrapped value
+      */
+     static Object wrap(Object object) {
+         try {
+             if (object == null) {
+                 return NULL;
+             }
+             if (object instanceof JSONObject || object instanceof JSONArray || 
+            		 NULL.equals(object)      || object instanceof JSONString || 
+            		 object instanceof Byte   || object instanceof Character ||
+                     object instanceof Short  || object instanceof Integer   ||
+                     object instanceof Long   || object instanceof Boolean   || 
+                     object instanceof Float  || object instanceof Double    ||
+                     object instanceof String) {
+                 return object;
+             }
+             
+             if (object instanceof Collection) {
+                 return new JSONArray((Collection)object);
+             }
+             if (object.getClass().isArray()) {
+                 return new JSONArray(object);
+             }
+             if (object instanceof Map) {
+                 return new JSONObject((Map)object);
+             }
+             Package objectPackage = object.getClass().getPackage();
+             String objectPackageName = ( objectPackage != null ? objectPackage.getName() : "" );
+             if (objectPackageName.startsWith("java.") ||
+            		 objectPackageName.startsWith("javax.") ||
+            		 object.getClass().getClassLoader() == null) {
+                 return object.toString();
+             }
+             return new JSONObject(object);
+         } catch(Exception exception) {
+             return null;
+         }
+     }
+
+     
+     /**
+      * Write the contents of the JSONObject as JSON text to a writer.
+      * For compactness, no whitespace is added.
+      * <p>
+      * Warning: This method assumes that the data structure is acyclical.
+      *
+      * @return The writer.
+      * @throws JSONException
+      */
+     public Writer write(Writer writer) throws JSONException {
+        try {
+            boolean  b = false;
+            Iterator keys = keys();
+            writer.write('{');
+
+            while (keys.hasNext()) {
+                if (b) {
+                    writer.write(',');
+                }
+                Object k = keys.next();
+                writer.write(quote(k.toString()));
+                writer.write(':');
+                Object v = this.map.get(k);
+                if (v instanceof JSONObject) {
+                    ((JSONObject)v).write(writer);
+                } else if (v instanceof JSONArray) {
+                    ((JSONArray)v).write(writer);
+                } else {
+                    writer.write(valueToString(v));
+                }
+                b = true;
+            }
