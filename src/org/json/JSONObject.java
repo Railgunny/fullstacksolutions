@@ -1576,3 +1576,10 @@ public class JSONObject {
                 }
                 b = true;
             }
+            writer.write('}');
+            return writer;
+        } catch (IOException exception) {
+            throw new JSONException(exception);
+        }
+     }
+}
