@@ -28,4 +28,11 @@ import java.io.StringWriter;
 
 /**
  * JSONStringer provides a quick and convenient way of producing JSON text.
- 
+ * The texts produced strictly conform to JSON syntax rules. No whitespace is
+ * added, so the results are ready for transmission or storage. Each instance of
+ * JSONStringer can produce one JSON text.
+ * <p>
+ * A JSONStringer instance provides a <code>value</code> method for appending
+ * values to the
+ * text, and a <code>key</code>
+ * method for adding
