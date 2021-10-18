@@ -40,4 +40,13 @@ import java.io.StringWriter;
  * <code>object</code> and <code>endObject</code> methods which make and bound
  * object values. All of these methods return the JSONWriter instance,
  * permitting cascade style. For example, <pre>
- * myString = new JSONStringer
+ * myString = new JSONStringer()
+ *     .object()
+ *         .key("JSON")
+ *         .value("Hello, World!")
+ *     .endObject()
+ *     .toString();</pre> which produces the string <pre>
+ * {"JSON":"Hello, World!"}</pre>
+ * <p>
+ * The first method called must be <code>array</code> or <code>object</code>.
+ * There are no methods for adding commas or colons. JSONStrin
