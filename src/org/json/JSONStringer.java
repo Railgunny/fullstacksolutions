@@ -49,4 +49,16 @@ import java.io.StringWriter;
  * {"JSON":"Hello, World!"}</pre>
  * <p>
  * The first method called must be <code>array</code> or <code>object</code>.
- * There are no methods for adding commas or colons. JSONStrin
+ * There are no methods for adding commas or colons. JSONStringer adds them for
+ * you. Objects and arrays can be nested up to 20 levels deep.
+ * <p>
+ * This can sometimes be easier than using a JSONObject to build a string.
+ * @author JSON.org
+ * @version 2008-09-18
+ */
+public class JSONStringer extends JSONWriter {
+    /**
+     * Make a fresh JSONStringer. It can be used to build one JSON text.
+     */
+    public JSONStringer() {
+        sup
