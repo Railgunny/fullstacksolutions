@@ -25,4 +25,15 @@ public class Test {
         
 /** 
  *  Obj is a typical class that implements JSONString. It also
- *  provides some beanie methods that can be u
+ *  provides some beanie methods that can be used to 
+ *  construct a JSONObject. It also demonstrates constructing
+ *  a JSONObject with an array of names.
+ */
+        class Obj implements JSONString {
+        	public String aString;
+        	public double aNumber;
+        	public boolean aBoolean;
+        	
+            public Obj(String string, double n, boolean b) {
+                this.aString = string;
+                thi
