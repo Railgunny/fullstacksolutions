@@ -76,4 +76,12 @@ public class Test {
         try {     
             s = "[0.1]";
             a = new JSONArray(s);
-          
+            System.out.println(a.toString());
+            System.out.println("");
+            
+            j = XML.toJSONObject("<![CDATA[This is a collection of test patterns and examples for org.json.]]>  Ignore the stuff past the end.  ");
+            System.out.println(j.toString());
+            System.out.println("");
+            
+            j = new JSONObject();
+      
