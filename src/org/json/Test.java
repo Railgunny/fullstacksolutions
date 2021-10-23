@@ -36,4 +36,19 @@ public class Test {
         	
             public Obj(String string, double n, boolean b) {
                 this.aString = string;
-                thi
+                this.aNumber = n;
+                this.aBoolean = b;
+            }
+            
+            public double getNumber() {
+            	return this.aNumber;
+            }
+            
+            public String getString() {
+            	return this.aString;
+            }
+            
+            public boolean isBoolean() {
+            	return this.aBoolean;
+            }
+     
