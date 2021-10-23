@@ -51,4 +51,16 @@ public class Test {
             public boolean isBoolean() {
             	return this.aBoolean;
             }
-     
+            
+            public String getBENT() {
+            	return "All uppercase key";
+            }
+            
+            public String getX() {
+            	return "x";
+            }
+            
+            public String toJSONString() {
+            	return "{" + JSONObject.quote(this.aString) + ":" + 
+            	JSONObject.doubleToString(this.aNumber) + "}";
+            }      
