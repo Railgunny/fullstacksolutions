@@ -95,4 +95,14 @@ public class Test {
             j.increment("two");
             System.out.println(j.toString());
             System.out.println("");
-       
+            
+            
+            s = "<test><blank></blank><empty/></test>";
+            j = XML.toJSONObject(s);
+            System.out.println(j.toString(2));
+            System.out.println(XML.toString(j));
+            System.out.println("");
+
+            s = "{     \"list of lists\" : [         [1, 2, 3],         [4, 5, 6],     ] }";
+            j = new JSONObject(s);
+           
