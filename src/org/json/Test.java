@@ -84,4 +84,15 @@ public class Test {
             System.out.println("");
             
             j = new JSONObject();
-      
+            o = null;
+            j.put("booga", o);
+            j.put("wooga", JSONObject.NULL);
+            System.out.println(j.toString());
+            System.out.println("");
+           
+            j = new JSONObject();
+            j.increment("two");
+            j.increment("two");
+            System.out.println(j.toString());
+            System.out.println("");
+       
