@@ -105,4 +105,7 @@ public class Test {
 
             s = "{     \"list of lists\" : [         [1, 2, 3],         [4, 5, 6],     ] }";
             j = new JSONObject(s);
-           
+            System.out.println(j.toString(4));
+            System.out.println(XML.toString(j));
+                    
+            s = "<recipe name=\"bread\" prep_time=\"5 mins\" cook_time=\"3 hours\"> <title>Basic bread</title> <ingredient amount=\"8\" unit=\"dL\">Flour</ingredient> <ingredient amount=\"10\" unit=\"grams\">Yeast</ingredient> <ingredient amount=\"4\" unit=\"dL\"
