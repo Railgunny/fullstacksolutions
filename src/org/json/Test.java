@@ -117,4 +117,10 @@ public class Test {
             System.out.println(j.toString());
             System.out.println(JSONML.toString(j));
             System.out.println();
-   
+            
+            a = JSONML.toJSONArray(s);
+            System.out.println(a.toString(4));
+            System.out.println(JSONML.toString(a));
+            System.out.println();
+            
+            s = "<div id=\"demo\" class=\"JSONML\"><p>JSONML is a transformation between <b>JSON</b> and <b>XML</b> that preserves ordering of document features.<
