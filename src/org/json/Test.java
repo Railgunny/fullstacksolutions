@@ -123,4 +123,12 @@ public class Test {
             System.out.println(JSONML.toString(a));
             System.out.println();
             
-            s = "<div id=\"demo\" class=\"JSONML\"><p>JSONML is a transformation between <b>JSON</b> and <b>XML</b> that preserves ordering of document features.<
+            s = "<div id=\"demo\" class=\"JSONML\"><p>JSONML is a transformation between <b>JSON</b> and <b>XML</b> that preserves ordering of document features.</p><p>JSONML can work with JSON arrays or JSON objects.</p><p>Three<br/>little<br/>words</p></div>";
+            j = JSONML.toJSONObject(s);
+            System.out.println(j.toString(4));
+            System.out.println(JSONML.toString(j));
+            System.out.println();
+            
+            a = JSONML.toJSONArray(s);
+            System.out.println(a.toString(4));
+     
