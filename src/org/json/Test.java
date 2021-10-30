@@ -131,4 +131,7 @@ public class Test {
             
             a = JSONML.toJSONArray(s);
             System.out.println(a.toString(4));
-     
+            System.out.println(JSONML.toString(a));
+            System.out.println();
+            
+            s = "<person created=\"2006-11-11T19:23\" modified=\"2006-12-31T23:59\">\n <firstName>Robert</firstName>\n <lastName>Smith</lastName>\n <address type=\"home\">\n <street>12345 Sixth Ave</street>\n <city>Anytown</city>\n <state>CA</stat
