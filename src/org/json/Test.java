@@ -141,4 +141,15 @@ public class Test {
             j = new JSONObject(obj);
             System.out.println(j.toString());
             
-            s = "{ \"entity\": { \"imageURL\": \"\", \"name\": \"IXXXXXXXXXXXXX\", \"id\": 12336, 
+            s = "{ \"entity\": { \"imageURL\": \"\", \"name\": \"IXXXXXXXXXXXXX\", \"id\": 12336, \"ratingCount\": null, \"averageRating\": null } }";
+            j = new JSONObject(s);
+            System.out.println(j.toString(2));
+
+            jj = new JSONStringer();
+            s = jj
+	            .object()
+	                .key("single")
+	                .value("MARIE HAA'S")
+	                .key("Johnny")
+	                .value("MARIE HAA\\'S")
+	                .key("foo")
