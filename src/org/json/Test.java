@@ -164,4 +164,16 @@ public class Test {
 	                .key("obj keys")
 	                .value(JSONObject.getNames(obj))
 	            .endObject()
-       
+            .toString();
+            System.out.println(s);
+
+            System.out.println(new JSONStringer()
+                .object()
+                	.key("a")
+                	.array()
+                		.array()
+                			.array()
+                				.value("b")
+                            .endArray()
+                        .endArray()
+                    .end
