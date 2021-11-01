@@ -176,4 +176,18 @@ public class Test {
                 				.value("b")
                             .endArray()
                         .endArray()
-                    .end
+                    .endArray()
+                .endObject()
+                .toString());
+
+            jj = new JSONStringer();
+            jj.array();
+            jj.value(1);
+            jj.array();
+            jj.value(null);
+            jj.array();
+            jj.object();
+            jj.key("empty-array").array().endArray();
+            jj.key("answer").value(42);
+            jj.key("null").value(null);
+            jj
