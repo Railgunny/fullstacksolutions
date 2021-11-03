@@ -190,4 +190,12 @@ public class Test {
             jj.key("empty-array").array().endArray();
             jj.key("answer").value(42);
             jj.key("null").value(null);
-            jj
+            jj.key("false").value(false);
+            jj.key("true").value(true);
+            jj.key("big").value(123456789e+88);
+            jj.key("small").value(123456789e-88);
+            jj.key("empty-object").object().endObject();
+            jj.key("long");
+            jj.value(9223372036854775807L);
+            jj.endObject();
+            jj.value("tw
