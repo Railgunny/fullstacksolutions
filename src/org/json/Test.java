@@ -222,4 +222,10 @@ public class Test {
         	
         	String sa[] = {"aString", "aNumber", "aBoolean"};            
             j = new JSONObject(obj, sa);
-            j.put("Testing JSONString in
+            j.put("Testing JSONString interface", obj);
+            System.out.println(j.toString(4));          
+            
+            j = new JSONObject("{slashes: '///', closetag: '</script>', backslash:'\\\\', ei: {quotes: '\"\\''},eo: {a: '\"quoted\"', b:\"don't\"}, quotes: [\"'\", '\"']}");
+            System.out.println(j.toString(2));
+            System.out.println(XML.toString(j));
+            System.ou
