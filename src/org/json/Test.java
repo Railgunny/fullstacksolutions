@@ -228,4 +228,12 @@ public class Test {
             j = new JSONObject("{slashes: '///', closetag: '</script>', backslash:'\\\\', ei: {quotes: '\"\\''},eo: {a: '\"quoted\"', b:\"don't\"}, quotes: [\"'\", '\"']}");
             System.out.println(j.toString(2));
             System.out.println(XML.toString(j));
-            System.ou
+            System.out.println("");
+
+            j = new JSONObject(
+                "{foo: [true, false,9876543210,    0.0, 1.00000001,  1.000000000001, 1.00000000000000001," +
+                " .00000000000000001, 2.00, 0.1, 2e100, -32,[],{}, \"string\"], " +
+                "  to   : null, op : 'Good'," +
+                "ten:10} postfix comment");
+            j.put("String", "98.6");
+            j.put("JSONObject", new JSONObject());
