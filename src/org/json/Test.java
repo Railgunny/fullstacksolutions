@@ -198,4 +198,18 @@ public class Test {
             jj.key("long");
             jj.value(9223372036854775807L);
             jj.endObject();
-            jj.value("tw
+            jj.value("two");
+            jj.endArray();
+            jj.value(true);
+            jj.endArray();
+            jj.value(98.6);
+            jj.value(-100.0);
+            jj.object();
+            jj.endObject();
+            jj.object();
+            jj.key("one");
+            jj.value(1.00);
+            jj.endObject();
+            jj.value(obj);
+            jj.endArray();
+            System.out.println(jj.toString(
