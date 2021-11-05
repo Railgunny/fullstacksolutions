@@ -212,4 +212,14 @@ public class Test {
             jj.endObject();
             jj.value(obj);
             jj.endArray();
-            System.out.println(jj.toString(
+            System.out.println(jj.toString());
+
+            System.out.println(new JSONArray(jj.toString()).toString(4));
+
+        	int ar[] = {1, 2, 3};
+        	JSONArray ja = new JSONArray(ar);
+        	System.out.println(ja.toString());
+        	
+        	String sa[] = {"aString", "aNumber", "aBoolean"};            
+            j = new JSONObject(obj, sa);
+            j.put("Testing JSONString in
