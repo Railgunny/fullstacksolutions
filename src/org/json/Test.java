@@ -237,3 +237,13 @@ public class Test {
                 "ten:10} postfix comment");
             j.put("String", "98.6");
             j.put("JSONObject", new JSONObject());
+            j.put("JSONArray", new JSONArray());
+            j.put("int", 57);
+            j.put("double", 123456789012345678901234567890.);
+            j.put("true", true);
+            j.put("false", false);
+            j.put("null", JSONObject.NULL);
+            j.put("bool", "true");
+            j.put("zero", -0.0);
+            j.put("\\u2028", "\u2028");
+            j.put("\\u2029", "\u2
