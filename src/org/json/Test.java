@@ -246,4 +246,15 @@ public class Test {
             j.put("bool", "true");
             j.put("zero", -0.0);
             j.put("\\u2028", "\u2028");
-            j.put("\\u2029", "\u2
+            j.put("\\u2029", "\u2029");
+            a = j.getJSONArray("foo");
+            a.put(666);
+            a.put(2001.99);
+            a.put("so \"fine\".");
+            a.put("so <fine>.");
+            a.put(true);
+            a.put(false);
+            a.put(new JSONArray());
+            a.put(new JSONObject());
+            j.put("keys", JSONObject.getNames(j));
+            System.out.println(j.toString(4));
