@@ -269,4 +269,7 @@ public class Test {
             System.out.println("   ten: " + j.getInt("ten"));
             System.out.println("  oops: " + j.optBoolean("oops"));
 
-            s = "<xml one = 1 two=' \"2\" '><five></five>First \u0009&lt;content&gt;<five></five> This is \"content\". <three>  3  </three>JSON does not preserve the sequencing of elements 
+            s = "<xml one = 1 two=' \"2\" '><five></five>First \u0009&lt;content&gt;<five></five> This is \"content\". <three>  3  </three>JSON does not preserve the sequencing of elements and contents.<three>  III  </three>  <three>  T H R E E</three><four/>Content text is an implied structure in XML. <six content=\"6\"/>JSON does not have implied structure:<seven>7</seven>everything is explicit.<![CDATA[CDATA blocks<are><supported>!]]></xml>";
+            j = XML.toJSONObject(s);
+            System.out.println(j.toString(2));
+            System.out.printl
