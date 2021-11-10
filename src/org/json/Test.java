@@ -265,4 +265,8 @@ public class Test {
             System.out.println("    to: " + j.getString("to"));
             System.out.println("  true: " + j.getString("true"));
             System.out.println("   foo: " + j.getJSONArray("foo"));
-   
+            System.out.println("    op: " + j.getString("op"));
+            System.out.println("   ten: " + j.getInt("ten"));
+            System.out.println("  oops: " + j.optBoolean("oops"));
+
+            s = "<xml one = 1 two=' \"2\" '><five></five>First \u0009&lt;content&gt;<five></five> This is \"content\". <three>  3  </three>JSON does not preserve the sequencing of elements 
