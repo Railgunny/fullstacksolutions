@@ -258,3 +258,11 @@ public class Test {
             a.put(new JSONObject());
             j.put("keys", JSONObject.getNames(j));
             System.out.println(j.toString(4));
+            System.out.println(XML.toString(j));
+
+            System.out.println("String: " + j.getDouble("String"));
+            System.out.println("  bool: " + j.getBoolean("bool"));
+            System.out.println("    to: " + j.getString("to"));
+            System.out.println("  true: " + j.getString("true"));
+            System.out.println("   foo: " + j.getJSONArray("foo"));
+   
