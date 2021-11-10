@@ -272,4 +272,12 @@ public class Test {
             s = "<xml one = 1 two=' \"2\" '><five></five>First \u0009&lt;content&gt;<five></five> This is \"content\". <three>  3  </three>JSON does not preserve the sequencing of elements and contents.<three>  III  </three>  <three>  T H R E E</three><four/>Content text is an implied structure in XML. <six content=\"6\"/>JSON does not have implied structure:<seven>7</seven>everything is explicit.<![CDATA[CDATA blocks<are><supported>!]]></xml>";
             j = XML.toJSONObject(s);
             System.out.println(j.toString(2));
-            System.out.printl
+            System.out.println(XML.toString(j));
+            System.out.println("");
+            
+            ja = JSONML.toJSONArray(s);
+            System.out.println(ja.toString(4));
+            System.out.println(JSONML.toString(ja));
+            System.out.println("");
+            
+            s = "<xml do='0'>uno<a re='1' mi='2'>dos<b fa='3'/>tres<c>true</c>quatro</a>cinqo
