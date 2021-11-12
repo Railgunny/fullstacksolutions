@@ -280,4 +280,10 @@ public class Test {
             System.out.println(JSONML.toString(ja));
             System.out.println("");
             
-            s = "<xml do='0'>uno<a re='1' mi='2'>dos<b fa='3'/>tres<c>true</c>quatro</a>cinqo
+            s = "<xml do='0'>uno<a re='1' mi='2'>dos<b fa='3'/>tres<c>true</c>quatro</a>cinqo<d>seis<e/></d></xml>";
+            ja = JSONML.toJSONArray(s);
+            System.out.println(ja.toString(4));
+            System.out.println(JSONML.toString(ja));
+            System.out.println("");
+
+            s = "<mapping><empty/>   <class name = \"Customer\">      <field name = \"ID\" type = \"string\">         <bind-xml name=\"ID\" node=\"attribute\"/>  
