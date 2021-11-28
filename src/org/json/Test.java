@@ -312,4 +312,9 @@ public class Test {
             System.out.println(XML.toString(j));
             System.out.println("");
 
-            j = XML.toJSONObject("<!ENTITY tp-address PUBLIC '-//ABC University::Special Collections Library//TEXT (titlepage: name and address)//EN' 'tpspcoll.sgm'><list type='sim
+            j = XML.toJSONObject("<!ENTITY tp-address PUBLIC '-//ABC University::Special Collections Library//TEXT (titlepage: name and address)//EN' 'tpspcoll.sgm'><list type='simple'><head>Repository Address </head><item>Special Collections Library</item><item>ABC University</item><item>Main Library, 40 Circle Drive</item><item>Ourtown, Pennsylvania</item><item>17654 USA</item></list>");
+            System.out.println(j.toString());
+            System.out.println(XML.toString(j));
+            System.out.println("");
+
+            j = XML.toJSONObject("<test intertag status=o
