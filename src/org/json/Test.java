@@ -317,4 +317,9 @@ public class Test {
             System.out.println(XML.toString(j));
             System.out.println("");
 
-            j = XML.toJSONObject("<test intertag status=o
+            j = XML.toJSONObject("<test intertag status=ok><empty/>deluxe<blip sweet=true>&amp;&quot;toot&quot;&toot;&#x41;</blip><x>eks</x><w>bonus</w><w>bonus2</w></test>");
+            System.out.println(j.toString(2));
+            System.out.println(XML.toString(j));
+            System.out.println("");
+
+            j = HTTP.toJSONObject("GET / HTTP/1.0\nAccept: image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, application/vnd.ms-powerpoint, application/vnd.ms-excel,
