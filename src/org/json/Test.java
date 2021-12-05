@@ -327,4 +327,9 @@ public class Test {
             System.out.println(HTTP.toString(j));
             System.out.println("");
 
-            j = HTTP.toJSONObject("HTTP/1.1 200 Oki
+            j = HTTP.toJSONObject("HTTP/1.1 200 Oki Doki\nDate: Sun, 26 May 2002 17:38:52 GMT\nServer: Apache/1.3.23 (Unix) mod_perl/1.26\nKeep-Alive: timeout=15, max=100\nConnection: Keep-Alive\nTransfer-Encoding: chunked\nContent-Type: text/html\n");
+            System.out.println(j.toString(2));
+            System.out.println(HTTP.toString(j));
+            System.out.println("");
+
+            j = new JSONObject("{nix: n
