@@ -332,4 +332,10 @@ public class Test {
             System.out.println(HTTP.toString(j));
             System.out.println("");
 
-            j = new JSONObject("{nix: n
+            j = new JSONObject("{nix: null, nux: false, null: 'null', 'Request-URI': '/', Method: 'GET', 'HTTP-Version': 'HTTP/1.0'}");
+            System.out.println(j.toString(2));
+            System.out.println("isNull: " + j.isNull("nix"));
+            System.out.println("   has: " + j.has("nix"));
+            System.out.println(XML.toString(j));
+            System.out.println(HTTP.toString(j));
+            System.out.println("
