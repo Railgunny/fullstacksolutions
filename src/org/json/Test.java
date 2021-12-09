@@ -338,4 +338,11 @@ public class Test {
             System.out.println("   has: " + j.has("nix"));
             System.out.println(XML.toString(j));
             System.out.println(HTTP.toString(j));
-            System.out.println("
+            System.out.println("");
+
+            j = XML.toJSONObject("<?xml version='1.0' encoding='UTF-8'?>"+"\n\n"+"<SOAP-ENV:Envelope"+
+              " xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\""+
+              " xmlns:xsi=\"http://www.w3.org/1999/XMLSchema-instance\""+
+              " xmlns:xsd=\"http://www.w3.org/1999/XMLSchema\">"+
+              "<SOAP-ENV:Body><ns1:doGoogleSearch"+
+  
