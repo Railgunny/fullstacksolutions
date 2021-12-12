@@ -345,4 +345,10 @@ public class Test {
               " xmlns:xsi=\"http://www.w3.org/1999/XMLSchema-instance\""+
               " xmlns:xsd=\"http://www.w3.org/1999/XMLSchema\">"+
               "<SOAP-ENV:Body><ns1:doGoogleSearch"+
-  
+              " xmlns:ns1=\"urn:GoogleSearch\""+
+              " SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"+
+              "<key xsi:type=\"xsd:string\">GOOGLEKEY</key> <q"+
+              " xsi:type=\"xsd:string\">'+search+'</q> <start"+
+              " xsi:type=\"xsd:int\">0</start> <maxResults"+
+              " xsi:type=\"xsd:int\">10</maxResults> <filter"+
+    
