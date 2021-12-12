@@ -351,4 +351,11 @@ public class Test {
               " xsi:type=\"xsd:string\">'+search+'</q> <start"+
               " xsi:type=\"xsd:int\">0</start> <maxResults"+
               " xsi:type=\"xsd:int\">10</maxResults> <filter"+
-    
+              " xsi:type=\"xsd:boolean\">true</filter> <restrict"+
+              " xsi:type=\"xsd:string\"></restrict> <safeSearch"+
+              " xsi:type=\"xsd:boolean\">false</safeSearch> <lr"+
+              " xsi:type=\"xsd:string\"></lr> <ie"+
+              " xsi:type=\"xsd:string\">latin1</ie> <oe"+
+              " xsi:type=\"xsd:string\">latin1</oe>"+
+              "</ns1:doGoogleSearch>"+
+              "</
