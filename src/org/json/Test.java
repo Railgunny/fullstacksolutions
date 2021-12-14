@@ -358,4 +358,9 @@ public class Test {
               " xsi:type=\"xsd:string\">latin1</ie> <oe"+
               " xsi:type=\"xsd:string\">latin1</oe>"+
               "</ns1:doGoogleSearch>"+
-              "</
+              "</SOAP-ENV:Body></SOAP-ENV:Envelope>");
+            System.out.println(j.toString(2));
+            System.out.println(XML.toString(j));
+            System.out.println("");
+
+            j = new JSONObject("{Envelope: {Body: {\"ns1:doGoogleSearch\": {oe: \"latin1\", filter: true, q: \"'+search+'\", key: \"GOOGLEKEY\", maxResults: 10, \"SOAP-ENV:encodingStyle\": \"http://schemas.xmlsoap.org/soap/encoding/\", sta
