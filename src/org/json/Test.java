@@ -363,4 +363,11 @@ public class Test {
             System.out.println(XML.toString(j));
             System.out.println("");
 
-            j = new JSONObject("{Envelope: {Body: {\"ns1:doGoogleSearch\": {oe: \"latin1\", filter: true, q: \"'+search+'\", key: \"GOOGLEKEY\", maxResults: 10, \"SOAP-ENV:encodingStyle\": \"http://schemas.xmlsoap.org/soap/encoding/\", sta
+            j = new JSONObject("{Envelope: {Body: {\"ns1:doGoogleSearch\": {oe: \"latin1\", filter: true, q: \"'+search+'\", key: \"GOOGLEKEY\", maxResults: 10, \"SOAP-ENV:encodingStyle\": \"http://schemas.xmlsoap.org/soap/encoding/\", start: 0, ie: \"latin1\", safeSearch:false, \"xmlns:ns1\": \"urn:GoogleSearch\"}}}}");
+            System.out.println(j.toString(2));
+            System.out.println(XML.toString(j));
+            System.out.println("");
+
+            j = CookieList.toJSONObject("  f%oo = b+l=ah  ; o;n%40e = t.wo ");
+            System.out.println(j.toString(2));
+            System.out.println(Cookie
