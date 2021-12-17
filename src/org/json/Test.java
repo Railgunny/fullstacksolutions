@@ -378,4 +378,11 @@ public class Test {
             System.out.println(Cookie.toString(j));
             System.out.println("");
 
-            j = new JSONObject("{script: 'It is not allowed in HTML to send a close script tag in a string<
+            j = new JSONObject("{script: 'It is not allowed in HTML to send a close script tag in a string<script>because it confuses browsers</script>so we insert a backslash before the /'}");
+            System.out.println(j.toString());
+            System.out.println("");
+
+            JSONTokener jt = new JSONTokener("{op:'test', to:'session', pre:1}{op:'test', to:'session', pre:2}");
+            j = new JSONObject(jt);
+            System.out.println(j.toString());
+            System.
