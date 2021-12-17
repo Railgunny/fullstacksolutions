@@ -370,4 +370,12 @@ public class Test {
 
             j = CookieList.toJSONObject("  f%oo = b+l=ah  ; o;n%40e = t.wo ");
             System.out.println(j.toString(2));
-            System.out.println(Cookie
+            System.out.println(CookieList.toString(j));
+            System.out.println("");
+
+            j = Cookie.toJSONObject("f%oo=blah; secure ;expires = April 24, 2002");
+            System.out.println(j.toString(2));
+            System.out.println(Cookie.toString(j));
+            System.out.println("");
+
+            j = new JSONObject("{script: 'It is not allowed in HTML to send a close script tag in a string<
