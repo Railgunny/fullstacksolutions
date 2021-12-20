@@ -385,4 +385,11 @@ public class Test {
             JSONTokener jt = new JSONTokener("{op:'test', to:'session', pre:1}{op:'test', to:'session', pre:2}");
             j = new JSONObject(jt);
             System.out.println(j.toString());
-            System.
+            System.out.println("pre: " + j.optInt("pre"));
+            int i = jt.skipTo('{');
+            System.out.println(i);
+            j = new JSONObject(jt);
+            System.out.println(j.toString());
+            System.out.println("");
+
+            a = CDL.toJSONArray("Comma delimited list test, '\"Strip\"Quotes', 'quote, comma', No quotes, 'Single Quotes', \"Double Quotes
