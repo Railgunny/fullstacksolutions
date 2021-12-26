@@ -392,4 +392,15 @@ public class Test {
             System.out.println(j.toString());
             System.out.println("");
 
-            a = CDL.toJSONArray("Comma delimited list test, '\"Strip\"Quotes', 'quote, comma', No quotes, 'Single Quotes', \"Double Quotes
+            a = CDL.toJSONArray("Comma delimited list test, '\"Strip\"Quotes', 'quote, comma', No quotes, 'Single Quotes', \"Double Quotes\"\n1,'2',\"3\"\n,'It is \"good,\"', \"It works.\"\n\n");
+
+            s = CDL.toString(a);
+            System.out.println(s);
+            System.out.println("");
+            System.out.println(a.toString(4));
+            System.out.println("");
+            a = CDL.toJSONArray(s);
+            System.out.println(a.toString(4));
+            System.out.println("");
+
+            a
