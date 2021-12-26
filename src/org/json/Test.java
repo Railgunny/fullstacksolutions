@@ -403,4 +403,10 @@ public class Test {
             System.out.println(a.toString(4));
             System.out.println("");
 
-            a
+            a = new JSONArray(" [\"<escape>\", next is an implied null , , ok,] ");
+            System.out.println(a.toString());
+            System.out.println("");
+            System.out.println(XML.toString(a));
+            System.out.println("");
+
+            j = new JSONObject("{ fun => with non-standard forms ; forgiving => This package can be used to parse formats tha
