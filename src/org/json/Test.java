@@ -409,4 +409,5 @@ public class Test {
             System.out.println(XML.toString(a));
             System.out.println("");
 
-            j = new JSONObject("{ fun => with non-standard forms ; forgiving => This package can be used to parse formats tha
+            j = new JSONObject("{ fun => with non-standard forms ; forgiving => This package can be used to parse formats that are similar to but not stricting conforming to JSON; why=To make it easier to migrate existing data to JSON,one = [[1.00]]; uno=[[{1=>1}]];'+':+6e66 ;pluses=+++;empty = '' , 'double':0.666,true: TRUE, false: FALSE, null=NULL;[true] = [[!,@;*]]; string=>  o. k. ; \r oct=0666; hex=0x666; dec=666; o=0999; noh=0x0x}");
+            System.out.println(j.toStri
