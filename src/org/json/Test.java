@@ -421,4 +421,10 @@ public class Test {
             System.out.println(j.toString(4));
 
             System.out.println("");
-         
+            System.out.println(new JSONStringer().array().value(a).value(j).endArray());
+
+            j = new JSONObject("{string: \"98.6\", long: 2147483648, int: 2147483647, longer: 9223372036854775807, double: 9223372036854775808}");
+            System.out.println(j.toString(4));
+
+            System.out.println("\ngetInt");
+            System.out.println(
