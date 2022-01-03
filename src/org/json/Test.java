@@ -427,4 +427,11 @@ public class Test {
             System.out.println(j.toString(4));
 
             System.out.println("\ngetInt");
-            System.out.println(
+            System.out.println("int    " + j.getInt("int"));
+            System.out.println("long   " + j.getInt("long"));
+            System.out.println("longer " + j.getInt("longer"));
+            //System.out.println("double " + j.getInt("double"));
+            //System.out.println("string " + j.getInt("string"));
+
+            System.out.println("\ngetLong");
+            Sys
