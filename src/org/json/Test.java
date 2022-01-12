@@ -441,4 +441,10 @@ public class Test {
             //System.out.println("string " + j.getLong("string"));
 
             System.out.println("\ngetDouble");
-            Sys
+            System.out.println("int    " + j.getDouble("int"));
+            System.out.println("long   " + j.getDouble("long"));
+            System.out.println("longer " + j.getDouble("longer"));
+            System.out.println("double " + j.getDouble("double"));
+            System.out.println("string " + j.getDouble("string"));
+
+            j.put("good sized", 92
