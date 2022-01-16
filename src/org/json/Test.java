@@ -447,4 +447,14 @@ public class Test {
             System.out.println("double " + j.getDouble("double"));
             System.out.println("string " + j.getDouble("string"));
 
-            j.put("good sized", 92
+            j.put("good sized", 9223372036854775807L);
+            System.out.println(j.toString(4));
+
+            a = new JSONArray("[2147483647, 2147483648, 9223372036854775807, 9223372036854775808]");
+            System.out.println(a.toString(4));
+
+            System.out.println("\nKeys: ");
+            it = j.keys();
+            while (it.hasNext()) {
+                s = (String)it.next();
+                System.out.
