@@ -457,4 +457,17 @@ public class Test {
             it = j.keys();
             while (it.hasNext()) {
                 s = (String)it.next();
-                System.out.
+                System.out.println(s + ": " + j.getString(s));
+            }
+
+
+            System.out.println("\naccumulate: ");
+            j = new JSONObject();
+            j.accumulate("stooge", "Curly");
+            j.accumulate("stooge", "Larry");
+            j.accumulate("stooge", "Moe");
+            a = j.getJSONArray("stooge");
+            a.put(5, "Shemp");
+            System.out.println(j.toString(4));
+
+            Sys
