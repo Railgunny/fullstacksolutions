@@ -478,4 +478,10 @@ public class Test {
             System.out.println(j.toString(4));
             System.out.println(XML.toString(j));
             
-            s = "<book><chapter>Content of the first chapter</chapter><chapter>Content of th
+            s = "<book><chapter>Content of the first chapter</chapter><chapter>Content of the second chapter      <chapter>Content of the first subchapter</chapter>      <chapter>Content of the second subchapter</chapter></chapter><chapter>Third Chapter</chapter></book>";
+            j = XML.toJSONObject(s);
+            System.out.println(j.toString(4));
+            System.out.println(XML.toString(j));
+            
+            a = JSONML.toJSONArray(s);
+            System.out.pri
