@@ -470,4 +470,12 @@ public class Test {
             a.put(5, "Shemp");
             System.out.println(j.toString(4));
 
-            Sys
+            System.out.println("\nwrite:");
+            System.out.println(j.write(new StringWriter()));
+
+            s = "<xml empty><a></a><a>1</a><a>22</a><a>333</a></xml>";
+            j = XML.toJSONObject(s);
+            System.out.println(j.toString(4));
+            System.out.println(XML.toString(j));
+            
+            s = "<book><chapter>Content of the first chapter</chapter><chapter>Content of th
