@@ -484,4 +484,15 @@ public class Test {
             System.out.println(XML.toString(j));
             
             a = JSONML.toJSONArray(s);
-            System.out.pri
+            System.out.println(a.toString(4));
+            System.out.println(JSONML.toString(a));
+            
+            Collection c = null;
+            Map m = null;
+            
+            j = new JSONObject(m);
+            a = new JSONArray(c);
+            j.append("stooge", "Joe DeRita");
+            j.append("stooge", "Shemp");
+            j.accumulate("stooges", "Curly");
+            j.accumu
