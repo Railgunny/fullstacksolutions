@@ -505,4 +505,8 @@ public class Test {
             a.put(c);
             System.out.println(j.toString(4));
             
-            s = "{plist=Apple; AnimalSmells = { pig = piggis
+            s = "{plist=Apple; AnimalSmells = { pig = piggish; lamb = lambish; worm = wormy; }; AnimalSounds = { pig = oink; lamb = baa; worm = baa;  Lisa = \"Why is the worm talking like a lamb?\" } ; AnimalColors = { pig = pink; lamb = black; worm = pink; } } "; 
+            j = new JSONObject(s);
+            System.out.println(j.toString(4));
+            
+            s = " (\"San Francisco\", \"New York\", \"Seoul\"
