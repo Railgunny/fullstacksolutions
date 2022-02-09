@@ -495,4 +495,14 @@ public class Test {
             j.append("stooge", "Joe DeRita");
             j.append("stooge", "Shemp");
             j.accumulate("stooges", "Curly");
-            j.accumu
+            j.accumulate("stooges", "Larry");
+            j.accumulate("stooges", "Moe");
+            j.accumulate("stoogearray", j.get("stooges"));
+            j.put("map", m);
+            j.put("collection", c);
+            j.put("array", a);
+            a.put(m);
+            a.put(c);
+            System.out.println(j.toString(4));
+            
+            s = "{plist=Apple; AnimalSmells = { pig = piggis
