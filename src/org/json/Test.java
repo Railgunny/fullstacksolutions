@@ -516,4 +516,12 @@ public class Test {
             s = "<a ichi='1' ni='2'><b>The content of b</b> and <c san='3'>The content of c</c><d>do</d><e></e><d>re</d><f/><d>mi</d></a>";
             j = XML.toJSONObject(s);
 
-            System.out.println(j.toStr
+            System.out.println(j.toString(2));
+            System.out.println(XML.toString(j));
+            System.out.println("");
+            ja = JSONML.toJSONArray(s);
+            System.out.println(ja.toString(4));
+            System.out.println(JSONML.toString(ja));
+            System.out.println("");
+            
+            s = "<Root><MsgType type=\"node\"><BatchType type=\"stri
