@@ -509,4 +509,11 @@ public class Test {
             j = new JSONObject(s);
             System.out.println(j.toString(4));
             
-            s = " (\"San Francisco\", \"New York\", \"Seoul\"
+            s = " (\"San Francisco\", \"New York\", \"Seoul\", \"London\", \"Seattle\", \"Shanghai\")";
+            a = new JSONArray(s);
+            System.out.println(a.toString());
+            
+            s = "<a ichi='1' ni='2'><b>The content of b</b> and <c san='3'>The content of c</c><d>do</d><e></e><d>re</d><f/><d>mi</d></a>";
+            j = XML.toJSONObject(s);
+
+            System.out.println(j.toStr
