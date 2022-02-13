@@ -535,4 +535,15 @@ public class Test {
 
             System.out.print("Exception: ");
             try {
-                a = ne
+                a = new JSONArray("[\n\r\n\r}");
+                System.out.println(a.toString());
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            
+            System.out.print("Exception: ");
+            try {
+                a = new JSONArray("<\n\r\n\r      ");
+                System.out.println(a.toString());
+            } catch (Exception e) {
+        
