@@ -524,4 +524,15 @@ public class Test {
             System.out.println(JSONML.toString(ja));
             System.out.println("");
             
-            s = "<Root><MsgType type=\"node\"><BatchType type=\"stri
+            s = "<Root><MsgType type=\"node\"><BatchType type=\"string\">111111111111111</BatchType></MsgType></Root>";
+            j = JSONML.toJSONObject(s);
+            System.out.println(j);
+            ja = JSONML.toJSONArray(s);
+            System.out.println(ja);
+          
+            
+            System.out.println("\nTesting Exceptions: ");
+
+            System.out.print("Exception: ");
+            try {
+                a = ne
