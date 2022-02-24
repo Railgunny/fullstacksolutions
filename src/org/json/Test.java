@@ -580,4 +580,15 @@ public class Test {
             try {
                 System.out.println(a.getDouble(0));
             } catch (Exception e) {
-   
+                System.out.println(e);
+            }
+            System.out.print("Exception: ");
+            try {
+                System.out.println(a.get(-1));
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            System.out.print("Exception: ");
+            try {
+                System.out.println(a.put(Double.NaN));
+            } catch (Except
