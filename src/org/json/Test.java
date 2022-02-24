@@ -568,4 +568,16 @@ public class Test {
             try {
                 System.out.println(j.getDouble("howard"));
             } catch (Exception e) {
-                System
+                System.out.println(e);
+            }
+            System.out.print("Exception: ");
+            try {
+                System.out.println(j.put(null, "howard"));
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            System.out.print("Exception: ");
+            try {
+                System.out.println(a.getDouble(0));
+            } catch (Exception e) {
+   
