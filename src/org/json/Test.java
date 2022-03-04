@@ -591,4 +591,15 @@ public class Test {
             System.out.print("Exception: ");
             try {
                 System.out.println(a.put(Double.NaN));
-            } catch (Except
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            System.out.print("Exception: ");
+            try {
+            	j = XML.toJSONObject("<a><b>    ");
+            } catch (Exception e) {
+            	System.out.println(e);
+            }            
+            System.out.print("Exception: ");
+            try {
+            	j = XML.toJSONObject("<a></b>    "
