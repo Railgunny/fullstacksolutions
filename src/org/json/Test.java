@@ -614,4 +614,16 @@ public class Test {
             }
             System.out.print("Exception: ");
             try {            	
-            	ja = new JSONArray(new O
+            	ja = new JSONArray(new Object());
+            	System.out.println(ja.toString());
+            } catch (Exception e) {
+            	System.out.println(e);
+            }
+
+            System.out.print("Exception: ");
+            try {            	
+            	s = "[)";
+            	a = new JSONArray(s);
+            	System.out.println(a.toString());
+            } catch (Exception e) {
+           
