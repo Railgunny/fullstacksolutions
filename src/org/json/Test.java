@@ -626,4 +626,16 @@ public class Test {
             	a = new JSONArray(s);
             	System.out.println(a.toString());
             } catch (Exception e) {
-           
+            	System.out.println(e);
+            }
+
+            System.out.print("Exception: ");
+            try {            	
+                s = "<xml";
+                ja = JSONML.toJSONArray(s);
+                System.out.println(ja.toString(4));
+            } catch (Exception e) {
+            	System.out.println(e);
+            }
+
+            System.out.print("Except
