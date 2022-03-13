@@ -638,4 +638,16 @@ public class Test {
             	System.out.println(e);
             }
 
-            System.out.print("Except
+            System.out.print("Exception: ");
+            try {            	
+                s = "<right></wrong>";
+                ja = JSONML.toJSONArray(s);
+                System.out.println(ja.toString(4));
+            } catch (Exception e) {
+            	System.out.println(e);
+            }
+
+            System.out.print("Exception: ");
+            try {            	
+                s = "{\"koda\": true, \"koda\": true}";
+                j = new 
