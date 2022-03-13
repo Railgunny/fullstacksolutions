@@ -662,4 +662,17 @@ public class Test {
                 s = jj
     	            .object()
     	                .key("bosanda")
-    	                .value("MARIE HAA'S
+    	                .value("MARIE HAA'S")
+    	                .key("bosanda")
+    	                .value("MARIE HAA\\'S")
+    	            .endObject()
+    	            .toString();
+                System.out.println(j.toString(4));
+            } catch (Exception e) {
+            	System.out.println(e);
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+    }
+}
