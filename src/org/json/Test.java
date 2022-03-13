@@ -650,4 +650,16 @@ public class Test {
             System.out.print("Exception: ");
             try {            	
                 s = "{\"koda\": true, \"koda\": true}";
-                j = new 
+                j = new JSONObject(s);
+                System.out.println(j.toString(4));
+            } catch (Exception e) {
+            	System.out.println(e);
+            }
+
+            System.out.print("Exception: ");
+            try {            	
+                jj = new JSONStringer();
+                s = jj
+    	            .object()
+    	                .key("bosanda")
+    	                .value("MARIE HAA'S
