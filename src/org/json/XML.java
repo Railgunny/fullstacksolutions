@@ -399,3 +399,44 @@ public class XML {
                     	} else {
                     		b.append(toString(v, k));
                     	}
+                    }
+                } else if (v.equals("")) {
+                    b.append('<');
+                    b.append(k);
+                    b.append("/>");
+
+// Emit a new tag <k>
+
+                } else {
+                    b.append(toString(v, k));
+                }
+            }
+            if (tagName != null) {
+
+// Emit the </tagname> close tag
+
+                b.append("</");
+                b.append(tagName);
+                b.append('>');
+            }
+            return b.toString();
+
+// XML does not have good support for arrays. If an array appears in a place
+// where XML is lacking, synthesize an <array> element.
+
+        } else if (o instanceof JSONArray) {
+            ja = (JSONArray)o;
+            len = ja.length();
+            for (i = 0; i < len; ++i) {
+            	v = ja.opt(i);
+                b.append(toString(v, (tagName == null) ? "array" : tagName));
+            }
+            return b.toString();
+        } else {
+            s = (o == null) ? "null" : escape(o.toString());
+            return (tagName == null) ? "\"" + s + "\"" :
+                (s.length() == 0) ? "<" + tagName + "/>" :
+                "<" + tagName + ">" + s + "</" + tagName + ">";
+        }
+    }
+}
