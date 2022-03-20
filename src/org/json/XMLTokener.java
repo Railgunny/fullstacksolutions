@@ -337,3 +337,30 @@ public class XMLTokener extends JSONTokener {
     			j += 1;
     			if (j >= n) {
     				j -= n;
+    			}
+    		}
+    		/*
+    		 * If we exit the loop with b intact, then victory is ours.
+    		 */
+    		if (b) {
+    			return true;
+    		}
+    		/*
+    		 * Get the next character. If there isn't one, then defeat is ours.
+    		 */
+    		c = next();
+    		if (c == 0) {
+    			return false;
+    		}
+    		/*
+    		 * Shove the character in the circle buffer and advance the 
+    		 * circle offset. The offset is mod n.
+    		 */
+    		circle[offset] = c;
+    		offset += 1;
+    		if (offset >= n) {
+    			offset -= n;
+    		}
+    	}
+    }
+}

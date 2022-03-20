@@ -1,0 +1,96 @@
+
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+
+	<!-- Servlet responsible for displaying something (Currently a list of calendars). 
+	Be sure to update this comment when we decide what exactly -->
+	<servlet>
+		<servlet-name>LifePlanning</servlet-name>
+		<servlet-class>com.appspot.iclifeplanning.LifePlanningServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>LifePlanning</servlet-name>
+		<url-pattern>/lifeplanning</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>Suggestions</servlet-name>
+		<servlet-class>com.appspot.iclifeplanning.SuggestionServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Suggestions</servlet-name>
+		<url-pattern>/suggestions</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ChosenPriorities</servlet-name>
+		<servlet-class>com.appspot.iclifeplanning.charts.ChosenPrioritiesServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ChosenPriorities</servlet-name>
+		<url-pattern>/dashboard/chosen-priorities</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>SpheresHistory</servlet-name>
+		<servlet-class>com.appspot.iclifeplanning.charts.SpheresHistoryServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SpheresHistory</servlet-name>
+		<url-pattern>/dashboard/spheres-history</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>PlanAchievement</servlet-name>
+		<servlet-class>com.appspot.iclifeplanning.charts.PlanAchievementServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PlanAchievement</servlet-name>
+		<url-pattern>/dashboard/plan-achievement</url-pattern>
+	</servlet-mapping>
+	<!-- Servlet used for adding userData, to be deleted -->
+	<servlet>
+		<servlet-name>AddUserData</servlet-name>
+		<servlet-class>com.appspot.iclifeplanning.charts.utils.AddUserDataServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AddUserData</servlet-name>
+		<url-pattern>/addUserData</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ChartData</servlet-name>
+		<servlet-class>com.appspot.iclifeplanning.charts.ChartDataServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ChartData</servlet-name>
+		<url-pattern>/dashboard/chart-data</url-pattern>
+	</servlet-mapping>
+
+
+	<!-- Servlet responsible notification. Used for scheduled cron jobs -->
+	<servlet>
+		<servlet-name>Notifications</servlet-name>
+		<servlet-class>com.appspot.iclifeplanning.notifications.NotificationServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Notifications</servlet-name>
+		<url-pattern>/notifications</url-pattern>
+	</servlet-mapping>
+
+	<!-- Servlet responsible settings. -->
+	<servlet>
+		<servlet-name>Settings</servlet-name>
+		<servlet-class>com.appspot.iclifeplanning.SettingsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Settings</servlet-name>
+		<url-pattern>/dashboard/settings</url-pattern>
+	</servlet-mapping>
+
+	<!-- Top-level web-page for our app -->
+	<welcome-file-list>
+	    <welcome-file>index.jsp</welcome-file>
+		
+	</welcome-file-list>
+
+</web-app>
