@@ -11,4 +11,26 @@
 	float: left;
     list-style: none;
 	position: relative;
-	top
+	top: 25px;
+	padding-top: 6px;
+	height: 27px;
+}
+#lavaLampMenu li.backLava {
+	border: 0;
+	background: url("../img/000000-70.png");
+	width: 9px;
+	z-index: 8;
+	position: absolute;
+}
+#lavaLampMenu li a {
+	font-family: Futura;
+	font-size: 18px;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: #fff;
+	text-align: center;
+
+	z-index: 10;
+	position: relative;
+	vertical-align: center;
+	displa
