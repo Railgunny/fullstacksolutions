@@ -33,4 +33,9 @@
 	z-index: 10;
 	position: relative;
 	vertical-align: center;
-	displa
+	display: block;
+	wi dth: 75px;
+	padding: 0 10px;
+	height: 35px;
+	top: 0px;
+}
