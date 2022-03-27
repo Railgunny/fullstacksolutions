@@ -18,4 +18,26 @@ ul#drw_tabs li {
 }
 
 * html ul#drw_tabs li.last {
-	position   
+	position       : absolute;
+	float          : right;
+}
+
+ul#drw_tabs a {
+	font-family: Futura;
+	font-size      : 20px;
+	text-align     : center;
+	text-decoration: none;
+	text-transform: uppercase;
+	line-height    : 35px;
+	background     : ;
+	height         : 35px;
+	display        : block;
+	color: #fff;
+}
+
+ul#drw_tabs a:hover {
+	color: #000;
+}
+
+ul#drw_tabs li.first a {
+	backgro
