@@ -1,0 +1,21 @@
+ul#drw_tabs {
+	width: 360px;
+	margin: 0 auto;
+	background: red;
+	list-style     : none;
+	position       : relative;
+}
+
+ul#drw_tabs li {
+	background: #247da2;
+	padding: 0 10px 0 10px;
+	float          : left;
+}
+
+*+html ul#drw_tabs li.last {
+	position       : absolute;
+	float          : right;
+}
+
+* html ul#drw_tabs li.last {
+	position   
