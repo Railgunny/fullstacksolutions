@@ -40,4 +40,20 @@ ul#drw_tabs a:hover {
 }
 
 ul#drw_tabs li.first a {
-	backgro
+	background-position: left 0;
+	border-left        : none;
+}
+
+ul#drw_tabs li.last  a {
+	background-position: right 0;
+	border-right       : none;
+}
+
+ul#drw_tabs          a#drw_tabs_focus { background-position: center -35px; }
+ul#drw_tabs li.first a#drw_tabs_focus { background-position: left   -35px; }
+ul#drw_tabs li.last  a#drw_tabs_focus { background-position: right  -35px; }
+
+
+
+/** Drawer */
+/********************
