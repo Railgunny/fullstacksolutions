@@ -77,4 +77,25 @@ div#drw div#drw_close a {
 
 div#drw div#drw_loader {
 	text-indent    : -9999px;
-	background     : url("loader.gif") center center n
+	background     : url("loader.gif") center center no-repeat;
+	height         : 50px;
+	margin         : 10px 0 0 0;
+}
+
+/** Clearfix */
+/**************************************/
+ul#drw_tabs:after,
+ul.drw_icon_view:after,
+ul.drw_icon_view li:after,
+ul.drw_list_view a:after {
+	content        : ".";
+	height         : 0px;
+	clear          : both;
+	visibility     : hidden;
+	display        : block;
+}
+
+ul#drw_tabs,
+ul.drw_icon_view,
+ul.drw_icon_view li,
+ul.drw_list_view a 
