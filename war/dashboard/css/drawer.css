@@ -56,4 +56,25 @@ ul#drw_tabs li.last  a#drw_tabs_focus { background-position: right  -35px; }
 
 
 /** Drawer */
-/********************
+/**************************************/
+div#drw {
+	margin         : 0 auto;
+	overflow       : hidden;
+}
+
+div#drw div#drw_close {
+	display: none;
+	text-align: center;
+	clear: both;
+}
+
+div#drw div#drw_close a {
+	background     : url("drw.gif");
+
+	margin         : 0 0 0 auto;
+	display        : block;
+}
+
+div#drw div#drw_loader {
+	text-indent    : -9999px;
+	background     : url("loader.gif") center center n
