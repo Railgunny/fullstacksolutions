@@ -98,4 +98,21 @@ ul.drw_list_view a:after {
 ul#drw_tabs,
 ul.drw_icon_view,
 ul.drw_icon_view li,
-ul.drw_list_view a 
+ul.drw_list_view a {
+	display        : inline-block;
+}
+
+/*\*/
+* html ul#drw_tabs,
+* html ul.drw_icon_view,
+* html ul.drw_icon_view li,
+* html ul.drw_list_view a {
+	height         : 1%;
+}
+
+ul#drw_tabs,
+ul.drw_icon_view,
+ul.drw_icon_view li,
+ul.drw_list_view a {
+	display        : block;
+}
