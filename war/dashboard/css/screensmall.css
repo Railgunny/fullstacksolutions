@@ -22,4 +22,16 @@ background-color: #222;
 background-image: url(rdo_on.png)
 }
 .unselected {
-background-c
+background-color: #1c1c1c;
+background-image: url(rdo_off.png)
+}
+.leftcol {
+float: left;
+clear: left;
+width: 50%
+}
+.rightcol {
+float: left;
+clear: right;
+width: 50%
+}
