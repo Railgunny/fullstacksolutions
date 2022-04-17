@@ -51,4 +51,9 @@ a.dp-choose-date.dp-disabled {
 	cursor: default;
 }
 /* makes the input field shorter once the date picker code
- * has run (to allow space for
+ * has run (to allow space for the calendar icon
+ */
+input.dp-applied {
+	width: 140px;
+	float: left;
+}
