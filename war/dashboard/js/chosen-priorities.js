@@ -24,4 +24,22 @@ $.getJSON("chosen-priorities", parametersForServlet, function(data){
 		},
 		tooltip: {
 			formatter: function() {
-				return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.y
+				return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.y*100, 0) +' %';
+			}
+		},
+		// hides the "highchats.com" credits
+		credits: {
+			enabled: false
+		},
+		plotOptions: {
+			pie: {
+				allowPointSelect: true,
+				cursor: 'pointer',
+				dataLabels: {
+					enabled: true,
+					formatter: function() {
+						if (this.y > 5) return this.point.name;
+					},
+					color: 'black',
+					style: {
+						font: '13px 
