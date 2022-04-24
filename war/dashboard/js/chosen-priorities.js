@@ -42,4 +42,24 @@ $.getJSON("chosen-priorities", parametersForServlet, function(data){
 					},
 					color: 'black',
 					style: {
-						font: '13px 
+						font: '13px Trebuchet MS, Verdana, sans-serif'
+					}
+				}
+			}
+		},
+		legend: {
+			layout: 'vertical',
+			style: {
+				left: 'auto',
+				bottom: 'auto',
+				right: '50px',
+				top: '100px'
+			}
+		},
+		series: [{
+			type: 'pie',
+			name: 'Spheres',
+			data: data 
+		}]
+	});
+});	
