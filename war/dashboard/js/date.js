@@ -37,4 +37,18 @@ Date.dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday
  *
  * @name abbrDayNames
  * @type Array
- * @cat Plu
+ * @cat Plugins/Methods/Date
+ */
+Date.abbrDayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+/**
+ * An Array of month names starting with Janurary.
+ * 
+ * @example monthNames[0]
+ * @result 'January'
+ *
+ * @name monthNames
+ * @type Array
+ * @cat Plugins/Methods/Date
+ */
+Date.monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'De
