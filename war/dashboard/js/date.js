@@ -70,3 +70,18 @@ Date.abbrMonthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', '
  *
  * @name firstDayOfWeek
  * @type Number
+ * @cat Plugins/Methods/Date
+ * @author Kelvin Luck
+ */
+Date.firstDayOfWeek = 1;
+
+/**
+ * The format that string dates should be represented as (e.g. 'dd/mm/yyyy' for UK, 'mm/dd/yyyy' for US, 'yyyy-mm-dd' for Unicode etc).
+ *
+ * @name format
+ * @type String
+ * @cat Plugins/Methods/Date
+ * @author Kelvin Luck
+ */
+Date.format = 'dd/mm/yyyy';
+//Date.form
