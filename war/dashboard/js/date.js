@@ -84,4 +84,12 @@ Date.firstDayOfWeek = 1;
  * @author Kelvin Luck
  */
 Date.format = 'dd/mm/yyyy';
-//Date.form
+//Date.format = 'mm/dd/yyyy';
+//Date.format = 'yyyy-mm-dd';
+//Date.format = 'dd mmm yy';
+
+/**
+ * The first two numbers in the century to be used when decoding a two digit year. Since a two digit year is ambiguous (and date.setYear
+ * only works with numbers < 99 and so doesn't allow you to set years after 2000) we need to use this to disambiguate the two digit year codes.
+ *
+ * @name for
