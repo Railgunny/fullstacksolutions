@@ -117,4 +117,21 @@ Date.fullYearStart = '20';
 	/**
 	 * Checks if the year is a leap year.
 	 *
-	 * @example var 
+	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.isLeapYear();
+	 * @result true
+	 *
+	 * @name isLeapYear
+	 * @type Boolean
+	 * @cat Plugins/Methods/Date
+	 */
+	add("isLeapYear", function() {
+		var y = this.getFullYear();
+		return (y%4==0 && y%100!=0) || y%400==0;
+	});
+	
+	/**
+	 * Checks if the day is a weekend day (Sat or Sun).
+	 *
+	 * @example var dtm = new Date("01/12/2008");
+	 * 
