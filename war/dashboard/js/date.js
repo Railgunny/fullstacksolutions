@@ -92,4 +92,29 @@ Date.format = 'dd/mm/yyyy';
  * The first two numbers in the century to be used when decoding a two digit year. Since a two digit year is ambiguous (and date.setYear
  * only works with numbers < 99 and so doesn't allow you to set years after 2000) we need to use this to disambiguate the two digit year codes.
  *
- * @name for
+ * @name format
+ * @type String
+ * @cat Plugins/Methods/Date
+ * @author Kelvin Luck
+ */
+Date.fullYearStart = '20';
+
+(function() {
+
+	/**
+	 * Adds a given method under the given name 
+	 * to the Date prototype if it doesn't
+	 * currently exist.
+	 *
+	 * @private
+	 */
+	function add(name, method) {
+		if( !Date.prototype[name] ) {
+			Date.prototype[name] = method;
+		}
+	};
+	
+	/**
+	 * Checks if the year is a leap year.
+	 *
+	 * @example var 
