@@ -172,3 +172,19 @@ Date.fullYearStart = '20';
 	 * @cat Plugins/Methods/Date
 	 */
 	add("getDaysInMonth", function() {
+		return [31,(this.isLeapYear() ? 29:28),31,30,31,30,31,31,30,31,30,31][this.getMonth()];
+	});
+	
+	/**
+	 * Gets the name of the day.
+	 * 
+	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.getDayName();
+	 * @result 'Saturday'
+	 * 
+	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.getDayName(true);
+	 * @result 'Sat'
+	 * 
+	 * @param abbreviated Boolean When set to true the name will be abbreviated.
+	 
