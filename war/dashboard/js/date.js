@@ -153,4 +153,22 @@ Date.fullYearStart = '20';
 	 * @result false
 	 * 
 	 * @name isWeekDay
-	 * @type Bo
+	 * @type Boolean
+	 * @cat Plugins/Methods/Date
+	 */
+	add("isWeekDay", function() {
+		return !this.isWeekend();
+	});
+	
+	/**
+	 * Gets the number of days in the month.
+	 * 
+	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.getDaysInMonth();
+	 * @result 31
+	 * 
+	 * @name getDaysInMonth
+	 * @type Number
+	 * @cat Plugins/Methods/Date
+	 */
+	add("getDaysInMonth", function() {
