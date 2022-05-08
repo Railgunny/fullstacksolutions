@@ -134,4 +134,23 @@ Date.fullYearStart = '20';
 	 * Checks if the day is a weekend day (Sat or Sun).
 	 *
 	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.isWeekend();
+	 * @result false
+	 *
+	 * @name isWeekend
+	 * @type Boolean
+	 * @cat Plugins/Methods/Date
+	 */
+	add("isWeekend", function() {
+		return this.getDay()==0 || this.getDay()==6;
+	});
+	
+	/**
+	 * Check if the day is a day of the week (Mon-Fri)
 	 * 
+	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.isWeekDay();
+	 * @result false
+	 * 
+	 * @name isWeekDay
+	 * @type Bo
