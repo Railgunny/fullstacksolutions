@@ -187,4 +187,19 @@ Date.fullYearStart = '20';
 	 * @result 'Sat'
 	 * 
 	 * @param abbreviated Boolean When set to true the name will be abbreviated.
-	 
+	 * @name getDayName
+	 * @type String
+	 * @cat Plugins/Methods/Date
+	 */
+	add("getDayName", function(abbreviated) {
+		return abbreviated ? Date.abbrDayNames[this.getDay()] : Date.dayNames[this.getDay()];
+	});
+
+	/**
+	 * Gets the name of the month.
+	 * 
+	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.getMonthName();
+	 * @result 'Janurary'
+	 *
+	 * @exa
