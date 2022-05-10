@@ -212,4 +212,20 @@ Date.fullYearStart = '20';
 	 * @cat Plugins/Methods/Date
 	 */
 	add("getMonthName", function(abbreviated) {
-		return abbreviated ? Date.abbrMonthNames[this.getMonth()] : Date.monthNames[this.getMonth()]
+		return abbreviated ? Date.abbrMonthNames[this.getMonth()] : Date.monthNames[this.getMonth()];
+	});
+
+	/**
+	 * Get the number of the day of the year.
+	 * 
+	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.getDayOfYear();
+	 * @result 11
+	 * 
+	 * @name getDayOfYear
+	 * @type Number
+	 * @cat Plugins/Methods/Date
+	 */
+	add("getDayOfYear", function() {
+		var tmpdtm = new Date("1/1/" + this.getFullYear());
+		return Math.floor((this.getTime() - tmpdtm.getTime()) / 86
