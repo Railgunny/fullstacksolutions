@@ -228,4 +228,25 @@ Date.fullYearStart = '20';
 	 */
 	add("getDayOfYear", function() {
 		var tmpdtm = new Date("1/1/" + this.getFullYear());
-		return Math.floor((this.getTime() - tmpdtm.getTime()) / 86
+		return Math.floor((this.getTime() - tmpdtm.getTime()) / 86400000);
+	});
+	
+	/**
+	 * Get the number of the week of the year.
+	 * 
+	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.getWeekOfYear();
+	 * @result 2
+	 * 
+	 * @name getWeekOfYear
+	 * @type Number
+	 * @cat Plugins/Methods/Date
+	 */
+	add("getWeekOfYear", function() {
+		return Math.ceil(this.getDayOfYear() / 7);
+	});
+
+	/**
+	 * Set the day of the year.
+	 * 
+	 * @example var dtm = ne
