@@ -249,4 +249,24 @@ Date.fullYearStart = '20';
 	/**
 	 * Set the day of the year.
 	 * 
-	 * @example var dtm = ne
+	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.setDayOfYear(1);
+	 * dtm.toString();
+	 * @result 'Tue Jan 01 2008 00:00:00'
+	 * 
+	 * @name setDayOfYear
+	 * @type Date
+	 * @cat Plugins/Methods/Date
+	 */
+	add("setDayOfYear", function(day) {
+		this.setMonth(0);
+		this.setDate(day);
+		return this;
+	});
+	
+	/**
+	 * Add a number of years to the date object.
+	 * 
+	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.addYears(1);
+	 *
