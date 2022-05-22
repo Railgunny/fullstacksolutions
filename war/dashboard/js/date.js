@@ -286,4 +286,23 @@ Date.fullYearStart = '20';
 	 * 
 	 * @example var dtm = new Date("01/12/2008");
 	 * dtm.addMonths(1);
-	 * dtm.toString(
+	 * dtm.toString();
+	 * @result 'Tue Feb 12 2008 00:00:00'
+	 * 
+	 * @name addMonths
+	 * @type Date
+	 * @cat Plugins/Methods/Date
+	 */
+	add("addMonths", function(num) {
+		var tmpdtm = this.getDate();
+		
+		this.setMonth(this.getMonth() + num);
+		
+		if (tmpdtm > this.getDate())
+			this.addDays(-this.getDate());
+		
+		return this;
+	});
+	
+	/**
+	 * Add a number of days to
