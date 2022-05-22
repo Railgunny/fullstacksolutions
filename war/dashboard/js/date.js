@@ -305,4 +305,22 @@ Date.fullYearStart = '20';
 	});
 	
 	/**
-	 * Add a number of days to
+	 * Add a number of days to the date object.
+	 * 
+	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.addDays(1);
+	 * dtm.toString();
+	 * @result 'Sun Jan 13 2008 00:00:00'
+	 * 
+	 * @name addDays
+	 * @type Date
+	 * @cat Plugins/Methods/Date
+	 */
+	add("addDays", function(num) {
+		//this.setDate(this.getDate() + num);
+		this.setTime(this.getTime() + (num*86400000) );
+		return this;
+	});
+	
+	/**
+	 * Add a number of hours to
