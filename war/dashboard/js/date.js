@@ -342,4 +342,21 @@ Date.fullYearStart = '20';
 	/**
 	 * Add a number of minutes to the date object.
 	 * 
-	 * @example var dtm
+	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.addMinutes(60);
+	 * dtm.toString();
+	 * @result 'Sat Jan 12 2008 01:00:00'
+	 * 
+	 * @name addMinutes
+	 * @type Date
+	 * @cat Plugins/Methods/Date
+	 */
+	add("addMinutes", function(num) {
+		this.setMinutes(this.getMinutes() + num);
+		return this;
+	});
+	
+	/**
+	 * Add a number of seconds to the date object.
+	 * 
+	 * @example var 
