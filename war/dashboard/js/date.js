@@ -323,4 +323,23 @@ Date.fullYearStart = '20';
 	});
 	
 	/**
-	 * Add a number of hours to
+	 * Add a number of hours to the date object.
+	 * 
+	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.addHours(24);
+	 * dtm.toString();
+	 * @result 'Sun Jan 13 2008 00:00:00'
+	 * 
+	 * @name addHours
+	 * @type Date
+	 * @cat Plugins/Methods/Date
+	 */
+	add("addHours", function(num) {
+		this.setHours(this.getHours() + num);
+		return this;
+	});
+
+	/**
+	 * Add a number of minutes to the date object.
+	 * 
+	 * @example var dtm
