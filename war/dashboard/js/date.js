@@ -359,4 +359,19 @@ Date.fullYearStart = '20';
 	/**
 	 * Add a number of seconds to the date object.
 	 * 
-	 * @example var 
+	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.addSeconds(60);
+	 * dtm.toString();
+	 * @result 'Sat Jan 12 2008 00:01:00'
+	 * 
+	 * @name addSeconds
+	 * @type Date
+	 * @cat Plugins/Methods/Date
+	 */
+	add("addSeconds", function(num) {
+		this.setSeconds(this.getSeconds() + num);
+		return this;
+	});
+	
+	/**
+	 * Sets the time component of this Date to zero for cleaner, easier comparison of
