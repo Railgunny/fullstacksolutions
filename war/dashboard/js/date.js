@@ -390,4 +390,18 @@ Date.fullYearStart = '20';
 		this.setMilliseconds(0);
 		this.setSeconds(0);
 		this.setMinutes(0);
-		this.set
+		this.setHours(0);
+		return this;
+	});
+	
+	/**
+	 * Returns a string representation of the date object according to Date.format.
+	 * (Date.toString may be used in other places so I purposefully didn't overwrite it)
+	 * 
+	 * @example var dtm = new Date("01/12/2008");
+	 * dtm.asString();
+	 * @result '12/01/2008' // (where Date.format == 'dd/mm/yyyy'
+	 * 
+	 * @name asString
+	 * @type Date
+	 * @cat Plugins/Met
