@@ -404,4 +404,14 @@ Date.fullYearStart = '20';
 	 * 
 	 * @name asString
 	 * @type Date
-	 * @cat Plugins/Met
+	 * @cat Plugins/Methods/Date
+	 * @author Kelvin Luck
+	 */
+	add("asString", function(format) {
+		var r = format || Date.format;
+		return r
+			.split('yyyy').join(this.getFullYear())
+			.split('yy').join((this.getFullYear() + '').substring(2))
+			.split('mmmm').join(this.getMonthName(false))
+			.split('mmm').join(this.getMonthName(true))
+			.split('mm').join(_zeroPad(th
