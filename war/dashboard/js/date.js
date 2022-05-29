@@ -374,4 +374,20 @@ Date.fullYearStart = '20';
 	});
 	
 	/**
-	 * Sets the time component of this Date to zero for cleaner, easier comparison of
+	 * Sets the time component of this Date to zero for cleaner, easier comparison of dates where time is not relevant.
+	 * 
+	 * @example var dtm = new Date();
+	 * dtm.zeroTime();
+	 * dtm.toString();
+	 * @result 'Sat Jan 12 2008 00:01:00'
+	 * 
+	 * @name zeroTime
+	 * @type Date
+	 * @cat Plugins/Methods/Date
+	 * @author Kelvin Luck
+	 */
+	add("zeroTime", function() {
+		this.setMilliseconds(0);
+		this.setSeconds(0);
+		this.setMinutes(0);
+		this.set
