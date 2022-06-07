@@ -422,4 +422,11 @@ Date.fullYearStart = '20';
 	});
 	
 	/**
-	 * Returns a new date object created from the passed String according to Date.format or false if the attempt to do this 
+	 * Returns a new date object created from the passed String according to Date.format or false if the attempt to do this results in an invalid date object
+	 * (We can't simple use Date.parse as it's not aware of locale and I chose not to overwrite it incase it's functionality is being relied on elsewhere)
+	 *
+	 * @example var dtm = Date.fromString("12/01/2008");
+	 * dtm.toString();
+	 * @result 'Sat Jan 12 2008 00:00:00' // (where Date.format == 'dd/mm/yyyy'
+	 * 
+	 *
