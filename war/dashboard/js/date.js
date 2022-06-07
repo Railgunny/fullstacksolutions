@@ -429,4 +429,20 @@ Date.fullYearStart = '20';
 	 * dtm.toString();
 	 * @result 'Sat Jan 12 2008 00:00:00' // (where Date.format == 'dd/mm/yyyy'
 	 * 
-	 *
+	 * @name fromString
+	 * @type Date
+	 * @cat Plugins/Methods/Date
+	 * @author Kelvin Luck
+	 */
+	Date.fromString = function(s, format)
+	{
+		var f = format || Date.format;
+		var d = new Date('01/01/1977');
+		
+		var mLength = 0;
+
+		var iM = f.indexOf('mmmm');
+		if (iM > -1) {
+			for (var i=0; i<Date.monthNames.length; i++) {
+				var mStr = s.substr(iM, Date.monthNames[i].length);
+				i
