@@ -445,4 +445,19 @@ Date.fullYearStart = '20';
 		if (iM > -1) {
 			for (var i=0; i<Date.monthNames.length; i++) {
 				var mStr = s.substr(iM, Date.monthNames[i].length);
-				i
+				if (Date.monthNames[i] == mStr) {
+					mLength = Date.monthNames[i].length - 4;
+					break;
+				}
+			}
+			d.setMonth(i);
+		} else {
+			iM = f.indexOf('mmm');
+			if (iM > -1) {
+				var mStr = s.substr(iM, 3);
+				for (var i=0; i<Date.abbrMonthNames.length; i++) {
+					if (Date.abbrMonthNames[i] == mStr) break;
+				}
+				d.setMonth(i);
+			} else {
+				d.se
