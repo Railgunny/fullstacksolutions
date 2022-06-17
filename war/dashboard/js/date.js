@@ -460,4 +460,22 @@ Date.fullYearStart = '20';
 				}
 				d.setMonth(i);
 			} else {
-				d.se
+				d.setMonth(Number(s.substr(f.indexOf('mm'), 2)) - 1);
+			}
+		}
+		
+		var iY = f.indexOf('yyyy');
+
+		if (iY > -1) {
+			if (iM < iY)
+			{
+				iY += mLength;
+			}
+			d.setFullYear(Number(s.substr(iY, 4)));
+		} else {
+			if (iM < iY)
+			{
+				iY += mLength;
+			}
+			// TODO - this doesn't work very well - are there any rules for what is meant by a two digit year?
+			d.
