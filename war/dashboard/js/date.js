@@ -478,4 +478,22 @@ Date.fullYearStart = '20';
 				iY += mLength;
 			}
 			// TODO - this doesn't work very well - are there any rules for what is meant by a two digit year?
-			d.
+			d.setFullYear(Number(Date.fullYearStart + s.substr(f.indexOf('yy'), 2)));
+		}
+		var iD = f.indexOf('dd');
+		if (iM < iD)
+		{
+			iD += mLength;
+		}
+		d.setDate(Number(s.substr(iD, 2)));
+		if (isNaN(d.getTime())) {
+			return false;
+		}
+		return d;
+	};
+	
+	// utility method
+	var _zeroPad = function(num) {
+		var s = '0'+num;
+		return s.substring(s.length-2)
+		//return ('0'+num).substring(-2); // doesn't work on IE :(
