@@ -497,3 +497,6 @@ Date.fullYearStart = '20';
 		var s = '0'+num;
 		return s.substring(s.length-2)
 		//return ('0'+num).substring(-2); // doesn't work on IE :(
+	};
+	
+})();
