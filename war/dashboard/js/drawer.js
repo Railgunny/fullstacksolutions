@@ -43,4 +43,14 @@ $.extend({ drawer: {
 	
 	
 	open: function () {
+		var content = $('#drw_content').empty();
+		$('#drw_tabs_focus').removeAttr('id');
+		if (!this.self) return;
 		
+		this.self.id = 'drw_tabs_focus';
+		loaded       = /(#[\w\-]+)$/.test(this.self.href);
+		content.append(loaded ? $(RegExp.$1).clone().show() : this.loader);
+		content.append(this.closer);
+		content.find('.drw_close').click(function () {
+			$.drawer.close(null);
+			t
