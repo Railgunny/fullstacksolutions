@@ -25,4 +25,22 @@ $.extend({ drawer: {
 		var w     = Math.floor(100 / tabs.size());
 		var w_rem = 100 % tabs.size();
 		tabs.each(function () {
-			$(this).css({ width: (w + ((w_rem-- >
+			$(this).css({ width: (w + ((w_rem-- > 0) ? 1 : 0)) + '%' });
+		});
+		
+		$('#drw_tabs li:first').addClass('first');
+		$('#drw_tabs li:last').addClass('last');
+		$('#drw_tabs a[rel*=drw]').each(function () {
+			$('#' + this.href.split('#')[1]).hide();
+			$(this).click(function () {
+				$.drawer.close(($.drawer.self != this) ? this : null);
+				this.blur();
+				return false;
+			});
+		});
+	},
+	
+	
+	
+	open: function () {
+		
