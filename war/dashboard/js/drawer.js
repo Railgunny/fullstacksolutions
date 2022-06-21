@@ -83,4 +83,8 @@ $.extend({ drawer: {
 		loaded    = true;
 		this.self = el;
 		var content = $('#drw_content');
-		content.an
+		content.animate({ marginTop: content.height() * -1 }, function () { $.drawer.open(); });
+	}
+}});
+$(function () { $.drawer.init(); });
+})(jQuery);
