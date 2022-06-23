@@ -1280,3 +1280,375 @@ SVGElement.prototype = {
 			key = hash;
 			hash = {};
 			hash[key] = val;
+		}
+		
+		// used as a getter: first argument is a string, second is undefined
+		if (typeof hash == 'string') {
+			key = hash;
+			if (nodeName == 'circle') {
+				key = { x: 'cx', y: 'cy' }[key] || key;
+			} else if (key == 'strokeWidth') {
+				key = 'stroke-width';
+			}
+			ret = parseFloat(attr(element, key) || this[key] || 0);
+			
+		// setter
+		} else {
+		
+			for (key in hash) {
+				value = hash[key];
+				
+				// paths
+				if (key == 'd') {
+					if (value && value.join) { // join path
+						value = value.join(' ');
+					}
+					if (/(NaN|  |^$)/.test(value)) {
+						value = 'M 0 0';
+					}
+					
+				// update child tspans x values
+				} else if (key == 'x' && nodeName == 'text') { 
+					for (i = 0; i < element.childNodes.length; i++ ) {
+						child = element.childNodes[i];
+						// if the x values are equal, the tspan represents a linebreak
+						if (attr(child, 'x') == attr(element, 'x')) {
+							//child.setAttribute('x', value);
+							attr(child, 'x', value);
+						}
+					}
+					
+				// apply gradients
+				} else if (key == 'fill') {
+					value = renderer.color(value, element, key);
+				
+				// circle x and y
+				} else if (nodeName == 'circle') {
+					key = { x: 'cx', y: 'cy' }[key] || key;
+					
+				// translation
+				} else if (key == 'translateX' || key == 'translateY') {
+					this[key] = value;
+					this.updateTransform();
+					skipAttr = true;
+	
+				// apply opacity as subnode (required by legacy WebKit and Batik)
+				} else if (key == 'stroke') {
+					value = renderer.color(value, element, key);
+					 
+				
+				// special
+				} else if (key == 'isTracker') {
+					this[key] = value;
+				}
+				
+				// jQuery animate changes case
+				if (key == 'strokeWidth') {
+					key = 'stroke-width';
+				}
+				
+				// Chrome/Win < 6 bug (http://code.google.com/p/chromium/issues/detail?id=15461)				
+				if (isWebKit && key == 'stroke-width' && value === 0) {
+					value = 0.000001;
+				}
+				
+				// symbols
+				if (this.symbolName && /^(x|y|r|start|end|innerR)/.test(key)) {
+					
+					
+					if (!hasSetSymbolSize) {
+						this.symbolAttr(hash);
+						hasSetSymbolSize = true;
+					}
+					skipAttr = true;
+				}
+				
+				// let the shadow follow the main element
+				if (shadows && /^(width|height|visibility|x|y|d)$/.test(key)) {
+					i = shadows.length;
+					while (i--) {
+						attr(shadows[i], key, value);
+					}
+					
+				}
+				
+					
+				
+				if (key == 'text') {
+					// only one node allowed
+					renderer.buildText(element, value);
+				} else if (!skipAttr) {
+					//element.setAttribute(key, value);
+					attr(element, key, value);
+				}
+			}
+			
+		}
+		return ret;
+	},
+	
+	/**
+	 * If one of the symbol size affecting parameters are changed,
+	 * check all the others only once for each call to an element's
+	 * .attr() method
+	 * @param {Object} hash
+	 */
+	symbolAttr: function(hash) {
+		var wrapper = this;
+		
+		wrapper.x = pick(hash.x, wrapper.x);
+		wrapper.y = parseFloat(pick(hash.y, wrapper.y)); // mootools animation bug needs parseFloat
+		wrapper.r = pick(hash.r, wrapper.r);
+		wrapper.start = pick(hash.start, wrapper.start);
+		wrapper.end = pick(hash.end, wrapper.end);
+		wrapper.width = pick(hash.width, wrapper.width);
+		wrapper.height = parseFloat(pick(hash.height, wrapper.height));
+		wrapper.innerR = pick(hash.innerR, wrapper.innerR);
+		
+		wrapper.attr({ 
+			d: wrapper.renderer.symbols[wrapper.symbolName](wrapper.x, wrapper.y, wrapper.r, {
+				start: wrapper.start, 
+				end: wrapper.end,
+				width: wrapper.width, 
+				height: wrapper.height,
+				innerR: wrapper.innerR
+			})
+		});
+	},
+	
+	/**
+	 * Apply a clipping path to this object
+	 * @param {String} id
+	 */
+	clip: function(clipRect) {
+		return this.attr('clip-path', 'url('+ this.renderer.url +'#'+ clipRect.id +')');
+	},
+	
+	/**
+	 * Set styles for the element
+	 * @param {Object} styles
+	 */
+	css: function(styles) {
+		var elemWrapper = this;
+		
+		// convert legacy
+		if (styles && styles.color) {
+			styles.fill = styles.color;
+		}
+		
+		// save the styles in an object
+		styles = extend(
+			elemWrapper.styles,
+			styles
+		);
+		
+		// serialize and set style attribute
+		elemWrapper.attr({
+			style: serializeCSS(styles)
+		});
+		
+		// store object
+		elemWrapper.styles = styles;
+		
+		return elemWrapper;
+	},
+	
+	/**
+	 * Add an event listener
+	 * @param {String} eventType
+	 * @param {Function} handler
+	 */
+	on: function(eventType, handler) {
+		// simplest possible event model for internal use
+		this.element['on'+ eventType] = handler;
+		return this;
+	},
+	
+	
+	/**
+	 * Move an object and its children by x and y values
+	 * @param {Number} x
+	 * @param {Number} y
+	 */
+	translate: function(x, y) {
+		var wrapper = this;
+		wrapper.translateX = x;
+		wrapper.translateY = y;
+		wrapper.updateTransform();
+		return wrapper;
+	},
+	
+	/**
+	 * Invert a group, rotate and flip
+	 */
+	invert: function() {
+		var wrapper = this;
+		wrapper.inverted = true;
+		wrapper.updateTransform();
+		return wrapper;
+	},
+	
+	/**
+	 * Private method to update the transform attribute based on internal 
+	 * properties
+	 */
+	updateTransform: function() {
+		var wrapper = this,
+			translateX = wrapper.translateX || 0,
+			translateY = wrapper.translateY || 0,
+			inverted = wrapper.inverted,
+			transform = [];
+			
+		// flipping affects translate as adjustment for flipping around the group's axis
+		if (inverted) {
+			translateX += wrapper.attr('width');
+			translateY += wrapper.attr('height');
+		}
+			
+		// apply translate
+		if (translateX || translateY) {
+			transform.push('translate('+ translateX +','+ translateY +')');
+		}
+		
+		// apply rotation
+		if (inverted) {
+			transform.push('rotate(90) scale(-1,1)');
+		}
+		
+		if (transform.length) {
+			attr(wrapper.element, 'transform', transform.join(' '));
+		}
+	},
+	/**
+	 * Bring the element to the front
+	 */
+	toFront: function() {
+		var element = this.element;
+		element.parentNode.appendChild(element);
+		return this;
+	},
+	/**
+	 * Get the bounding box (width, height, x and y) for the element
+	 */
+	getBBox: function() {
+		return this.element.getBBox();
+	},
+	
+	/**
+	 * Show the element
+	 */
+	show: function() {
+		return this.attr({ visibility: VISIBLE });
+	},
+	
+	/**
+	 * Hide the element
+	 */
+	hide: function() {
+		return this.attr({ visibility: HIDDEN });
+	},
+	
+	/**
+	 * Add the element
+	 * @param {Object|Undefined} parent Can be an element, an element wrapper or undefined
+	 *    to append the element to the renderer.box.
+	 */ 
+	add: function(parent) {
+	
+		var renderer = this.renderer,
+			parentWrapper = parent || renderer,
+			parentNode = parentWrapper.element || renderer.box,
+			childNodes = parentNode.childNodes,
+			element = this.element,
+			zIndex = attr(element, 'zIndex'),
+			otherElement,
+			otherZIndex,
+			i;
+			
+		// mark as inverted
+		this.parentInverted = parent && parent.inverted;
+		
+		// mark the container as having z indexed children
+		if (zIndex) {
+			parentWrapper.handleZ = true;
+			zIndex = parseInt(zIndex, 10);
+		}
+
+		// insert according to this and other elements' zIndex
+		if (parentWrapper.handleZ) { // this element or any of its siblings has a z index
+			for (i = 0; i < childNodes.length; i++) {
+				otherElement = childNodes[i];
+				otherZIndex = attr(otherElement, 'zIndex');
+				if (otherElement != element && (
+						// insert before the first element with a higher zIndex
+						parseInt(otherZIndex, 10) > zIndex || 
+						// if no zIndex given, insert before the first element with a zIndex
+						(!defined(zIndex) && defined(otherZIndex))  
+						
+						)) {
+					parentNode.insertBefore(element, otherElement);
+					return this;
+				}
+			}
+		}
+		
+		// default: append at the end
+		parentNode.appendChild(element);
+		return this;
+	},
+	
+	/**
+	 * Destroy the element and element wrapper
+	 */
+	destroy: function() {
+		var wrapper = this,
+			element = wrapper.element,
+			shadows = wrapper.shadows,
+			parentNode = element.parentNode,
+			key;
+		
+		element.onclick = element.onmouseout = element.onmouseover = element.onmousemove = null;
+		stop(wrapper); // stop running animations
+		if (parentNode) {
+			parentNode.removeChild(element);
+		}
+		
+		if (shadows) {
+			each(shadows, function(shadow) {
+				parentNode = shadow.parentNode;
+				if (parentNode) { // the entire chart HTML can be overwritten
+					parentNode.removeChild(shadow);
+				}				
+			});
+		}
+				
+		for (key in wrapper) {
+			delete wrapper[key];
+		}
+		
+		return null;
+	},
+	
+	/**
+	 * Empty a group element
+	 */
+	empty: function() {
+		var element = this.element,
+			childNodes = element.childNodes,
+			i = childNodes.length;
+			
+		while (i--) {
+			element.removeChild(childNodes[i]);
+		}
+	},
+	
+	/**
+	 * Add a shadow to the element. Must be done after the element is added to the DOM
+	 * @param {Boolean} apply
+	 */
+	shadow: function(apply) {
+		var shadows = [],
+			i,
+			shadow,
+			element = this.element,
+			
