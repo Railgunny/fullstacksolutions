@@ -498,3 +498,378 @@ if (!globalAdapter && win.jQuery) {
 
 /**
  * Set the time methods globally based on the useUTC option. Time method can be either 
+ * local time or UTC (default).
+ */
+function setTimeMethods() {
+	var useUTC = defaultOptions.global.useUTC;
+	
+	makeTime = useUTC ? Date.UTC : function(year, month, date, hours, minutes, seconds) {
+		return new Date(
+			year, 
+			month, 
+			pick(date, 1), 
+			pick(hours, 0), 
+			pick(minutes, 0), 
+			pick(seconds, 0)
+		).getTime();
+	};
+	getMinutes = useUTC ? 'getUTCMinutes' : 'getMinutes';
+	getHours = useUTC ? 'getUTCHours' : 'getHours';
+	getDay = useUTC ? 'getUTCDay' : 'getDay';
+	getDate = useUTC ? 'getUTCDate' : 'getDate';
+	getMonth = useUTC ? 'getUTCMonth' : 'getMonth';
+	getFullYear = useUTC ? 'getUTCFullYear' : 'getFullYear';
+	setMinutes = useUTC ? 'setUTCMinutes' : 'setMinutes';
+	setHours = useUTC ? 'setUTCHours' : 'setHours';
+	setDate = useUTC ? 'setUTCDate' : 'setDate';
+	setMonth = useUTC ? 'setUTCMonth' : 'setMonth';
+	setFullYear = useUTC ? 'setUTCFullYear' : 'setFullYear';
+		
+}
+
+/**
+ * Merge the default options with custom options and return the new options structure
+ * @param {Object} options The new custom options
+ */
+function setOptions(options) {
+	defaultOptions = merge(defaultOptions, options);
+	
+	// apply UTC
+	setTimeMethods();
+	
+	return defaultOptions;
+}
+
+/**
+ * Get the updated default options. Merely exposing defaultOptions for outside modules
+ * isn't enough because the setOptions method creates a new object.
+ */
+function getOptions() {
+	return defaultOptions;
+}
+
+/**
+ * Discard an element by moving it to the bin and delete
+ * @param {Object} The HTML node to discard
+ */
+function discardElement(element) {
+	// create a garbage bin element, not part of the DOM
+	if (!garbageBin) {
+		garbageBin = createElement(DIV);
+	}
+	
+	// move the node and empty bin
+	if (element) {
+		garbageBin.appendChild(element);
+	}
+	garbageBin.innerHTML = '';
+}
+
+/* ****************************************************************************
+ * Handle the options                                                         *
+ *****************************************************************************/
+var 
+
+defaultLabelOptions = {
+	enabled: true,
+	// rotation: 0,
+	align: 'center',
+	x: 0,
+	y: 15,
+	/*formatter: function() {
+		return this.value;
+	},*/
+	style: {
+		color: '#666',
+		fontSize: '11px'
+	}
+};
+
+defaultOptions = {
+	colors: ['#4572A7', '#AA4643', '#89A54E', '#80699B', '#3D96AE', 
+		'#DB843D', '#92A8CD', '#A47D7C', '#B5CA92'],
+	symbols: ['circle', 'diamond', 'square', 'triangle', 'triangle-down'],
+	lang: {
+		loading: 'Loading...',
+		months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
+				'August', 'September', 'October', 'November', 'December'],
+		weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+		decimalPoint: '.',
+		resetZoom: 'Reset zoom',
+		resetZoomTitle: 'Reset zoom level 1:1',
+		thousandsSep: ','
+	},
+	global: {
+		useUTC: true
+	},
+	chart: {
+		//alignTicks: false,
+		//className: null,
+		//events: { load, selection },
+		margin: [50, 50, 90, 80], // docs
+		//marginTop: 50,
+		//marginRight: 50,
+		//marginBottom: 90, // docs
+		//marginLeft: 50,
+		borderColor: '#4572A7',
+		//borderWidth: 0,
+		borderRadius: 5,		
+		defaultSeriesType: 'line',
+		ignoreHiddenSeries: true,
+		//inverted: false,
+		//shadow: false,
+		style: {
+			fontFamily: '"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
+			fontSize: '12px'
+		},
+		backgroundColor: '#FFFFFF',
+		//plotBackgroundColor: null,
+		plotBorderColor: '#C0C0C0'
+		//plotBorderWidth: 0,
+		//plotShadow: false,
+		//zoomType: ''
+	},
+	title: {
+		text: 'Chart title',
+		x: 0,
+		y: 20,
+		align: 'center',
+		style: {
+			color: '#3E576F',
+			fontSize: '16px'
+		}
+
+	},
+	subtitle: {
+		text: '',
+		x: 0,
+		y: 40,
+		align: 'center',
+		style: {
+			color: '#6D869F'
+		}
+	},
+	
+	plotOptions: {
+		line: { // base series options
+			allowPointSelect: false,
+			showCheckbox: false,
+			animation: true,
+			//cursor: 'default',
+			//enableMouseTracking: true,
+			events: {},
+			lineWidth: 2,
+			shadow: true,
+			// stacking: null,
+			marker: { 
+				enabled: true,
+				//symbol: null, 
+				lineWidth: 0,
+				radius: 4,
+				lineColor: '#FFFFFF',
+				//fillColor: null, 
+				states: { // states for a single point
+					hover: {
+						//radius: base + 2
+					},
+					select: {
+						fillColor: '#FFFFFF',
+						lineColor: '#000000',
+						lineWidth: 2
+					}					
+				}
+			},
+			point: {
+				events: {}
+			},
+			dataLabels: merge(defaultLabelOptions, {
+				enabled: false,
+				y: -6,
+				formatter: function() {
+					return this.y;
+				}
+			}),
+			
+			//pointStart: 0,
+			//pointInterval: 1,
+			showInLegend: true,
+			states: { // states for the entire series
+				hover: {
+					//enabled: false,
+					lineWidth: 3,
+					marker: {
+						// lineWidth: base + 1,
+						// radius: base + 1
+					}
+				},
+				select: {
+					marker: {}
+				}
+			},
+			stickyTracking: true
+		}
+	},
+	labels: {
+		//items: [],
+		style: {
+			//font: defaultFont,
+			position: ABSOLUTE,
+			color: '#3E576F'
+		}
+	},
+	legend: {
+		enabled: true,
+		align: 'center',
+		layout: 'horizontal',
+		labelFormatter: function() {
+			return this.name;
+		},
+		// lineHeight: 16,
+		borderWidth: 1,
+		borderColor: '#909090',
+		borderRadius: 5,
+		//reversed: false,
+		shadow: false,
+		// backgroundColor: null,
+		style: {
+			padding: '5px'
+		},
+		itemStyle: {
+			cursor: 'pointer',
+			color: '#3E576F'
+		},
+		itemHoverStyle: {
+			cursor: 'pointer',
+			color: '#000000'
+		},
+		itemHiddenStyle: {
+			color: '#C0C0C0'
+		},
+		itemCheckboxStyle: {
+			position: ABSOLUTE,
+			width: '13px', // for IE precision
+			height: '13px'
+		},
+		// itemWidth: undefined,
+		symbolWidth: 16,
+		symbolPadding: 5,
+		verticalAlign: 'bottom',
+		// width: undefined,
+		x: 15,
+		y: -15
+	},
+	
+	loading: {
+		hideDuration: 100,
+		labelStyle: {
+			fontWeight: 'bold',
+			position: RELATIVE,
+			top: '1em'
+		},
+		showDuration: 100,
+		style: {
+			position: ABSOLUTE,
+			backgroundColor: 'white',
+			opacity: 0.5,
+			textAlign: 'center'
+		}
+	},
+	
+	tooltip: {
+		enabled: true,
+		formatter: function() {
+			var pThis = this,
+				series = pThis.series,
+				xAxis = series.xAxis,
+				x = pThis.x;
+			return '<b>'+ (pThis.point.name || series.name) +'</b><br/>'+
+				(defined(x) ? 
+					'X value: '+ (xAxis && xAxis.options.type == 'datetime' ? 
+						dateFormat(null, x) : x) +'<br/>':
+					'')+
+				'Y value: '+ pThis.y;
+		},
+		backgroundColor: 'rgba(255, 255, 255, .85)',
+		borderWidth: 2,
+		borderRadius: 5,
+		shadow: true,
+		snap: 10,
+		style: {
+			color: '#333333',
+			fontSize: '12px',
+			padding: '5px',
+			whiteSpace: 'nowrap'
+		}
+	},
+	
+	toolbar: {
+		itemStyle: {
+			color: '#4572A7',
+			cursor: 'pointer'
+		}
+	},
+	
+	credits: {
+		enabled: true,
+		text: 'Highcharts.com',
+		href: 'http://www.highcharts.com',
+		style: {
+			cursor: 'pointer',
+			color: '#909090',
+			fontSize: '10px'
+		}
+	}
+};
+
+// Axis defaults
+var defaultXAxisOptions =  {
+	// allowDecimals: null,
+	// alternateGridColor: null,
+	// categories: [],
+	dateTimeLabelFormats: {
+		second: '%H:%M:%S',
+		minute: '%H:%M',
+		hour: '%H:%M',
+		day: '%e. %b',
+		week: '%e. %b',
+		month: '%b \'%y',
+		year: '%Y'
+	},
+	endOnTick: false,
+	gridLineColor: '#C0C0C0',
+	// gridLineWidth: 0,
+	// reversed: false,
+	
+	labels: defaultLabelOptions,
+	lineColor: '#C0D0E0',
+	lineWidth: 1,
+	//linkedTo: null, // docs
+	max: null,
+	min: null,
+	minPadding: 0.01,
+	maxPadding: 0.01,
+	maxZoom: null,
+	minorGridLineColor: '#E0E0E0',
+	minorGridLineWidth: 1,
+	minorTickColor: '#A0A0A0',
+	//minorTickInterval: null,
+	minorTickLength: 2,
+	minorTickPosition: 'outside', // inside or outside
+	minorTickWidth: 1,
+	//opposite: false,
+	//offset: 0
+	//plotBands: [],
+	//plotLines: [],
+	//reversed: false,
+	showFirstLabel: true,
+	showLastLabel: false,
+	startOfWeek: 1, 
+	startOnTick: false,
+	tickColor: '#C0D0E0',
+	//tickInterval: null,
+	tickLength: 5,
+	tickmarkPlacement: 'between', // on or between
+	tickPixelInterval: 100,
+	tickPosition: 'outside',
+	tickWidth: 1,
+	title: {
