@@ -2386,3 +2386,418 @@ var VMLElement = extendClass( SVGElement, {
 					if (!hasSetSymbolSize) {
 							
 						this.symbolAttr(hash);						
+					
+						hasSetSymbolSize = true;
+					} 
+					
+					skipAttr = true;
+					
+				} else if (key == 'd') {
+					
+					//key = 'path';
+					
+					// convert paths 
+					i = value.length;
+					var convertedPath = [];
+					while (i--) {					
+						
+						// Multiply by 10 to allow subpixel precision.
+						// Substracting half a pixel seems to make the coordinates
+						// align with SVG, but this hasn't been tested thoroughly
+						if (typeof value[i] == 'number') {
+							convertedPath[i] = mathRound(value[i] * 10) - 5;
+						}
+						// close the path
+						else if (value[i] == 'Z') {
+							convertedPath[i] = 'x';
+						} 
+						else {
+							convertedPath[i] = value[i];
+						}
+						
+					}
+					
+					value = convertedPath.join(' ') || 'x';
+					element.path = value;
+			
+					// update shadows
+					if (shadows) {
+						i = shadows.length;
+						while (i--) {
+							shadows[i].path = value;
+						}
+					}
+					skipAttr = true;
+	
+				// directly mapped to css
+				} else if (key == 'zIndex' || key == 'visibility') {
+					elemStyle[key] = value;
+					
+					// issue 61 workaround
+					if (documentMode == 8 && key == 'visibility' && nodeName == 'DIV') {
+						each(element.childNodes, function(childNode) {
+							css(childNode, { visibility: value });
+						});
+					}
+					
+					skipAttr = true;
+				
+				// width and height
+				} else if (/^(width|height)$/.test(key)) {
+					
+					// normal
+					elemStyle[key] = value;
+										
+					// clipping rectangle special
+					if (this.updateClipping) {
+						this.updateClipping();
+					}
+					
+					skipAttr = true;
+					
+				// x and y 
+				} else if (/^(x|y)$/.test(key)) {
+
+					if (key == 'y' && element.tagName == 'SPAN' && element.lineHeight) { // subtract lineHeight
+						value -= element.lineHeight;
+					}
+					elemStyle[{ x: 'left', y: 'top' }[key]] = value;
+					
+				// class name
+				} else if (key == 'class') {
+					// IE8 Standards mode has problems retrieving the className
+					element.className = value;
+			
+				// stroke
+				} else if (key == 'stroke') {
+					
+					value = renderer.color(value, element, key);				
+						
+					key = 'strokecolor';
+					
+				// stroke width
+				} else if (key == 'stroke-width' || key == 'strokeWidth') {
+	
+					element.stroked = value ? true : false;
+					key = 'strokeweight';
+					if (typeof value == 'number') {
+						value += PX;
+					}
+					
+				// fill
+				} else if (key == 'fill') {
+					
+					if (nodeName == 'SPAN') { // text color
+						elemStyle.color = value;
+					} else {
+						element.filled = value != NONE ? true : false;
+						
+						value = renderer.color(value, element, key);
+						
+						key = 'fillcolor';
+					}
+				}
+				
+				// translation for animation
+				else if (key == 'translateX' || key == 'translateY') {
+					this[key] = val;
+					this.updateTransform();
+					
+					skipAttr = true;
+				}
+				
+				
+					
+				// let the shadow follow the main element
+				if (shadows && key == 'visibility') {
+					i = shadows.length;
+					while (i--) {
+						shadows[i].style[key] = value;
+					}
+				}
+				
+				
+				
+					
+				if (key == 'text') {
+					// only one node allowed
+					element.innerHTML = value;
+				} else if (!skipAttr) {
+					if (documentMode == 8) { // IE8 setAttribute bug
+						element[key] = value;
+					} else {
+						attr(element, key, value);
+					}
+				}
+			}			
+		}
+		return ret;
+	},
+	
+	/**
+	 * Set the element's clipping to a predefined rectangle
+	 * 
+	 * @param {String} id The id of the clip rectangle
+	 */
+	clip: function(clipRect) {
+		var wrapper = this,
+			clipMembers = clipRect.members,
+			index = clipMembers.length;
+			
+		clipMembers.push(wrapper);
+		wrapper.destroyClip = function() {
+			clipMembers.splice(index, 1);
+		};
+		return wrapper.css(clipRect.getCSS(wrapper.inverted));
+	},
+	
+	/**
+	 * Set styles for the element
+	 * @param {Object} styles
+	 */
+	css: function(styles) {
+		var wrapper = this;
+		
+		css(wrapper.element, styles);
+		
+		return wrapper;
+	},
+	
+	/**
+	 * Extend element.destroy by removing it from the clip members array
+	 */
+	destroy: function() {
+		var wrapper = this;
+		
+		if (wrapper.destroyClip) {
+			wrapper.destroyClip();
+		}
+		
+		SVGElement.prototype.destroy.apply(this);
+	},
+	
+	/**
+	 * Remove all child nodes of a group, except the v:group element
+	 */
+	empty: function() {
+		var element = this.element,
+			childNodes = element.childNodes,
+			i = childNodes.length,
+			node;
+			
+		while (i--) {
+			node = childNodes[i];
+			node.parentNode.removeChild(node);
+		}
+	},
+	
+	/**
+	 * Calculate the bounding box based on offsets
+	 * 
+	 * @return {Object} A hash containing values for x, y, width and height
+	 */
+	
+	getBBox: function() {
+		var element = this.element,
+			ret,
+			hasOffsetWidth = element.offsetWidth,
+			origParentNode = element.parentNode;
+		
+		if (!hasOffsetWidth) {
+			doc.body.appendChild(element);
+		} 
+		ret = {
+			x: element.offsetLeft,
+			y: element.offsetTop,
+			width: element.offsetWidth,
+			height: element.offsetHeight
+		};
+		
+		if (!hasOffsetWidth) {
+			if (origParentNode) {
+				origParentNode.appendChild(element);
+			} else {
+				doc.body.removeChild(element);
+			}
+		}
+
+		return ret;
+			
+	},
+	
+	/**
+	 * Add an event listener. VML override for normalizing event parameters.
+	 * @param {String} eventType
+	 * @param {Function} handler
+	 */
+	on: function(eventType, handler) {
+		// simplest possible event model for internal use
+		this.element['on'+ eventType] = function() {
+			var evt = win.event;
+			evt.target = evt.srcElement;
+			handler(evt);
+		};
+		return this;
+	},
+	
+	
+	/**
+	 * Private method to update elements based on internal 
+	 * properties based on SVG transform
+	 */
+	updateTransform: function() {
+		var wrapper = this,
+			translateX = wrapper.translateX || 0,
+			translateY = wrapper.translateY || 0;
+			
+		// apply translate
+		if (translateX || translateY) {
+			wrapper.css({
+				left: translateX,
+				top: translateY
+			});
+		}
+	},
+	
+	/**
+	 * Apply a drop shadow by copying elements and giving them different strokes 
+	 * @param {Boolean} apply
+	 */
+	shadow: function(apply) {
+		var shadows = [],
+			i,
+			element = this.element,
+			renderer = this.renderer,
+			shadow,
+			elemStyle = element.style,
+			markup,
+			path = element.path;
+			
+		// the path is some mysterious string-like object that can be cast to a string
+		if (''+ element.path == '') {
+			path = 'x';
+		}
+			
+		if (apply) {
+			for (i = 1; i <= 3; i++) {
+				markup = ['<shape isShadow="true" strokeweight="', ( 7 - 2 * i ) ,
+					'" filled="false" path="', path,
+					'" coordsize="100,100" style="', element.style.cssText, '" />'];
+				shadow = createElement(renderer.prepVML(markup),
+					null, {
+						left: parseInt(elemStyle.left, 10) + 1,
+						top: parseInt(elemStyle.top, 10) + 1
+					}
+				);
+				
+				// apply the opacity
+				markup = ['<stroke color="black" opacity="', (0.05 * i), '"/>'];
+				createElement(renderer.prepVML(markup), null, null, shadow);				
+				
+				
+				// insert it
+				element.parentNode.insertBefore(shadow, element);
+				
+				// record it
+				shadows.push(shadow);				
+				
+			}
+			
+			this.shadows = shadows;
+		}
+		return this;
+	
+	}
+});
+	
+/**
+ * The VML renderer
+ */
+VMLRenderer = function() {
+	this.init.apply(this, arguments);
+};
+VMLRenderer.prototype = merge( SVGRenderer.prototype, { // inherit SVGRenderer
+	
+	isIE8: userAgent.indexOf('MSIE 8.0') > -1,
+	
+
+	/**
+	 * Initialize the VMLRenderer
+	 * @param {Object} container
+	 * @param {Number} width
+	 * @param {Number} height
+	 */
+	init: function(container, width, height) {
+		
+		// generate the containing box
+		this.width = width;
+		this.height = height;
+		this.box = createElement(DIV, null, {
+				width: width + PX,
+				height: height + PX
+			}, container);
+		this.Element = VMLElement;
+		
+		// The only way to make IE6 and IE7 print is to use a global namespace. However,
+		// with IE8 the only way to make the dynamic shapes visible in screen and print mode
+		// seems to be to add the xmlns attribute and the behaviour style inline. Except
+		// for rotated text, which I haven't been able to render in IE8 without a namespace.
+		// As a consequence, rotated text doesn't print.  
+		if (!doc.namespaces.hcv) {			
+			
+			doc.namespaces.add('hcv', 'urn:schemas-microsoft-com:vml');
+			
+			// setup default css
+			doc.createStyleSheet().cssText = 
+				'hcv\\:fill, hcv\\:path, hcv\\:textpath, hcv\\:shape, hcv\\:stroke, hcv\\:line '+
+				'{ behavior:url(#default#VML); display: inline-block; } ';
+			
+		}	
+	},
+	
+	/**
+	 * Define a clipping rectangle. In VML it is accomplished by storing the values
+	 * for setting the CSS style to all associated members.
+	 * 
+	 * @param {Number} x
+	 * @param {Number} y
+	 * @param {Number} width
+	 * @param {Number} height
+	 */
+	clipRect: function (x, y, width, height) {
+				
+		// create a dummy element
+		var clipRect = this.createElement();
+		
+		// mimic a rectangle with its style object for automatic updating in attr
+		return extend(clipRect, {
+			members: [],
+			element: {
+				style: {
+					left: x,
+					top: y,
+					width: width,
+					height: height
+				}
+			},
+			getCSS: function(inverted) {
+				var elemStyle = clipRect.element.style,
+					top = elemStyle.top,
+					left = elemStyle.left,
+					right = left + elemStyle.width,
+					bottom = top + elemStyle.height,
+					ret = {
+						clip: 'rect('+ 
+							(inverted ? left : top) + 'px,'+ 
+							(inverted ? bottom : right) + 'px,'+ 
+							(inverted ? right : bottom) + 'px,'+ 
+							(inverted ? top : left) +'px)'
+					};
+					
+				// issue 74 workaround
+				if (!inverted && doc.documentMode == 8) {
+					extend(ret, {
+						width: right +PX,
+						height: bottom +PX
+					});
+				}
