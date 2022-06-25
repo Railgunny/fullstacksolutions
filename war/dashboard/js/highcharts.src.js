@@ -2801,3 +2801,406 @@ VMLRenderer.prototype = merge( SVGRenderer.prototype, { // inherit SVGRenderer
 						height: bottom +PX
 					});
 				}
+				return ret;			
+			},
+			
+			// used in attr and animation to update the clipping of all members
+			updateClipping: function() {
+				each (clipRect.members, function(member) {
+					member.css(clipRect.getCSS(member.inverted));
+				});
+			}
+		});
+		
+	},
+	
+	
+	/**
+	 * Take a color and return it if it's a string, make it a gradient if it's a
+	 * gradient configuration object, and apply opacity.
+	 * 
+	 * @param {Object} color The color or config object
+	 */
+	color: function(color, elem, prop) {
+		var colorObject,
+			regexRgba = /^rgba/,
+			markup;
+			
+		if (color && color.linearGradient) {
+			
+			var stopColor, 
+				stopOpacity,
+				linearGradient = color.linearGradient,
+				angle,
+				color1,
+				opacity1,
+				color2,
+				opacity2;	
+				
+			each(color.stops, function(stop, i) {
+				if (regexRgba.test(stop[1])) {
+					colorObject = Color(stop[1]);
+					stopColor = colorObject.get('rgb');
+					stopOpacity = colorObject.get('a');
+				} else {
+					stopColor = stop[1];
+					stopOpacity = 1;
+				}
+				
+				if (!i) { // first
+					color1 = stopColor;
+					opacity1 = stopOpacity;
+				} else {
+					color2 = stopColor;
+					opacity2 = stopOpacity;
+				}
+			});
+			
+			
+			
+			// calculate the angle based on the linear vector
+			angle = 90  - math.atan(
+				(linearGradient[3] - linearGradient[1]) / // y vector
+				(linearGradient[2] - linearGradient[0]) // x vector
+				) * 180 / math.PI;
+			
+			// when colors attribute is used, the meanings of opacity and o:opacity2
+			// are reversed.
+			markup = ['<', prop, ' colors="0% ', color1, ',100% ', color2, '" angle="', angle,
+				'" opacity="', opacity2, '" o:opacity2="', opacity1,
+				'" type="gradient" focus="100%" />'];
+			createElement(this.prepVML(markup), null, null, elem);
+			
+		
+		// if the color is an rgba color, split it and add a fill node
+		// to hold the opacity component
+		} else if (regexRgba.test(color)) {
+			
+			colorObject = Color(color);
+			
+			markup = ['<', prop, ' opacity="', colorObject.get('a'), '"/>'];
+			createElement(this.prepVML(markup), null, null, elem);
+			
+			return colorObject.get('rgb');
+			
+			
+		} else {
+			return color;
+		}
+		
+	},
+	
+	/**
+	 * Take a VML string and prepare it for either IE8 or IE6/IE7. 
+	 * @param {Array} markup A string array of the VML markup to prepare
+	 */
+	prepVML: function(markup) {
+		var //xmlns = 'urn:schemas-microsoft-com:vml',
+			vmlStyle = 'display:inline-block;behavior:url(#default#VML);',
+			isIE8 = this.isIE8;
+	
+		try { // bug in IE9 Beta 1, quirks mode - check this again with later upgrades
+			markup = markup.join('');
+		} catch (e) {
+			var s = '', i = 0;
+			for (i; i < markup.length; i++) {
+				s += markup[i];
+			}
+			markup = s;
+		}
+		
+		if (isIE8) { // add xmlns and style inline
+			markup = markup.replace('/>', ' xmlns="urn:schemas-microsoft-com:vml" />');
+			if (markup.indexOf('style="') == -1) {
+				markup = markup.replace('/>', ' style="'+ vmlStyle +'" />');
+			} else {
+				markup = markup.replace('style="', 'style="'+ vmlStyle);
+			}
+
+		} else { // add namespace
+			markup = markup.replace('<', '<hcv:');
+		}
+
+		return markup;
+	},
+	
+	/**
+	 * Create rotated and aligned text
+	 * @param {Object} str
+	 * @param {Object} x
+	 * @param {Object} y
+	 * @param {Object} style
+	 * @param {Object} rotation
+	 * @param {Object} align
+	 */
+	text: function(str, x, y, style, rotation, align) {
+		//if (str || str === 0) {
+		style = style || {};
+		align = align || 'left';
+		rotation = rotation || 0;
+		
+		// declare variables
+		var elemWrapper, 
+			elem, 
+			spanWidth,
+			lineHeight = mathRound(parseInt(style.fontSize || 12, 10) * 1.2),
+			defaultChartStyle = defaultOptions.chart.style; 
+	
+		x = mathRound(x);
+		y = mathRound(y);
+		
+		// set styles
+		extend(style, {
+			color: style.color || '#000000',
+			whiteSpace: 'nowrap',
+			// get font metrics for correct sizing
+			fontFamily: style.fontFamily || defaultChartStyle.fontFamily,
+			fontSize: style.fontSize || defaultChartStyle.fontSize
+		});
+			
+		// create a simple span for the non-rotated text
+		if (!rotation) { 
+			elemWrapper = this.createElement('span').attr({
+				x: x,
+				y: y - lineHeight,
+				text: str
+			});
+			elem = elemWrapper.element;
+			elem.lineHeight = lineHeight; // used in attr
+			
+			css(elem, style);
+			
+			
+			// fix the position according to align
+			if (align != 'left') {	
+				spanWidth = elemWrapper.getBBox().width;
+			
+				css(elem, {
+					left: (x - spanWidth / { right: 1, center: 2 }[align]) + PX
+				});				
+			}
+		
+		
+		// to achieve rotated text, the ie text is drawn on a vector line that
+		// is extrapolated to the left or right or both depending on the 
+		// alignment of the text
+		} else {
+			var radians = (rotation || 0) * math.PI * 2 / 360, // deg to rad
+				costheta = mathCos(radians),
+				sintheta = mathSin(radians),
+				length = 10, // the text is not likely to be longer than this
+				baselineCorrection = lineHeight * 0.3,
+				left = align == 'left',
+				right = align == 'right',
+				x1 = left ?     x : x - length * costheta,
+				x2 = right ?    x : x + length * costheta,
+				y1 = left ?     y : y - length * sintheta,
+				y2 = right ?    y : y + length * sintheta;
+				
+				
+			// IE seems to always draw the text with v-text-align middle, so we need 
+			// to correct for that by moving the path
+			x1 += baselineCorrection * sintheta;
+			x2 += baselineCorrection * sintheta;
+			y1 -= baselineCorrection * costheta;
+			y2 -= baselineCorrection * costheta;
+			
+			// strange painting bug
+			if (mathAbs(x1 - x2) < 0.1) {
+				x1 += 0.1;
+			}
+			if (mathAbs(y1 - y2) < 0.1) {
+				y1 += 0.1;
+			}
+			
+			elemWrapper = this.createElement('line').attr({
+				from: x1 +', '+ y1,
+				to: x2 +', '+ y2
+			});
+			elem = elemWrapper.element;
+			
+			createElement('hcv:fill', {
+				on: true,
+				color: style.color
+			}, null, elem);
+			
+			createElement('hcv:path', {
+				textpathok: true
+			}, null, elem);
+			
+			// for reasons unknown, the style must be set on init
+			createElement(
+				'<hcv:textpath style="v-text-align:'+ align +';'+ serializeCSS(style).replace(/"/g, "'") +
+				'" on="true" string="'+ str.toString().replace(/<br[^>]?>/g, '\n') +'">',
+			null, null, elem);
+
+		}
+		
+		return elemWrapper;
+	},
+	
+	/**
+	 * Create and return a path element
+	 * @param {Array} path
+	 */
+	path: function (path) {
+		// create the shape
+		return this.createElement('shape').attr({
+			// subpixel precision down to 0.1 (width and height = 10px)
+			coordsize: '100 100',
+			d: path
+		});
+	},
+	
+	/**
+	 * Create and return a circle element. In VML circles are implemented as
+	 * shapes, which is faster than v:oval
+	 * @param {Number} x
+	 * @param {Number} y
+	 * @param {Number} r
+	 */
+	circle: function(x, y, r) {
+		return this.path(this.symbols.circle(x, y, r));
+	},
+	
+	/**
+	 * Create a group using an outer div and an inner v:group to allow rotating 
+	 * and flipping. A simple v:group would have problems with positioning
+	 * child HTML elements and CSS clip.
+	 * 
+	 * @param {String} name The name of the group
+	 */
+	g: function(name) {
+		var wrapper,
+			attribs;
+		
+		// set the class name	
+		if (name) {
+			attribs = { 'className': PREFIX + name, 'class': PREFIX + name };
+		}
+			
+		// the div to hold HTML and clipping	
+		wrapper = this.createElement(DIV).attr(attribs);
+		
+		return wrapper;
+	},
+	
+	/**
+	 * VML override to create a regular HTML image
+	 * @param {String} src
+	 * @param {Number} x
+	 * @param {Number} y
+	 * @param {Number} width
+	 * @param {Number} height
+	 */
+	image: function(src, x, y, width, height) {
+		return this.createElement('img')
+			.attr({ src: src })
+			.css({
+				left: x,
+				top: y,
+				width: width,
+				height: height
+			});
+	},
+	
+	/**
+	 * VML uses a shape for rect to overcome bugs and rotation problems
+	 */
+	rect: function(x, y, width, height, r, strokeWidth) {
+		// todo: share this code with SVG
+		if (arguments.length > 1) {
+			var normalizer = (strokeWidth || 0) % 2 / 2;
+
+			// normalize for crisp edges
+			x = mathRound(x || 0) + normalizer;
+			y = mathRound(y || 0) + normalizer;
+			width = mathRound((width || 0) - 2 * normalizer);
+			height = mathRound((height || 0) - 2 * normalizer);
+		}
+		
+		if (typeof x == 'object') { // the attributes can be passed as the first argument 
+			y = x.y;
+			width = x.width;
+			height = x.height;
+			r = x.r;
+			x = x.x;
+		} 
+		
+		return this.symbol('rect', x || 0, y || 0, r || 0, {
+			width: width || 0,
+			height: height || 0
+		});		
+	},
+	
+
+	
+	/**
+	 * Draw a symbol of a predefined type. Overrides the SVG method only when 
+	 * drawing image symbols.
+	 * 
+	 * @param {String} symbol
+	 * @param {Number} x
+	 * @param {Number} y
+	 * @param {Number} radius
+	 */
+	symbol: function(symbol, x, y, radius) {
+		var wrapper,
+			imageRegex = /^url\((.*?)\)$/;
+		
+		// image symbols
+		if (imageRegex.test(symbol)) {
+		
+			wrapper = this.createElement('img').attr({
+				onload: function() {
+					var img = this,
+						size = [img.width, img.height];
+					css(img, {
+						left: mathRound(x - size[0] / 2),
+						top: mathRound(y - size[1] / 2)
+					});
+				},
+				src: symbol.match(imageRegex)[1]
+			});
+		} else {
+			wrapper = SVGRenderer.prototype.symbol.apply(this, arguments);
+		}
+
+		return wrapper;
+	},
+	
+	/**
+	 * Symbol definitions that override the parent SVG renderer's symbols
+	 * 
+	 */
+	symbols: {
+		// VML specific arc function
+		arc: function (x, y, radius, options) {
+			var start = options.start,
+				optionsEnd = options.end,
+				end = optionsEnd - start == 2 * Math.PI ? optionsEnd - 0.001 : optionsEnd,
+				cosStart = mathCos(start),
+				sinStart = mathSin(start),
+				cosEnd = mathCos(end),
+				sinEnd = mathSin(end),
+				innerRadius = options.innerR;
+				
+			if (optionsEnd - start === 0) { // no angle, don't show it. 
+				return ['x'];
+			}
+								
+			return [
+				'wa', // clockwisearcto
+				x - radius, // left
+				y - radius, // top
+				x + radius, // right
+				y + radius, // bottom
+				x + radius * cosStart, // start x
+				y + radius * sinStart, // start y
+				x + radius * cosEnd, // end x
+				y + radius * sinEnd, // end y
+				
+				
+				'at', // clockwisearcto
+				x - innerRadius, // left
+				y - innerRadius, // top
