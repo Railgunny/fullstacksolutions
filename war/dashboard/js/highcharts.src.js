@@ -5474,3 +5474,379 @@ function Chart (options, callback) {
 			} else if (!inverted && type == 'bar') {
 				typeClass = seriesTypes.column;
 			}
+		}
+		
+		serie = new typeClass();
+		
+		serie.init(chart, options);
+		
+		// set internal chart properties
+		if (!hasRendered && serie.inverted) {
+			inverted = true;
+		}
+		if (serie.isCartesian) {
+			hasCartesianSeries = serie.isCartesian;
+		}
+		
+		series.push(serie);
+		
+		return serie;
+	}
+
+	/**
+	 * Add a series dynamically after  time
+	 * 
+	 * @param {Object} options The config options
+	 * @param {Boolean} redraw Whether to redraw the chart after adding. Defaults to true.
+	 * 
+	 * @return {Object} series The newly created series object
+	 */
+	function addSeries(options, redraw) {
+		var series;
+		
+		redraw = pick(redraw, true); // defaults to true
+		
+		fireEvent(chart, 'addSeries', { options: options }, function() {
+			series = initSeries(options);
+			series.isDirty = true;
+			
+			chart.isDirty = true; // the series array is out of sync with the display
+			if (redraw) {
+				chart.redraw();
+			}
+		});
+		
+		return series;
+	}
+	
+	/**
+	 * Check whether a given point is within the plot area
+	 * 
+	 * @param {Number} x Pixel x relative to the coordinateSystem
+	 * @param {Number} y Pixel y relative to the coordinateSystem
+	 */
+	isInsidePlot = function(x, y) {
+		var left = 0,
+			top = 0;
+		return x >= left &&
+			x <= left + plotWidth &&
+			y >= top &&
+			y <= top + plotHeight;
+	};
+		
+	/**
+	 * Adjust all axes tick amounts
+	 */
+	function adjustTickAmounts() {
+		if (optionsChart.alignTicks !== false) {
+			each (axes, function(axis) {
+				axis.adjustTickAmount();
+			});
+		}
+	}
+
+	/**
+	 * Redraw legend, axes or series based on updated data
+	 */
+	function redraw() {
+		var redrawLegend = chart.isDirty,
+			hasStackedSeries,
+			seriesLength = series.length,
+			i = seriesLength,
+			serie;
+		
+		// link stacked series
+		while (i--) {
+			serie = series[i];
+			if (serie.isDirty && serie.options.stacking) {
+				hasStackedSeries = true;
+				break;
+			}
+		}
+		if (hasStackedSeries) { // mark others as dirty
+			i = seriesLength;
+			while (i--) {
+				serie = series[i];
+				if (serie.options.stacking) {
+					serie.isDirty = true;
+				}
+			}
+		}
+			
+		// handle updated data in the series		
+		each (series, function(serie) {
+			if (serie.isDirty) { // prepare the data so axis can read it
+				serie.cleanData();
+				serie.getSegments();
+				
+				if (serie.options.legendType == 'point') {
+					redrawLegend = true;
+				}
+			}
+		});
+		
+		// reset maxTicks
+		maxTicks = null;
+		
+		if (hasCartesianSeries) {
+			// set axes scales
+			each (axes, function(axis) {
+				axis.setScale();
+			});
+			adjustTickAmounts();
+	
+			// redraw axes
+			each (axes, function(axis) {
+				if (axis.isDirty) { axis.redraw(); }
+			});
+		}
+		
+		// redraw affected series
+		each (series, function(serie) {
+			if (serie.isDirty && serie.visible) { 
+				serie.redraw();
+			}
+		});
+		
+		// handle added or removed series 
+		if (redrawLegend && legend.renderLegend) { // series or pie points are added or removed
+			// draw legend graphics
+			legend.renderLegend();
+			
+			chart.isDirty = false;
+		}
+
+		// hide tooltip and hover states
+		if (tracker && tracker.resetTracker) {
+			tracker.resetTracker();
+		}			
+		
+		
+		// fire the event
+		fireEvent(chart, 'redraw');
+	}
+	
+	
+	
+	/**
+	 * Dim the chart and show a loading text or symbol
+	 * 
+	 * @param {String} str An optional text to show in the loading label instead of the default one
+	 */
+	function showLoading(str) {
+		var loadingOptions = options.loading;
+
+		// create the layer at the first call
+		if (!loadingLayer) {
+			loadingLayer = createElement(DIV, {
+				className: 'highcharts-loading'
+			}, extend(loadingOptions.style, {
+				left: plotLeft + PX,
+				top: plotTop + PX,
+				width: plotWidth + PX,
+				height: plotHeight + PX,
+				zIndex: 10,
+				display: NONE
+			}), container);
+			
+			createElement('span', null, loadingOptions.labelStyle, loadingLayer);
+		}
+		
+		
+		// show it
+		if (!loadingShown) {
+			css(loadingLayer, { opacity: 0, display: '' });
+			loadingLayer.getElementsByTagName('span')[0].innerHTML = str || options.lang.loading;
+			animate(loadingLayer, {
+				opacity: loadingOptions.style.opacity
+			}, {
+				duration: loadingOptions.showDuration
+			});
+			loadingShown = true;
+		}
+	}
+	/**
+	 * Hide the loading layer
+	 */
+	function hideLoading() {
+		animate(loadingLayer, {
+			opacity: 0
+		}, {
+			duration: options.loading.hideDuration, 
+			complete: function() {
+				css(loadingLayer, { display: NONE });
+			}
+		});
+		loadingShown = false;
+	}
+	
+	/**
+	 * Get an axis, series or point object by id.
+	 * @param id {String} The id as given in the configuration options
+	 */
+	function get(id) {
+		var i,
+			j,
+			data;
+		
+		// search axes
+		for (i = 0; i < axes.length; i++) {
+			if (axes[i].options.id == id) {
+				return axes[i];
+			}
+		}
+		
+		// search series
+		for (i = 0; i < series.length; i++) {
+			if (series[i].options.id == id) {
+				return series[i];
+			}
+		}
+		
+		// search points
+		for (i = 0; i < series.length; i++) {
+			data = series[i].data;
+			for (j = 0; j < data.length; j++) {
+				if (data[j].id == id) {
+					return data[j];
+				}
+			}
+		}
+		return null;	
+	}
+	
+	/**
+	 * Update the chart's position after it has been moved, to match
+	 * the mouse positions with the chart
+	 */
+	/*function updatePosition() {
+		var container = doc.getElementById(containerId);
+		if (container) {
+			position = getPosition(container);
+		}
+	}*/
+	
+	/** 
+	 * Create the Axis instances based on the config options
+	 */
+	function getAxes() {
+		var xAxisOptions = options.xAxis || {},
+			yAxisOptions = options.yAxis || {},
+			axis;
+			
+		// make sure the options are arrays and add some members
+		xAxisOptions = splat(xAxisOptions);
+		each(xAxisOptions, function(axis, i) {
+			axis.index = i; 
+			axis.isX = true;
+		});
+		
+		yAxisOptions = splat(yAxisOptions);
+		each(yAxisOptions, function(axis, i) {
+			axis.index = i;
+		});
+		
+		// concatenate all axis options into one array
+		axes = xAxisOptions.concat(yAxisOptions);
+		
+		// loop the options and construct axis objects
+		chart.xAxis = [];
+		chart.yAxis = [];
+		axes = map (axes, function(axisOptions) {
+			axis = new Axis(chart, axisOptions);
+			chart[axis.isXAxis ? 'xAxis' : 'yAxis'].push(axis);
+			
+			return axis;
+		});
+		
+		adjustTickAmounts();	
+	}
+
+	
+	/**
+	 * Get the currently selected points from all series
+	 */
+	function getSelectedPoints() {
+		var points = [];
+		each(series, function(serie) {
+			points = points.concat( grep( serie.data, function(point) {
+				return point.selected;
+			}));
+		});
+		return points;
+	}
+	
+	/**
+	 * Get the currently selected series
+	 */
+	function getSelectedSeries() {
+		return grep (series, function (serie) {
+			return serie.selected;
+		});
+	}
+	
+	/**
+	 * Zoom out to 1:1
+	 */
+	zoomOut = function () {
+		fireEvent(chart, 'selection', { resetSelection: true }, zoom);
+		chart.toolbar.remove('zoom');
+
+	};
+	/**
+	 * Zoom into a given portion of the chart given by axis coordinates
+	 * @param {Object} event
+	 */
+	zoom = function (event) {
+		
+		// add button to reset selection
+		var lang = defaultOptions.lang;
+		chart.toolbar.add('zoom', lang.resetZoom, lang.resetZoomTitle, zoomOut);
+		
+		// if zoom is called with no arguments, reset the axes
+		if (!event || event.resetSelection) {
+			each(axes, function(axis) { 
+				axis.setExtremes(null, null, false);
+			});
+		}
+			
+		// else, zoom in on all axes
+		else {
+			each (event.xAxis.concat(event.yAxis), function(axisData) {
+				var axis = axisData.axis;
+					
+				// don't zoom more than maxZoom
+				if (chart.tracker[axis.isXAxis ? 'zoomX' : 'zoomY']) {
+					axis.setExtremes(axisData.min, axisData.max, false);
+				}
+			});
+		}
+		
+		// redraw chart
+		redraw();
+		
+	};
+	
+	/**
+	 * Function: (private) showTitle
+	 * 
+	 * Show the title and subtitle of the chart
+	 */
+	function showTitle () {
+		var title = options.title,
+			titleAlign = title.align,
+			subtitle = options.subtitle,
+			subtitleAlign = subtitle.align,
+			anchorMap = { // get the anchor relative to the alignment
+				left: 0,
+				center: chartWidth / 2,
+				right: chartWidth
+			};
+		
+			
+		// title
+		if (title && title.text) {
+			renderer.text(
+				title.text, 
+				anchorMap[titleAlign] + title.x,
+				title.y, 
