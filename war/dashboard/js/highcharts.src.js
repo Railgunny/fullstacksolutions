@@ -3204,3 +3204,371 @@ VMLRenderer.prototype = merge( SVGRenderer.prototype, { // inherit SVGRenderer
 				'at', // clockwisearcto
 				x - innerRadius, // left
 				y - innerRadius, // top
+				x + innerRadius, // right
+				y + innerRadius, // bottom
+				x + innerRadius * cosEnd, // start x
+				y + innerRadius * sinEnd, // start y
+				x + innerRadius * cosStart, // end x
+				y + innerRadius * sinStart, // end y
+				
+				'x', // finish path
+				'e' // close
+			];
+			
+		},
+		// Add circle symbol path. This performs significantly faster than v:oval.
+		circle: function (x, y, r) {
+			return [
+				'wa', // clockwisearcto
+				x - r, // left
+				y - r, // top
+				x + r, // right
+				y + r, // bottom
+				x + r, // start x
+				y,     // start y
+				x + r, // end x
+				y,     // end y
+				//'x', // finish path
+				'e' // close
+			];
+		},
+		/** 
+		 * Add rectangle symbol path which eases rotation and omits arcsize problems
+		 * compared to the built-in VML roundrect shape
+		 * 
+		 * @param {Object} left Left position
+		 * @param {Object} top Top position
+		 * @param {Object} r Border radius
+		 * @param {Object} options Width and height
+		 */
+		
+		rect: function (left, top, r, options) {
+			var width = options.width,
+				height = options.height,
+				right = left + width,
+				bottom = top + height;
+		
+			r = mathMin(r, width, height);
+			
+			return [
+				M,
+				left + r, top,
+				
+				L,
+				right - r, top,
+				'wa',
+				right - 2 * r, top,
+				right, top + 2 * r,
+				right - r, top,
+				right, top + r,
+				
+				L,
+				right, bottom - r,
+				'wa',
+				right - 2 * r, bottom - 2 * r,
+				right, bottom,
+				right, bottom - r,
+				right - r, bottom,
+				
+				L,
+				left + r, bottom,
+				'wa',
+				left, bottom - 2 * r,
+				left + 2 * r, bottom, 
+				left + r, bottom,
+				left, bottom - r,
+				
+				L,
+				left, top + r,
+				'wa',
+				left, top,
+				left + 2 * r, top + 2 * r,
+				left, top + r,
+				left + r, top,
+				
+				
+				'x',
+				'e'
+			];
+				
+		}
+	}
+});
+}
+/* **************************************************************************** 
+ *                                                                            * 
+ * END OF INTERNET EXPLORER <= 8 SPECIFIC CODE                                *
+ *                                                                            *
+ *****************************************************************************/
+
+/**
+ * General renderer
+ */
+var Renderer = hasSVG ?	SVGRenderer : VMLRenderer;
+	
+
+/**
+ * The chart class
+ * @param {Object} options
+ * @param {Function} callback Function to run when the chart has loaded
+ */
+function Chart (options, callback) {
+
+	defaultXAxisOptions = merge(defaultXAxisOptions, defaultOptions.xAxis);
+	defaultYAxisOptions = merge(defaultYAxisOptions, defaultOptions.yAxis);
+	defaultOptions.xAxis = defaultOptions.yAxis = null;
+		
+	// Handle regular options
+	options = merge(defaultOptions, options);
+	
+	// Define chart variables
+	var optionsChart = options.chart,
+		optionsMargin = optionsChart.margin,
+		margin = typeof optionsMargin == 'number' ? 
+			[optionsMargin, optionsMargin, optionsMargin, optionsMargin] :
+			optionsMargin,
+		plotTop = pick(optionsChart.marginTop, margin[0]),
+		marginRight = pick(optionsChart.marginRight, margin[1]),
+		marginBottom = pick(optionsChart.marginBottom, margin[2]),
+		plotLeft = pick(optionsChart.marginLeft, margin[3]),
+		renderTo,
+		renderToClone,
+		container,
+		containerId,
+		chartWidth,
+		chartHeight,
+		chart = this,
+		chartEvents = optionsChart.events,
+		eventType,
+		getAlignment, // function
+		isInsidePlot, // function
+		tooltip,
+		mouseIsDown,
+		loadingLayer,
+		loadingShown,
+		plotHeight,
+		plotWidth,
+		plotSizeX, // width if normal, height if inverted
+		plotSizeY, // height if normal, width if inverted
+		tracker,
+		trackerGroup,
+		legend,
+		position,// = getPosition(container),
+		hasCartesianSeries = optionsChart.showAxes,
+		axes = [],
+		maxTicks, // handle the greatest amount of ticks on grouped axes
+		series = [], 
+		inverted,
+		renderer,
+		tooltipTick,
+		tooltipInterval,
+		zoom, // function
+		zoomOut; // function
+		
+
+	/**
+	 * Create a new axis object
+	 * @param {Object} chart
+	 * @param {Object} options
+	 */
+	function Axis (chart, options) {
+
+		// Define variables
+		var isXAxis = options.isX,
+			opposite = options.opposite, // needed in setOptions			
+			horiz = inverted ? !isXAxis : isXAxis,
+			stacks = {
+				bar: {},
+				column: {},
+				area: {},
+				areaspline: {},
+				line: {}
+			};
+	
+		options = merge(
+				isXAxis ? defaultXAxisOptions : defaultYAxisOptions,
+				horiz ? 
+					(opposite ? defaultTopAxisOptions : defaultBottomAxisOptions) :
+					(opposite ? defaultRightAxisOptions : defaultLeftAxisOptions),
+				options
+			);
+	
+		var axis = this,
+			isDatetimeAxis = options.type == 'datetime',
+			offset = options.offset || 0,
+			xOrY = isXAxis ? 'x' : 'y',
+			axisLength = horiz ? plotWidth : plotHeight,
+		
+			transA, // translation factor
+			transB = horiz ? plotLeft : marginBottom, // translation addend
+			axisGroup,
+			gridGroup,
+			dataMin,
+			dataMax,
+			associatedSeries,
+			userSetMin,
+			userSetMax,
+			max = null,
+			min = null,
+			minPadding = options.minPadding,
+			maxPadding = options.maxPadding,
+			isLinked = defined(options.linkedTo),
+			ignoreMinPadding, // can be set to true by a column or bar series
+			ignoreMaxPadding,
+			usePercentage,
+			events = options.events,
+			eventType,
+			plotBands = options.plotBands || [],
+			plotLines = options.plotLines || [],
+			tickInterval,
+			minorTickInterval,
+			magnitude,
+			tickPositions, // array containing predefined positions
+			tickAmount,
+			dateTimeLabelFormat,
+			labelFormatter = options.labels.formatter ||  // can be overwritten by dynamic format
+				function() {
+					var value = this.value;
+					return dateTimeLabelFormat ? dateFormat(dateTimeLabelFormat, value) : value;
+				},
+			// column plots are always categorized
+			categories = options.categories || (isXAxis && chart.columnCount), 
+			reversed = options.reversed,
+			tickmarkOffset = (categories && options.tickmarkPlacement == 'between') ? 0.5 : 0;		
+
+		/**
+		 * Get the minimum and maximum for the series of each axis 
+		 */
+		function getSeriesExtremes() {
+			var stack = [],
+				run;
+				
+			// reset dataMin and dataMax in case we're redrawing
+			dataMin = dataMax = null;
+			
+			// get an overview of what series are associated with this axis
+			associatedSeries = [];
+			
+			each(series, function(serie) {
+				run = false;
+				
+				
+				// match this axis against the series' given or implicated axis
+				each(['xAxis', 'yAxis'], function(strAxis) {
+					if (
+						// the series is a cartesian type, and...
+						serie.isCartesian &&
+						// we're in the right x or y dimension, and...
+						(strAxis == 'xAxis' && isXAxis || strAxis == 'yAxis' && !isXAxis) && (
+							// the axis number is given in the options and matches this axis index, or
+							(serie.options[strAxis] == options.index) || 
+							// the axis index is not given
+							(serie.options[strAxis] === UNDEFINED && options.index === 0)
+						)
+					) {
+						serie[strAxis] = axis;
+						associatedSeries.push(serie);
+						
+						// the series is visible, run the min/max detection
+						run = true;		
+					}
+				});
+				// ignore hidden series if opted 
+				if (!serie.visible && optionsChart.ignoreHiddenSeries) {
+					run = false;
+				}				
+				
+				if (run) {
+					
+					var stacking,
+						typeStack;
+		
+					if (!isXAxis) {
+						stacking = serie.options.stacking;
+						usePercentage = stacking == 'percent';
+	
+						// create a stack for this particular series type
+						if (stacking) {
+							typeStack = stack[serie.type] || [];
+							stack[serie.type] = typeStack;
+						}
+						if (usePercentage) {
+							dataMin = 0;
+							dataMax = 99;			
+						}
+					} 
+					if (serie.isCartesian) { // line, column etc. need axes, pie doesn't
+						each(serie.data, function(point, i) {
+							var pointX = point.x,
+								pointY = point.y;
+							
+							// initial values
+							if (dataMin === null) {
+
+								// start out with the first point
+								dataMin = dataMax = point[xOrY]; 
+							}
+		
+							// x axis
+							if (isXAxis) {
+								if (pointX > dataMax) {
+									dataMax = pointX;
+								} else if (pointX < dataMin) {
+									dataMin = pointX;
+								}
+							}
+							
+							// y axis
+							else if (defined(pointY)) {
+								if (stacking) {
+									typeStack[pointX] = typeStack[pointX] ? typeStack[pointX] + pointY : pointY;
+								}
+								
+								var stackedPoint = typeStack ? typeStack[pointX] : pointY;
+								if (!usePercentage) {
+									if (stackedPoint > dataMax) {
+										dataMax = stackedPoint;
+									} else if (stackedPoint < dataMin) {
+										dataMin = stackedPoint;
+									}
+								}
+								if (stacking) {
+									stacks[serie.type][pointX] = { 
+										total: stackedPoint,
+										cum: stackedPoint 
+									};
+								}
+							}
+						});
+						
+							
+						// For column, areas and bars, set the minimum automatically to zero
+						// and prevent that minPadding is added in setScale
+						if (/(area|column|bar)/.test(serie.type) && !isXAxis) {
+							if (dataMin >= 0) {
+								dataMin = 0;
+								ignoreMinPadding = true;
+							} else if (dataMax < 0) {
+								dataMax = 0;
+								ignoreMaxPadding = true;
+							}
+						}
+					}
+				}
+			});
+			
+		}
+	
+		/**
+		 * Translate from axis value to pixel position on the chart, or back
+		 * 
+		 */
+		function translate(val, backwards, cvsCoord) {
+			var sign = 1,
+				cvsOffset = 0,
+				returnValue;
+			if (cvsCoord) {
+				sign *= -1; // canvas coordinates inverts the value
+				cvsOffset = axisLength;
+			}
+			if (reversed) { // reversed axis
