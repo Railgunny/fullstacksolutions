@@ -6217,3 +6217,424 @@ function Chart (options, callback) {
 	// API methods
 	chart.addSeries = addSeries;
 	chart.destroy = destroy;
+	chart.get = get;
+	chart.getAlignment = getAlignment;
+	chart.getSelectedPoints = getSelectedPoints;
+	chart.getSelectedSeries = getSelectedSeries;
+	chart.hideLoading = hideLoading;
+	chart.isInsidePlot = isInsidePlot;
+	chart.redraw = redraw;
+	chart.showLoading = showLoading;	
+	//chart.updatePosition = updatePosition;
+	
+	
+	
+		
+	firstRender();
+}
+
+/**
+ * The Point object and prototype. Inheritable and used as base for PiePoint
+ */
+var Point = function() {};
+Point.prototype = {
+
+	/**
+	 * Initialize the point
+	 * @param {Object} series The series object containing this point
+	 * @param {Object} options The data in either number, array or object format
+	 */
+	init: function(series, options) {
+		var point = this,
+			defaultColors;
+		point.series = series;
+		point.applyOptions(options);
+		point.pointAttr = {};
+		
+		if (series.options.colorByPoint) {
+			defaultColors = series.chart.options.colors;
+			if (!point.options) {
+				point.options = {};
+			}
+			point.color = point.options.color = point.color || defaultColors[colorCounter++];
+			
+			// loop back to zero
+			if (colorCounter >= defaultColors.length) {
+				colorCounter = 0;
+			}
+		}
+		
+		return point;
+	},
+	/**
+	 * Apply the options containing the x and y data and possible some extra properties.
+	 * This is called on point init or from point.update.
+	 * 
+	 * @param {Object} options
+	 */
+	applyOptions: function(options) {
+		var point = this,
+			series = point.series;
+	
+		point.config = options;
+		
+		// onedimensional array input
+		if (typeof options == 'number' || options === null) {
+			point.y = options;	
+		}
+		
+		// object input
+		else if (typeof options == 'object' && typeof options.length != 'number') {
+			
+			// copy options directly to point
+			extend(point, options);
+			point.options = options;
+		}
+		
+		// categorized data with name in first position
+		else if (typeof options[0] == 'string') {
+			point.name = options[0];
+			point.y = options[1];
+		}
+		
+		// two-dimentional array
+		else if (typeof options[0] ==  'number') {
+			point.x = options[0];
+			point.y = options[1];
+		}
+		
+		/* 
+		 * If no x is set by now, get auto incremented value. All points must have an
+		 * x value, however the y value can be null to create a gap in the series
+		 */
+		if (point.x === UNDEFINED) {
+			point.x = series.autoIncrement();
+		}
+	},
+	
+	/**
+	 * Destroy a point to clear memory. Its reference still stays in series.data.
+	 */
+	destroy: function() {
+		var point = this,
+			prop;
+			
+		if (point == point.series.chart.hoverPoint) {
+			point.onMouseOut();
+		}
+		
+		// remove all events
+		removeEvent(point);
+		
+		
+		each (['dataLabel', 'graphic', 'tracker', 'group'], function(prop) {
+			if (point[prop]) {
+				point[prop].destroy();
+			}
+		});
+		
+		
+		if (point.legendItem) { // pies have legend items
+			point.series.chart.legend.destroyItem(point);
+		}
+		
+		for (prop in point) {
+			point[prop] = null;
+		}
+		
+	},	
+	
+	/**
+	 * Toggle the selection status of a point
+	 * @param {Boolean} selected Whether to select or unselect the point.
+	 * @param {Boolean} accumulate Whether to add to the previous selection. By default,
+	 *     this happens if the control key (Cmd on Mac) was pressed during clicking.
+	 */
+	select: function(selected, accumulate) {
+		var point = this,
+			series = point.series,
+			chart = series.chart;
+			
+		point.selected = selected = pick(selected, !point.selected);
+		
+		//series.isDirty = true;
+		point.firePointEvent(selected ? 'select' : 'unselect');
+		point.setState(selected && SELECT_STATE);
+		
+		// unselect all other points unless Ctrl or Cmd + click
+		if (!accumulate) {
+			each (chart.getSelectedPoints(), function (loopPoint) {
+				if (loopPoint.selected && loopPoint != point) {
+					loopPoint.selected = false;
+					loopPoint.setState(NORMAL_STATE);
+					loopPoint.firePointEvent('unselect');
+				}
+			});
+		}
+		
+	},
+	
+	onMouseOver: function() {
+		var point = this,
+			chart = point.series.chart,
+			tooltip = chart.tooltip,
+			hoverPoint = chart.hoverPoint;
+			
+		// set normal state to previous series
+		if (hoverPoint && hoverPoint != point) {
+			hoverPoint.onMouseOut();
+		}
+		
+		// trigger the event
+		point.firePointEvent('mouseOver');
+		
+		// update the tooltip
+		if (tooltip) {
+			tooltip.refresh(point);
+		}
+		
+		// hover this
+		point.setState(HOVER_STATE);
+		chart.hoverPoint = point;
+	},
+	
+	onMouseOut: function() {
+		var point = this;
+		point.firePointEvent('mouseOut');
+		
+		point.setState(NORMAL_STATE);
+		point.series.chart.hoverPoint = null;
+	},
+	
+	/**
+	 * Update the point with new options (typically x/y data) and optionally redraw the series.
+	 * 
+	 * @param {Object} options Point options as defined in the series.data array
+	 * @param {Boolean} redraw Whether to redraw the chart or wait for an explicit call
+	 * 
+	 */
+	update: function(options, redraw) {
+		var point = this,
+			series = point.series;
+		redraw = pick(redraw, true);
+		
+		// fire the event with a default handler of doing the update
+		point.firePointEvent('update', { options: options }, function() {
+
+			point.applyOptions(options);
+	
+			// redraw
+			series.isDirty = true;
+			if (redraw) {
+				series.chart.redraw();
+			}
+		});
+	},
+	
+	/**
+	 * Remove a point and optionally redraw the series and if necessary the axes
+	 * @param {Boolean} redraw Whether to redraw the chart or wait for an explicit call
+	 */
+	remove: function(redraw) {
+		var point = this,
+			series = point.series,
+			chart = series.chart,
+			data = series.data,
+			i = data.length;
+		
+		redraw = pick(redraw, true);
+		
+		// fire the event with a default handler of removing the point			
+		point.firePointEvent('remove', null, function() {
+
+			// loop through the data to locate the point and remove it
+			while (i--) {
+				if (data[i] == point) {
+					data.splice(i, 1);
+					break;
+				}
+			}
+			
+			point.destroy();
+			
+			
+			// redraw
+			series.isDirty = true;
+			if (redraw) {
+				chart.redraw();
+			}
+		});
+			
+		
+	},
+	
+	/**
+	 * Fire an event on the Point object. Must not be renamed to fireEvent, as this
+	 * causes a name clash in MooTools
+	 * @param {String} eventType
+	 * @param {Object} eventArgs Additional event arguments
+	 * @param {Function} defaultFunction Default event handler
+	 */
+	firePointEvent: function(eventType, eventArgs, defaultFunction) {
+		var point = this,
+			series = this.series,
+			seriesOptions = series.options;
+		
+		// load event handlers on demand to save time on mouseover/out
+		if (seriesOptions.point.events[eventType] || (
+				point.options && point.options.events && point.options.events[eventType])) {
+			this.importEvents();
+		}
+			
+		// add default handler if in selection mode
+		if (eventType == 'click' && seriesOptions.allowPointSelect) {
+			defaultFunction = function (event) {
+				// Control key is for Windows, meta (= Cmd key) for Mac, Shift for Opera
+				point.select(null, event.ctrlKey || event.metaKey || event.shiftKey);
+			};
+		}
+		
+		fireEvent(this, eventType, eventArgs, defaultFunction);
+	},
+	/**
+	 * Import events from the series' and point's options. Only do it on 
+	 * demand, to save processing time on hovering.
+	 */
+	importEvents: function() {
+		if (!this.hasImportedEvents) {
+			var point = this,
+				options = merge (point.series.options.point, point.options),
+				events = options.events,
+				eventType;
+				
+			point.events = events;
+			
+			for (eventType in events) {
+				addEvent(point, eventType, events[eventType]);
+			}
+			this.hasImportedEvents = true;
+		}
+	},
+	
+	/**
+	 * Set the point's state
+	 * @param {String} state
+	 */
+	setState: function(state) {
+		var point = this,
+			series = point.series,
+			stateOptions = series.options.states,
+			markerOptions = series.options.marker,
+			normalDisabled = markerOptions && !markerOptions.enabled,
+			markerStateOptions = markerOptions && markerOptions.states[state],
+			stateDisabled = markerStateOptions && markerStateOptions.enabled === false,
+			chart = series.chart,
+			pointAttr = point.pointAttr;
+			
+		if (!state) {
+			state = NORMAL_STATE; // empty string
+		}
+		
+		if (
+				// selected points don't respond to hover
+				(point.selected && state != SELECT_STATE) ||
+				// series' state options is disabled
+				(stateOptions[state] && stateOptions[state].enabled === false) ||
+				// point marker's state options is disabled
+				//(!state && normalDisabled)
+				(state && (stateDisabled || normalDisabled && !markerStateOptions.enabled))
+
+			) {
+			return;
+		}
+		
+		
+		
+		
+		// if a graphic is not applied to each point in the normal state, create a shared
+		// graphic for the hover state
+		if (state && !point.graphic) {
+			if (!series.stateMarkerGraphic) {
+				series.stateMarkerGraphic = chart.renderer.circle(
+					0, 0, pointAttr[state].r
+				)
+				.attr(pointAttr[state])
+				.add(series.group);
+			}
+			
+			series.stateMarkerGraphic.translate(
+				point.plotX, 
+				point.plotY
+			);
+			
+		// else, apply hover styles to the existing point
+		} else if (point.graphic) {
+			point.graphic.attr(pointAttr[state]);
+		}
+		
+	},
+	
+	setTooltipText: function() {
+		var point = this;
+		point.tooltipText = point.series.chart.options.tooltip.formatter.call({
+			series: point.series,
+			point: point,
+			x: point.category, 
+			y: point.y,
+			percentage: point.percentage,
+			total: point.total || point.stackTotal
+		});
+	}	
+};
+
+/**
+ * The base function which all other series types inherit from
+ * @param {Object} chart
+ * @param {Object} options
+ */
+var Series = function() {};
+
+Series.prototype = {
+	
+	isCartesian: true,
+	type: 'line',
+	pointClass: Point,
+	pointAttrToOptions: { // mapping between SVG attributes and the corresponding options
+		stroke: 'lineColor',
+		'stroke-width': 'lineWidth',
+		fill: 'fillColor',
+		r: 'radius'
+	},
+	init: function(chart, options) {
+		var series = this,
+			eventType,
+			events,
+			//pointEvent,
+			index = chart.series.length;
+			
+		series.chart = chart;
+		options = series.setOptions(options); // merge with plotOptions
+		
+		// set some variables
+		extend (series, {
+			index: index,
+			options: options,
+			name: options.name || 'Series '+ (index + 1),
+			state: NORMAL_STATE,
+			pointAttr: {},
+			visible: options.visible !== false, // true by default
+			selected: options.selected === true // false by default
+		});
+		
+		// register event listeners
+		events = options.events;
+		for (eventType in events) {
+			addEvent(series, eventType, events[eventType]);
+		}
+		
+		series.getColor();
+		series.getSymbol();
+		
+		// set the data
+		series.setData(options.data, false);
+			
