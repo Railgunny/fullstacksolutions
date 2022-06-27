@@ -4314,3 +4314,371 @@ function Chart (options, callback) {
 							chartWidth - marginRight : 
 							lineLeft,
 						horiz ? 
+							lineTop:
+							chartHeight - marginBottom
+					], lineWidth)).
+					attr({ 
+						stroke: options.lineColor, 
+						'stroke-width': lineWidth,
+						zIndex: 7
+					}).
+					add();
+					
+				axis.hasRenderedLine = true;
+			}
+			
+			// Render the title. 
+			if (!axis.hasRenderedTitle && !axis.axisTitle && axisTitleOptions && axisTitleOptions.text) {
+				
+				// compute anchor points for each of the title align options
+				var margin = horiz ? 
+						plotLeft : plotTop;
+					
+				// the position in the length direction of the axis
+				var alongAxis = { 
+					low: margin + (horiz ? 0 : axisLength), 
+					middle: margin + axisLength / 2, 
+					high: margin + (horiz ? axisLength : 0)
+				}[axisTitleOptions.align];
+				
+				// the position in the perpendicular direction of the axis
+				var offAxis = (horiz ? plotTop + plotHeight : plotLeft) +
+					(horiz ? 1 : -1) * // horizontal axis reverses the margin
+					(opposite ? -1 : 1) * // so does opposite axes
+					axisTitleOptions.margin -
+					(isIE ? parseInt(
+						axisTitleOptions.style.fontSize || 12, 10
+					) / 3 : 0); // preliminary fix for vml's centerline
+				
+				axis.axisTitle = renderer.text(
+					axisTitleOptions.text,
+					(horiz ? 
+						alongAxis: 
+						offAxis + (opposite ? plotWidth : 0) + offset)
+						+ (axisTitleOptions.x || 0),
+					(horiz ? 
+						offAxis - (opposite ? plotHeight : 0) + offset: 
+						alongAxis)
+						+ (axisTitleOptions.y || 0),
+					axisTitleOptions.style, 
+					axisTitleOptions.rotation || 0,
+					{ low: 'left', middle: 'center', high: 'right' }[axisTitleOptions.align]
+				)
+				.attr({ zIndex: 7 })
+				.add();
+				
+				axis.hasRenderedTitle = true;
+			}
+			
+			axis.isDirty = false;
+		}
+		
+		/**
+		 * Remove a plot band or plot line from the chart by id
+		 * @param {Object} id
+		 */
+		function removePlotBandOrLine(id) {
+			each ([plotBands, plotLines], function(collection) {
+				for (var i = 0; i < collection.length; i++) {
+	
+					if (collection[i].id == id) {
+						collection.splice(i, 1);
+						break;
+					}
+				}
+			});
+			render();
+		}
+		
+		/**
+		 * Redraw the axis to reflect changes in the data or axis extremes
+		 */
+		function redraw() {
+			
+			// hide tooltip and hover states
+			if (tracker.resetTracker) {
+				tracker.resetTracker();
+			}
+		
+			// render the axis
+			render();
+			
+			// mark associated series as dirty and ready for redraw
+			each (associatedSeries, function(series) {
+				series.isDirty = true;
+			});
+						
+		}
+		
+		/**
+		 * Set new axis categories and optionally redraw
+		 * @param {Array} newCategories
+		 * @param {Boolean} doRedraw
+		 */
+		function setCategories(newCategories, doRedraw) {
+				// set the categories
+				axis.categories = categories = newCategories;
+				
+				// force reindexing tooltips
+				each (associatedSeries, function(series) {
+					series.translate();
+					series.setTooltipPoints(true);
+				});
+				
+				
+				// optionally redraw
+				axis.isDirty = true;
+				if (pick(doRedraw, true)) {
+					redraw();  // redraw axis
+				}
+		}
+		
+		
+		
+		// Run Axis
+			
+		// inverted charts have reversed xAxes as default
+		if (inverted && isXAxis && reversed === UNDEFINED) {
+			reversed = true;
+		}
+			
+		// negate offset
+		if (!opposite) {
+			offset *= -1;
+		}
+		if (horiz) {
+			offset *= -1;
+		} 
+			
+		// expose some variables
+		extend (axis, {
+			addPlotBand: addPlotBandOrLine,
+			addPlotLine: addPlotBandOrLine,
+			adjustTickAmount: adjustTickAmount,
+			categories: categories,
+			getExtremes: getExtremes,
+			getThreshold: getThreshold,
+			isXAxis: isXAxis,
+			options: options,
+			render: render,
+			setExtremes: setExtremes,
+			setScale: setScale,
+			setCategories: setCategories,
+			translate: translate,
+			redraw: redraw,
+			removePlotBand: removePlotBandOrLine,
+			removePlotLine: removePlotBandOrLine,
+			reversed: reversed,
+			stacks: stacks
+		});
+		
+		// register event listeners
+		for (eventType in events) {
+			addEvent(axis, eventType, events[eventType]);
+		}
+		
+		// set min and max
+		setScale();
+			
+	
+	} // end Axis
+	
+	
+	/**
+	 * The toolbar object
+	 * 
+	 * @param {Object} chart 
+	 */
+	function Toolbar(chart) {
+		var buttons = {};
+		
+		function add(id, text, title, fn) {
+			if (!buttons[id]) {
+				var button = renderer.text(
+					text,
+					plotLeft + plotWidth - 20,
+					plotTop + 30,
+					options.toolbar.itemStyle,
+					0,
+					'right'
+				)
+				.on('click', fn)
+				.attr({ zIndex: 20 })
+				.add();
+				buttons[id] = button;
+			}
+		}
+		function remove(id) {
+			discardElement(buttons[id].element);
+			buttons[id] = null;
+		}
+		
+		// public
+		return {
+			add: add,
+			remove: remove
+		};
+	}
+	
+	/**
+	 * The tooltip object
+	 * @param {Object} options Tooltip options
+	 */
+	function Tooltip (options) {
+		var currentSeries,
+			borderWidth = options.borderWidth,
+			style = options.style,
+			padding = parseInt(style.padding, 10),
+			boxOffLeft = borderWidth + padding, // off left/top position as IE can't 
+				//properly handle negative positioned shapes
+			tooltipIsHidden = true,
+			boxWidth,
+			boxHeight,
+			currentX = 0,			
+			currentY = 0;
+		
+		// remove padding CSS and apply padding on box instead
+		style.padding = 0;
+		
+		// create the elements
+		var group = renderer.g('tooltip')
+			.attr({ zIndex: 8 })
+			.add(),
+			
+			box = renderer.rect(boxOffLeft, boxOffLeft, 0, 0, options.borderRadius, borderWidth).
+				attr({
+					fill: options.backgroundColor,
+					'stroke-width': borderWidth
+				}).
+				add(group).
+				shadow(options.shadow),
+			label = renderer.text('', padding + boxOffLeft, parseInt(style.fontSize, 10) + padding + boxOffLeft).
+				attr({ zIndex: 1 }).
+				css(style).
+				add(group);
+				
+				
+		/**
+		 * Provide a soft movement for the tooltip
+		 * 
+		 * @param {Number} finalX
+		 * @param {Number} finalY 
+		 */
+		function move(finalX, finalY) {
+
+			currentX = tooltipIsHidden ? finalX : (2 * currentX + finalX) / 3;
+			currentY = tooltipIsHidden ? finalY : (currentY + finalY) / 2;
+			
+			group.translate(currentX, currentY);
+			
+			
+			// run on next tick of the mouse tracker
+			if (mathAbs(finalX - currentX) > 1 || mathAbs(finalY - currentY) > 1) {
+				tooltipTick = function() {
+					move(finalX, finalY);
+				};
+			} else {
+				tooltipTick = null;
+			}
+		}
+		
+		/**
+		 * Hide the tooltip
+		 */
+		function hide() {
+
+			tooltipIsHidden = true;
+			group.hide();
+		}
+		
+		/**
+		 * Refresh the tooltip's text and position. 
+		 * @param {Object} point
+		 * 
+		 */
+		function refresh(point) {
+			var 
+				series = point.series,
+				borderColor = options.borderColor || point.color || series.color || '#606060',
+				x,
+				y,
+				boxX,
+				boxY,
+				show,
+				bBox,
+				text = point.tooltipText,
+				tooltipPos = point.tooltipPos;
+				
+			
+			// register the current series
+			currentSeries = series;
+			
+			// get the reference point coordinates (pie charts use tooltipPos)
+			x = mathRound(tooltipPos ? tooltipPos[0] : (inverted ? plotWidth - point.plotY : point.plotX));
+			y = mathRound(tooltipPos ? tooltipPos[1] : (inverted ? plotHeight - point.plotX : point.plotY));
+				
+				
+			// hide tooltip if the point falls outside the plot
+			show = isInsidePlot(x, y);
+			
+			// update the inner HTML
+			if (text === false || !show) { 
+				hide();
+			} else {
+				
+			    // show it
+				if (tooltipIsHidden) {
+					group.show();
+					tooltipIsHidden = false;
+				}
+				
+				// update text
+				label.attr({
+					text: text
+				});
+				
+				// get the bounding box
+				bBox = label.getBBox();
+				boxWidth = bBox.width;
+				boxHeight = bBox.height;
+				
+				// set the size of the box
+				box.attr({
+					width: boxWidth + 2 * padding,
+					height: boxHeight + 2 * padding,
+					stroke: borderColor
+				});
+				
+				// keep the box within the chart area
+				boxX = x - boxWidth + plotLeft - 25;
+				boxY = y - boxHeight + plotTop + 10;
+				
+				// it is too far to the left, adjust it
+				if (boxX < 7) {
+					boxX = 7;
+					boxY -= 20;
+				}
+				
+				
+				if (boxY < 5) {
+					boxY = 5; // above
+				} else if (boxY + boxHeight > chartHeight) { 
+					boxY = chartHeight - boxHeight - 5; // below
+				}
+				
+				// do the move
+				move(mathRound(boxX - boxOffLeft), mathRound(boxY - boxOffLeft));
+				
+				
+			}
+		
+		}
+		
+
+		
+		// public members
+		return {
+			refresh: refresh,
+			hide: hide
+		};	
+	}
