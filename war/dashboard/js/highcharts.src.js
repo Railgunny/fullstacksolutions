@@ -3572,3 +3572,350 @@ function Chart (options, callback) {
 				cvsOffset = axisLength;
 			}
 			if (reversed) { // reversed axis
+				sign *= -1; 
+				cvsOffset -= sign * axisLength;
+			}
+			
+			if (min === UNDEFINED) { // points in a single hidden series, axis has no min or max
+				returnValue = null;
+			
+			} else if (backwards) { // reverse translation
+				if (reversed) {
+					val = axisLength - val;
+				}
+				returnValue = val / transA + min; // from chart pixel to value				
+			
+			} else { // normal translation
+				returnValue = sign * (val - min) * transA + cvsOffset; // from value to chart pixel
+			}
+			
+			return returnValue;
+		}
+		
+		/**
+		 * Add a single line across the plot
+		 */
+		function drawPlotLine(value, color, width) {
+			
+			if (width) {
+				var x1, 
+					y1, 
+					x2, 
+					y2,
+					translatedValue = translate(value),
+					skip;
+					
+				x1 = x2 = translatedValue + transB;
+				y1 = y2 = chartHeight - translatedValue - transB;
+				if (horiz) { 
+					y1 = plotTop;
+					y2 = chartHeight - marginBottom;
+					if (x1 < plotLeft || x1 > plotLeft + plotWidth) {
+						skip = true;
+					}
+				} else {
+					x1 = plotLeft;
+					x2 = chartWidth - marginRight;
+					if (y1 < plotTop || y1 > plotTop + plotHeight) {
+						skip = true;
+					}
+				}
+				
+				if (!skip) {
+					renderer.path(
+						renderer.crispLine([M, x1, y1, L, x2, y2], width)
+					).attr({
+							stroke: color,
+							'stroke-width': width
+						}).add(gridGroup);
+				}
+				
+			}
+		}
+		
+		/**
+		 * Add a masked band across the plot
+		 * @param {Number} from chart axis value
+		 * @param {Number} to chart axis value
+		 * @param {String} color
+		 */
+		function drawPlotBand(from, to, color) {
+			// keep within plot area
+			from = mathMax(from, min);
+			to = mathMin(to, max);  
+			
+			var width = (to - from) * transA;
+			drawPlotLine(from + (to - from) / 2, color, width);
+			
+		}
+		
+		/**
+		 * Add a tick mark an a label
+		 */
+		function addTick(pos, tickPos, color, width, len, withLabel, index) {
+			var x1, y1, x2, y2, str, labelOptions = options.labels;
+			
+			// negate the length
+			if (tickPos == 'inside') {
+				len = -len;
+			}
+			if (opposite) {
+				len = -len;
+			}
+			
+			// set the initial positions
+			x1 = x2 = translate(pos + tickmarkOffset) + transB;
+			y1 = y2 = chartHeight - translate(pos + tickmarkOffset) - transB;
+			
+			if (horiz) {
+				y1 = chartHeight - marginBottom - (opposite ? plotHeight : 0) + offset;
+				y2 = y1 + len;
+			} else {
+				x1 = plotLeft + (opposite ? plotWidth : 0) + offset;
+				x2 = x1 - len;				
+			}
+			
+			if (width) {
+				renderer.path(
+					renderer.crispLine([M, x1, y1, L, x2, y2], width)
+				).attr({
+					stroke: color,
+					'stroke-width': width
+				}).add(axisGroup);
+			}
+			
+			
+			// write the label
+			if (withLabel && labelOptions.enabled) {
+				str = labelFormatter.call({
+					index: index,
+					isFirst: pos == tickPositions[0],
+					isLast: pos == tickPositions[tickPositions.length - 1],
+					dateTimeLabelFormat: dateTimeLabelFormat,
+					value: (categories && categories[pos] ? categories[pos] : pos)
+				});
+				if (str || str === 0) {
+					x1 = x1 + labelOptions.x - (tickmarkOffset && horiz ? 
+						tickmarkOffset * transA * (reversed ? -1 : 1) : 0); 
+					y1 = y1 + labelOptions.y - (tickmarkOffset && !horiz ? 
+						tickmarkOffset * transA * (reversed ? 1 : -1) : 0);
+					renderer.text(
+						str,
+						x1,
+						y1,
+						labelOptions.style, 
+						labelOptions.rotation,
+						labelOptions.align
+					).add(axisGroup);
+				}
+			}
+			
+		}
+		
+		/**
+		 * Take an interval and normalize it to multiples of 1, 2, 2.5 and 5
+		 * @param {Number} interval
+		 */
+		function normalizeTickInterval(interval, multiples) {
+			var normalized;
+				
+			// round to a tenfold of 1, 2, 2.5 or 5
+			magnitude = multiples ? 1 : math.pow(10, mathFloor(math.log(interval) / math.LN10));
+			normalized = interval / magnitude;
+			
+			// multiples for a linear scale
+			if (!multiples) {
+				multiples = [1, 2, 2.5, 5, 10];				
+				
+				// the allowDecimals option
+				if (options.allowDecimals === false) {
+					if (magnitude == 1) {
+						multiples = [1, 2, 5, 10];
+					} else if (magnitude <= 0.1) {
+						multiples = [1 / magnitude];
+					}					
+				}
+			}
+			
+			// normalize the interval to the nearest multiple
+			for (var i = 0; i < multiples.length; i++) {
+				interval = multiples[i];
+				if (normalized <= (multiples[i] + (multiples[i+1] || multiples[i])) / 2) {
+					break;
+				}
+			}
+			
+			// multiply back to the correct magnitude
+			interval *= magnitude;
+			
+			return interval;
+		}
+	
+		/**
+		 * Set the tick positions to a time unit that makes sense, for example
+		 * on the first of each month or on every Monday.
+		 */
+		function setDateTimeTickPositions() {
+			tickPositions = [];
+			var i,
+				useUTC = defaultOptions.global.useUTC,
+				oneSecond = 1000 / timeFactor,
+				oneMinute = 60000 / timeFactor,
+				oneHour = 3600000 / timeFactor,
+				oneDay = 24 * 3600000 / timeFactor,
+				oneWeek = 7 * 24 * 3600000 / timeFactor,
+				oneMonth = 30 * 24 * 3600000 / timeFactor,
+				oneYear = 31556952000 / timeFactor,
+			
+				units = [[
+					'second',						// unit name
+					oneSecond,						// fixed incremental unit
+					[1, 2, 5, 10, 15, 30]			// allowed multiples
+				], [
+					'minute',						// unit name
+					oneMinute,						// fixed incremental unit
+					[1, 2, 5, 10, 15, 30]			// allowed multiples
+				], [
+					'hour',							// unit name
+					oneHour,						// fixed incremental unit
+					[1, 2, 3, 4, 6, 8, 12]			// allowed multiples
+				], [
+					'day',							// unit name
+					oneDay,							// fixed incremental unit
+					[1, 2]							// allowed multiples
+				], [
+					'week',							// unit name
+					oneWeek,						// fixed incremental unit
+					[1, 2]							// allowed multiples
+				], [
+					'month',
+					oneMonth,
+					[1, 2, 3, 4, 6]
+				], [
+					'year',
+					oneYear,
+					null
+				]],
+			
+				unit = units[6], // default unit is years
+				interval = unit[1], 
+				multiples = unit[2];
+			
+			// loop through the units to find the one that best fits the tickInterval
+			for (i = 0; i < units.length; i++)  {
+				unit = units[i];
+				interval = unit[1];
+				multiples = unit[2];
+				
+				
+				if (units[i+1]) {
+					// lessThan is in the middle between the highest multiple and the next unit.
+					var lessThan = (interval * multiples[multiples.length - 1] + 
+								units[i + 1][1]) / 2;
+							
+					// break and keep the current unit
+					if (tickInterval <= lessThan) {
+						break;
+					}
+				}
+			}
+			
+			// prevent 2.5 years intervals, though 25, 250 etc. are allowed
+			if (interval == oneYear && tickInterval < 5 * interval) {
+				multiples = [1, 2, 5];
+			}
+	
+			// get the minimum value by flooring the date
+			var multitude = normalizeTickInterval(tickInterval / interval, multiples),
+				minYear, // used in months and years as a basis for Date.UTC()
+				minDate = new Date(min * timeFactor);
+				
+			minDate.setMilliseconds(0);
+			
+			if (interval >= oneSecond) { // second
+				minDate.setSeconds(interval >= oneMinute ? 0 :
+					multitude * mathFloor(minDate.getSeconds() / multitude));
+			}
+	
+			if (interval >= oneMinute) { // minute
+				minDate[setMinutes](interval >= oneHour ? 0 :
+					multitude * mathFloor(minDate[getMinutes]() / multitude));
+			}
+	
+			if (interval >= oneHour) { // hour
+				minDate[setHours](interval >= oneDay ? 0 :
+					multitude * mathFloor(minDate[getHours]() / multitude));
+			}
+	
+			if (interval >= oneDay) { // day
+				minDate[setDate](interval >= oneMonth ? 1 :
+					multitude * mathFloor(minDate[getDate]() / multitude));
+			}
+					
+			if (interval >= oneMonth) { // month
+				minDate[setMonth](interval >= oneYear ? 0 :
+					multitude * mathFloor(minDate[getMonth]() / multitude));
+				minYear = minDate[getFullYear]();
+			}
+			
+			if (interval >= oneYear) { // year
+				minYear -= minYear % multitude;
+				minDate[setFullYear](minYear);
+			}
+			
+			// week is a special case that runs outside the hierarchy
+			if (interval == oneWeek) {
+				// get start of current week, independent of multitude
+				minDate[setDate](minDate[getDate]() - minDate[getDay]() + 
+					options.startOfWeek);
+			}
+			
+			
+			// get tick positions
+			i = 1; // prevent crash just in case
+			minYear = minDate[getFullYear]();
+			var time = minDate.getTime() / timeFactor,
+				minMonth = minDate[getMonth](),
+				minDateDate = minDate[getDate]();
+				
+			// iterate and add tick positions at appropriate values
+			while (time < max && i < plotWidth) {
+				tickPositions.push(time);
+				
+				// if the interval is years, use Date.UTC to increase years
+				if (interval == oneYear) {
+					time = makeTime(minYear + i * multitude, 0) / timeFactor;
+				
+				// if the interval is months, use Date.UTC to increase months
+				} else if (interval == oneMonth) {
+					time = makeTime(minYear, minMonth + i * multitude) / timeFactor;
+					
+				// if we're using global time, the interval is not fixed as it jumps
+				// one hour at the DST crossover
+				} else if (!useUTC && (interval == oneDay || interval == oneWeek)) {
+					time = makeTime(minYear, minMonth, minDateDate + 
+						i * multitude * (interval == oneDay ? 1 : 7));
+					
+				// else, the interval is fixed and we use simple addition
+				} else {
+					time += interval * multitude;
+				}
+				
+				i++;
+			}
+			// push the last time
+			tickPositions.push(time);
+			
+			// dynamic label formatter 
+			dateTimeLabelFormat = options.dateTimeLabelFormats[unit[0]];
+			/*if (!options.labels.formatter) {
+				labelFormatter = function() {
+					return dateFormat(options.dateTimeLabelFormats[unit[0]], this.value, 1);
+				};
+			}*/
+			
+		}
+			
+		/**
+		 * Fix JS round off float errors
+		 * @param {Number} num
