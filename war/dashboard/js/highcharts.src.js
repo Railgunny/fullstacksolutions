@@ -5850,3 +5850,370 @@ function Chart (options, callback) {
 				title.text, 
 				anchorMap[titleAlign] + title.x,
 				title.y, 
+				title.style, 
+				0,
+				titleAlign
+			).attr({
+				'class': 'highcharts-title'
+			}).add();
+		}
+		
+		// subtitle
+		if (subtitle && subtitle.text) {
+			renderer.text(
+				subtitle.text, 
+				anchorMap[subtitleAlign] + subtitle.x,
+				subtitle.y, 
+				subtitle.style, 
+				0,
+				subtitleAlign
+			).attr({
+				'class': 'highcharts-subtitle'
+			}).add();
+		}
+	}
+
+	/**
+	 * Break down alignment options like align, verticalAlign, x, y, 
+	 * width and height to x and y relative to the chart.
+	 * 
+	 * @param {Object} alignmentOptions
+	 * 
+	 */
+	getAlignment = function(alignmentOptions) {
+		var align = alignmentOptions.align,
+			vAlign = alignmentOptions.verticalAlign,
+			optionsX = alignmentOptions.x || 0,
+			optionsY = alignmentOptions.y || 0,
+			ret = {
+				x: optionsX || 0, // default: left align
+				y: optionsY || 0 // default: top align
+			};
+		// align
+		if (/^(right|center)$/.test(align)) {
+			ret.x = (chartWidth - alignmentOptions.width) /
+				{ right: 1, center: 2 }[align] +
+				optionsX;			
+		}
+		// vertical align
+		if (/^(bottom|middle)$/.test(vAlign)) {
+			ret.y = (chartHeight - alignmentOptions.height) /
+				{ bottom: 1, middle: 2 }[vAlign] +
+				optionsY;			
+		}
+		
+		
+		return ret;
+	};
+	
+	/**
+	 * Get the containing element, determine the size and create the inner container
+	 * div to hold the chart
+	 */
+	function getContainer() {
+		renderTo = optionsChart.renderTo;
+		containerId = PREFIX + idCounter++;
+	
+		if (typeof renderTo == 'string') {
+			renderTo = doc.getElementById(renderTo);
+		}
+	
+		// remove previous chart
+		renderTo.innerHTML = '';
+		
+		// If the container doesn't have an offsetWidth, it has or is a child of a node
+		// that has display:none. We need to temporarily move it out to a visible
+		// state to determine the size, else the legend and tooltips won't render
+		// properly 
+		if (!renderTo.offsetWidth) {
+			renderToClone = renderTo.cloneNode(0);
+			css(renderToClone, {
+				position: ABSOLUTE,
+				top: '-9999px',
+				display: ''
+			});
+			doc.body.appendChild(renderToClone);
+		}
+		
+		// get the width and height
+		var renderToOffsetHeight = (renderToClone || renderTo).offsetHeight;
+		chart.chartWidth = chartWidth = optionsChart.width || (renderToClone || renderTo).offsetWidth || 600;
+		chart.chartHeight = chartHeight = optionsChart.height || 
+			// the offsetHeight of an empty container is 0 in standard browsers, but 19 in IE7:
+			(renderToOffsetHeight > plotTop + marginBottom ? renderToOffsetHeight : 0) || 
+			400;
+			
+		
+		chart.plotWidth = plotWidth = chartWidth - plotLeft - marginRight;
+		chart.plotHeight = plotHeight = chartHeight - plotTop - marginBottom;
+	
+		chart.plotLeft = plotLeft;
+		chart.plotTop = plotTop;
+		
+		// create the inner container
+		chart.container = container = createElement(DIV, {
+				className: 'highcharts-container' + 
+					(optionsChart.className ? ' '+ optionsChart.className : ''),
+				id: containerId
+			}, extend({
+				position: RELATIVE,
+				overflow: HIDDEN,
+				width: chartWidth + PX,
+				height: chartHeight + PX,
+				textAlign: 'left'
+			}, optionsChart.style),
+			renderToClone || renderTo
+		);
+		
+		chart.renderer = renderer = 
+			optionsChart.renderer == 'SVG' ? // force SVG, used for SVG export
+				new SVGRenderer(container, chartWidth, chartHeight) : 
+				new Renderer(container, chartWidth, chartHeight);
+	}
+	/**
+	 * Render all graphics for the chart
+	 */
+	function render () {
+		
+		var mgn, 
+			//div, 
+			//i, 
+			labels = options.labels, 
+			credits = options.credits,
+			chartBorderWidth = optionsChart.borderWidth || 0,
+			chartBackgroundColor = optionsChart.backgroundColor,
+			plotBackgroundColor = optionsChart.plotBackgroundColor,
+			plotBackgroundImage = optionsChart.plotBackgroundImage;
+		
+		
+		// Chart area
+		mgn = 2 * chartBorderWidth + (optionsChart.shadow ? 8 : 0);
+			
+		if (chartBorderWidth || chartBackgroundColor) {
+			renderer.rect(mgn / 2, mgn / 2, chartWidth - mgn, chartHeight - mgn, 
+					optionsChart.borderRadius, chartBorderWidth).
+				attr({ 
+					stroke: optionsChart.borderColor,
+					'stroke-width': chartBorderWidth,
+					fill: chartBackgroundColor || NONE
+				}).
+				add().
+				shadow(optionsChart.shadow);
+		}
+		
+		
+		// Plot background
+		if (plotBackgroundColor) {
+			renderer.rect(plotLeft, plotTop, plotWidth,	plotHeight,	0)
+				.attr({
+					fill: plotBackgroundColor
+				})
+				.add()
+				.shadow(optionsChart.plotShadow);
+		}
+		if (plotBackgroundImage) {
+			renderer.image(plotBackgroundImage, plotLeft, plotTop, plotWidth, plotHeight)
+				.add();
+		}
+		
+		// Plot area border
+		if (optionsChart.plotBorderWidth) {
+			renderer.rect(plotLeft, plotTop, plotWidth, plotHeight, 0, optionsChart.plotBorderWidth).
+				attr({
+					stroke: optionsChart.plotBorderColor,
+					'stroke-width': optionsChart.plotBorderWidth,
+					zIndex: 4
+				}).add();
+		}
+						
+		// Axes
+		if (hasCartesianSeries) {
+			each(axes, function(axis) { 
+				axis.render();
+			});
+		}
+	
+		// Title
+		showTitle();
+		
+		
+		// Labels
+		if (labels.items) {
+			each (labels.items, function () {
+				var style = extend (labels.style, this.style),
+					x = parseInt(style.left, 10) + plotLeft,
+					y = parseInt(style.top, 10) + plotTop + 12;
+				
+				// delete to prevent rewriting in IE
+				delete style.left;
+				delete style.top;
+				
+				renderer.text(
+					this.html,
+					x,
+					y,
+					style
+				)
+				.attr({ zIndex: 2 })
+				.add();
+					
+			});
+		}
+
+		// The series
+		each (series, function(serie) {
+			serie.render();
+		});
+		
+		// Legend
+		legend = chart.legend = new Legend(chart);
+
+		
+		// Toolbar (don't redraw)
+		if (!chart.toolbar) {
+			chart.toolbar = Toolbar(chart);
+		}
+		
+		// Credits
+		if (credits.enabled && !chart.credits) {
+			renderer.text(
+				credits.text,
+				chartWidth - 10,
+				chartHeight - 5,
+				credits.style,
+				0,
+				'right'
+			)
+			.on('click', function() {
+				location.href = credits.href;
+			})
+			.attr({ zIndex: 8 })
+			.add(); 
+		}
+
+		// Set flag
+		chart.hasRendered = true;
+		
+		// If the chart was rendered outside the top container, put it back in
+		if (renderToClone) {
+			renderTo.appendChild(container);
+			discardElement(renderToClone);
+			//updatePosition(container);
+		}
+	}
+	
+	/**
+	 * Clean up memory usage
+	 */
+	function destroy() {
+		var i = series.length;
+
+		// remove events
+		//removeEvent(win, 'resize', updatePosition);
+		removeEvent(win, 'unload', destroy);
+		removeEvent(chart);
+		
+		each (axes, function(axis) {
+			removeEvent(axis);
+		});
+
+		// destroy each series
+		while (i--) {
+			series[i].destroy();
+		}
+		
+		// remove container and all SVG
+		container.onmousedown = container.onmousemove = container.onmouseup = container.onclick = null;
+		container.parentNode.removeChild(container);
+		
+		// IE6 leak 
+		container =	null;
+			
+		// memory and CPU leak
+		clearInterval(tooltipInterval);
+		
+		for (i in chart) {
+			delete chart[i];
+		}
+	}
+	/**
+	 * Prepare for first rendering after all data are loaded
+	 */
+	function firstRender() {
+		
+		// VML namespaces can't be added until after complete. Listening
+		// for Perini's doScroll hack is not enough.
+		var onreadystatechange = 'onreadystatechange';
+		if (!hasSVG && doc.readyState != 'complete') {
+			doc.attachEvent(onreadystatechange, function() {
+				doc.detachEvent(onreadystatechange, arguments.callee);
+				firstRender();
+			});
+			return;
+		}
+		
+		// create the container
+		getContainer();
+		
+		
+		// Initialize the series
+		each (options.series || [], function(serieOptions) {
+			initSeries(serieOptions);
+		});
+	
+		// Set the common inversion and transformation for inverted series after initSeries
+		chart.inverted = inverted = pick(inverted, options.chart.inverted);
+		chart.plotSizeX = plotSizeX = inverted ? plotHeight : plotWidth;
+		chart.plotSizeY = plotSizeY = inverted ? plotWidth : plotHeight; 
+			
+		// depends on inverted	
+		chart.tracker = tracker = new MouseTracker(chart, options.tooltip);
+		
+		getAxes();
+		
+		
+		// Prepare for the axis sizes
+		each(series, function(serie) {
+			serie.translate();
+			serie.setTooltipPoints();
+		});	
+		
+		chart.render = render;
+		
+		render();
+		fireEvent(chart, 'load');
+		callback && callback(chart);
+	}
+	
+	
+		
+	//updatePosition(container);
+	
+		
+	// Set to zero for each new chart
+	colorCounter = 0;
+	symbolCounter = 0;
+	
+	// Update position on resize and scroll
+	//addEvent(win, 'resize', updatePosition);
+	
+	// Destroy the chart and free up memory. 
+	addEvent(win, 'unload', destroy);
+	
+	// Chart event handlers
+	if (chartEvents) {
+		for (eventType in chartEvents) { 
+			addEvent(chart, eventType, chartEvents[eventType]);
+		}
+	}
+	
+	
+	chart.options = options;
+	chart.series = series;
+	//chart.container = container;
+	
+	
+	
+	// API methods
+	chart.addSeries = addSeries;
+	chart.destroy = destroy;
