@@ -4682,3 +4682,413 @@ function Chart (options, callback) {
 			hide: hide
 		};	
 	}
+	
+	/**
+	 * The mouse tracker object
+	 * @param {Object} chart
+	 * @param {Object} options
+	 */
+	function MouseTracker (chart, options) {
+
+		
+		var mouseDownX, 
+			mouseDownY,
+			hasDragged,
+			selectionMarker,
+			zoomType = optionsChart.zoomType,
+			zoomX = /x/.test(zoomType),
+			zoomY = /y/.test(zoomType),
+			zoomHor = zoomX && !inverted || zoomY && inverted,
+			zoomVert = zoomY && !inverted || zoomX && inverted;
+			
+		/**
+		 * Add crossbrowser support for chartX and chartY
+		 * @param {Object} e The event object in standard browsers
+		 */
+		function normalizeMouseEvent(e) {
+			
+			// common IE normalizing
+			e = e || win.event;
+			if (!e.target) {
+				e.target = e.srcElement;
+			}
+			
+			// in certain cases, get mouse position
+			if (e.type != 'mousemove' || win.opera) { // only Opera needs position on mouse move, see below
+				position = getPosition(container);
+			}
+
+			// chartX and chartY
+			if (isIE) { // IE including IE9 that has chartX but in a different meaning
+				e.chartX = e.x;
+				e.chartY = e.y;
+			} else {
+				if (e.layerX === UNDEFINED) { // Opera
+					e.chartX = e.pageX - position.x;
+					e.chartY = e.pageY - position.y;
+				} else {
+					e.chartX = e.layerX;
+					e.chartY = e.layerY;
+				}
+			}
+			
+			return e;
+		}
+		
+		/**
+		 * Get the click position in terms of axis values.
+		 * 
+		 * @param {Object} e A mouse event
+		 */
+		function getMouseCoordinates(e) {
+			var coordinates = {
+				xAxis: [],
+				yAxis: []
+			}; 
+			each (axes, function(axis, i) {
+				var translate = axis.translate,
+					isXAxis = axis.isXAxis,
+					isHorizontal = inverted ? !isXAxis : isXAxis;
+					
+				coordinates[isXAxis ? 'xAxis' : 'yAxis'].push({
+					axis: axis,
+					value: translate(
+						isHorizontal ? 
+							e.chartX - plotLeft  : 
+							plotHeight - e.chartY + plotTop ,
+						true
+					)								
+				});
+			});
+			return coordinates;
+		}
+		
+		/**
+		 * With line type charts with a single tracker, get the point closest to the mouse
+		 */
+		function onmousemove (e) {
+			var point,
+				hoverPoint = chart.hoverPoint,
+				hoverSeries = chart.hoverSeries;
+				
+			if (hoverSeries && hoverSeries.tracker) { // only use for line-type series with common tracker
+		
+				// get the point
+				point = hoverSeries.tooltipPoints[
+					inverted ? 
+						e.chartY : 
+						e.chartX - plotLeft // wtf?
+				];
+				
+				// a new point is hovered, refresh the tooltip
+				if (point && point != hoverPoint) {
+					
+					// trigger the events
+					point.onMouseOver();
+					
+				}				
+			}
+		}
+				
+		
+		
+		/**
+		 * Reset the tracking by hiding the tooltip, the hover series state and the hover point
+		 */
+		function resetTracker() {
+			var hoverSeries = chart.hoverSeries,
+				hoverPoint = chart.hoverPoint;				
+
+			if (hoverPoint) {
+				hoverPoint.onMouseOut();
+			}
+			if (hoverSeries) {
+				hoverSeries.onMouseOut();
+			}
+			if (tooltip) {
+				tooltip.hide();
+			}
+			
+		}
+		
+		/**
+		 * Mouse up or outside the plot area
+		 */
+		function drop() {
+			if (selectionMarker) {
+				var selectionData = {
+						xAxis: [],
+						yAxis: []
+					},
+					selectionBox = selectionMarker.getBBox(),
+					selectionLeft = selectionBox.x - plotLeft,
+					selectionTop = selectionBox.y - plotTop;
+				
+					
+				// a selection has been made
+				if (hasDragged) {
+					
+					// record each axis' min and max
+					each (axes, function(axis, i) {
+						var translate = axis.translate,
+							isXAxis = axis.isXAxis,
+							isHorizontal = inverted ? !isXAxis : isXAxis,
+							selectionMin = translate(
+								isHorizontal ? 
+									selectionLeft : 
+									plotHeight - selectionTop - selectionBox.height, 
+								true
+							),
+							selectionMax = translate(
+								isHorizontal ? 
+									selectionLeft + selectionBox.width : 
+									plotHeight - selectionTop, 
+								true
+							);
+								
+							selectionData[isXAxis ? 'xAxis' : 'yAxis'].push({
+								axis: axis,
+								min: mathMin(selectionMin, selectionMax), // for reversed axes
+								max: mathMax(selectionMin, selectionMax)
+							});
+							
+						});
+					fireEvent(chart, 'selection', selectionData, zoom);
+
+				}
+				selectionMarker = selectionMarker.destroy();
+			}
+			
+			chart.mouseIsDown = mouseIsDown = hasDragged = false;
+
+		}
+		
+		/**
+		 * Set the JS events on the container element
+		 */
+		function setDOMEvents () {
+			var lastWasOutsidePlot = true;
+			
+			container.onmousedown = function(e) {
+				e = normalizeMouseEvent(e);
+				
+				// record the start position
+				if (e.preventDefault) {
+					e.preventDefault();
+				}
+				chart.mouseIsDown = mouseIsDown = true;
+				mouseDownX = e.chartX;
+				mouseDownY = e.chartY;
+					
+				
+				// make a selection
+				if (hasCartesianSeries && (zoomX || zoomY)) {
+					if (!selectionMarker) {
+						selectionMarker = renderer.rect(
+							plotLeft,
+							plotTop,
+							zoomHor ? 1 : plotWidth,
+							zoomVert ? 1 : plotHeight,
+							0
+						)
+						.attr({
+							fill: 'rgba(69,114,167,0.25)',
+							zIndex: 7
+						})
+						.add();
+					}
+				}
+				
+			};
+						
+			// Use native browser event for this one. It's faster, and MooTools
+			// doesn't use clientX and clientY.
+			container.onmousemove = function(e) {
+				e = normalizeMouseEvent(e);
+				e.returnValue = false;
+				
+				var chartX = e.chartX,
+					chartY = e.chartY,
+					isOutsidePlot = !isInsidePlot(chartX - plotLeft, chartY - plotTop);
+				
+				if (mouseIsDown) { // make selection
+					
+					// determine if the mouse has moved more than 10px
+					hasDragged = Math.sqrt(
+						Math.pow(mouseDownX - chartX, 2) + 
+						Math.pow(mouseDownY - chartY, 2)
+					) > 10;
+					
+					
+					// adjust the width of the selection marker
+					if (zoomHor) {
+						var xSize = chartX - mouseDownX;
+						selectionMarker.attr({
+							width: mathAbs(xSize),
+							x: (xSize > 0 ? 0 : xSize) + mouseDownX
+						});
+					}
+					// adjust the height of the selection marker
+					if (zoomVert) {
+						var ySize = chartY - mouseDownY;
+						selectionMarker.attr({
+							height: mathAbs(ySize),
+							y: (ySize > 0 ? 0 : ySize) + mouseDownY
+						});
+					}
+					
+					
+					
+					
+				} else if (!isOutsidePlot) {
+					// show the tooltip
+					onmousemove(e);
+				}
+				
+				// cancel on mouse outside
+				if (isOutsidePlot && !lastWasOutsidePlot) {
+					// reset the tracker					
+					resetTracker();
+					
+					// drop the selection if any and reset mouseIsDown and hasDragged
+					drop();
+				}	
+				
+				lastWasOutsidePlot = isOutsidePlot;
+				return false;
+			};
+			
+			container.onmouseup = function(e) {
+				drop();
+			};
+			
+			
+			
+			// MooTools 1.2.3 doesn't fire this in IE when using addEvent
+			container.onclick = function(e) {
+				var hoverPoint = chart.hoverPoint;
+				e = normalizeMouseEvent(e);
+				 
+				e.cancelBubble = true; // IE specific
+				
+				
+				if (!hasDragged) {
+					if (hoverPoint && attr(e.target, 'isTracker')) {
+						var plotX = hoverPoint.plotX,
+							plotY = hoverPoint.plotY;
+							
+						// add page position info
+						extend(hoverPoint, {
+							pageX: position.x + plotLeft + 
+								(inverted ? plotWidth - plotY : plotX),
+							pageY: position.y + plotTop + 
+								(inverted ? plotHeight - plotX : plotY)
+						});
+						
+						// the series click event
+						fireEvent(chart.hoverSeries || hoverPoint.series, 'click', extend(e, {
+							point: hoverPoint
+						}));
+						
+						// the point click event
+						hoverPoint.firePointEvent('click', e);
+					
+					} else { 
+						extend (e, getMouseCoordinates(e));
+						
+						// fire a click event in the chart
+						if (isInsidePlot(e.chartX - plotLeft, e.chartY - plotTop)) {
+							fireEvent(chart, 'click', e);
+						}
+					}
+					
+					
+				}
+				// reset mouseIsDown and hasDragged
+				hasDragged = false;
+			};
+			
+			 
+		}
+		
+		
+
+		
+		/**
+		 * Create the image map that listens for mouseovers
+		 */
+		function createTrackerGroup () {
+			chart.trackerGroup = trackerGroup = renderer.g('tracker');
+			
+			if (inverted) {
+				trackerGroup.attr({
+					width: chart.plotWidth,
+					height: chart.plotHeight
+				}).invert();
+			} 
+		
+			trackerGroup
+				.attr({ zIndex: 9 })
+				.translate(plotLeft, plotTop)
+				.add();	
+		}
+		
+		
+		// Run MouseTracker
+		createTrackerGroup();
+		if (options.enabled) {
+			chart.tooltip = tooltip = Tooltip(options);
+		}
+		
+		setDOMEvents();
+		
+		// set the fixed interval ticking for the smooth tooltip
+		tooltipInterval = setInterval(function() {
+			if (tooltipTick) {
+				tooltipTick();
+			}
+		}, 32);
+		
+		// expose properties
+		extend (this, {
+			zoomX: zoomX,
+			zoomY: zoomY,
+			resetTracker: resetTracker
+		});
+	}
+	
+	
+	
+	/**
+	 * The overview of the chart's series
+	 * @param {Object} chart
+	 */
+	var Legend = function(chart) {
+
+		var options = chart.options.legend;
+			
+		if (!options.enabled) {
+			return;
+		}
+		
+		var horizontal = options.layout == 'horizontal',
+			symbolWidth = options.symbolWidth,
+			symbolPadding = options.symbolPadding,
+			allItems = [],
+			style = options.style,
+			itemStyle = options.itemStyle,
+			itemHoverStyle = options.itemHoverStyle,
+			itemHiddenStyle = options.itemHiddenStyle,
+			padding = parseInt(style.padding, 10),
+			rightPadding = 20,
+			lineHeight = options.lineHeight || 16,
+			y = 18,
+			initialItemX = 4 + padding + symbolWidth + symbolPadding,
+			itemX,
+			itemY,
+			lastItemY,
+			box,
+			legendBorderWidth = options.borderWidth,
+			legendBackgroundColor = options.backgroundColor,
+			legendGroup,
+			offsetWidth,
