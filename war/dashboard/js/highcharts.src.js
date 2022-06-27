@@ -5092,3 +5092,385 @@ function Chart (options, callback) {
 			legendBackgroundColor = options.backgroundColor,
 			legendGroup,
 			offsetWidth,
+			widthOption = options.width,
+			boxWidth,
+			boxHeight,
+			series = chart.series,
+			reversedLegend = options.reversed;
+			
+			
+		
+		/**
+		 * Set the colors for the legend item
+		 * @param {Object} item A Series or Point instance
+		 * @param {Object} visible Dimmed or colored
+		 */
+		function colorizeItem(item, visible) {
+			var legendItem = item.legendItem,
+				legendLine = item.legendLine,
+				legendSymbol = item.legendSymbol,
+				hiddenColor = itemHiddenStyle.color,
+				textColor = visible ? options.itemStyle.color : hiddenColor,
+				symbolColor = visible ? item.color : hiddenColor;
+			if (legendItem) {
+				legendItem.css({ color: textColor });
+			}
+			if (legendLine) {
+				legendLine.attr({ stroke: symbolColor });
+			}
+			if (legendSymbol) {
+				legendSymbol.attr({ 
+					stroke: symbolColor,
+					fill: symbolColor
+				});
+			}
+		}
+		
+		/**
+		 * Position the legend item
+		 * @param {Object} item A Series or Point instance
+		 * @param {Object} visible Dimmed or colored
+		 */
+		function positionItem(item, itemX, itemY) {
+			var legendItem = item.legendItem,
+				legendLine = item.legendLine,
+				legendSymbol = item.legendSymbol,
+				checkbox = item.checkbox;
+			if (legendItem) {
+				legendItem.attr({ 
+					x: itemX,
+					y: itemY
+				});
+			}
+			if (legendLine) {
+				legendLine.translate(itemX, itemY - 4);
+			}
+			if (legendSymbol) {
+				legendSymbol
+					.translate(itemX, itemY);
+			}
+			if (checkbox) {
+				checkbox.x = itemX;
+				checkbox.y = itemY;
+			}
+		}
+		
+		/**
+		 * Destroy a single legend item
+		 * @param {Object} item The series or point
+		 */
+		function destroyItem(item) {
+			var i = allItems.length,				
+				checkbox = item.checkbox;
+				
+			// pull out from the array
+			while (i--) {
+				if (allItems[i] == item) {
+					allItems.splice(i, 1);
+					break;
+				}
+			}
+				
+			// destroy SVG elements
+			each (['legendItem', 'legendLine', 'legendSymbol'], function(key) {
+				if (item[key]) {
+					item[key].destroy();
+				}
+			});
+			
+			if (checkbox) {
+				discardElement(item.checkbox);
+			}
+			
+			
+		}
+		
+		
+		
+		/**
+		 * Render a single specific legend item
+		 * @param {Object} item A series or point
+		 */
+		function renderItem(item) {
+			var	bBox,
+				itemWidth,
+				legendSymbol,
+				simpleSymbol,
+				li = item.legendItem,
+				series = item.series || item;
+				
+			
+			if (!li) { // generate it once, later move it
+			
+				// let these series types use a simple symbol
+				simpleSymbol = /^(bar|pie|area|column)$/.test(series.type);
+				
+				// generate the list item text
+				item.legendItem = li = renderer.text(
+						options.labelFormatter.call(item),
+						0, 
+						0
+					)
+					.css(item.visible ? itemStyle : itemHiddenStyle)
+					.on('mouseover', function() {
+						item.setState(HOVER_STATE);
+						li.css(itemHoverStyle);
+					})
+					.on('mouseout', function() {
+						li.css(item.visible ? itemStyle : itemHiddenStyle);
+						item.setState();
+					})
+					.on('click', function(event) {
+						var strLegendItemClick = 'legendItemClick',
+							fnLegendItemClick = function() {
+								item.setVisible();
+							};
+						
+						// click the name or symbol
+						if (item.firePointEvent) { // point
+							item.firePointEvent (strLegendItemClick, null, fnLegendItemClick);
+						} else {
+							fireEvent (item, strLegendItemClick, null, fnLegendItemClick);
+						}
+					})
+					.attr({ zIndex: 2 })
+					.add(legendGroup);
+				
+				// draw the line
+				if (!simpleSymbol && item.options && item.options.lineWidth) {
+					item.legendLine = renderer.path([
+						M,
+						-symbolWidth - symbolPadding, 
+						0,
+						L, 
+						-symbolPadding, 
+						0
+					]).attr({
+						//stroke: color,
+						'stroke-width': item.options.lineWidth,
+						zIndex: 2
+					}).
+					add(legendGroup);
+				}
+					
+				// draw a simple symbol
+				if (simpleSymbol) { // bar|pie|area|column
+					//legendLayer.drawRect(
+					legendSymbol = renderer.rect(
+						-symbolWidth - symbolPadding,
+						-11,
+						symbolWidth,
+						12,
+						2
+					).attr({
+						'stroke-width': 0,
+						zIndex: 3
+					}).add(legendGroup);
+				}
+					
+				// draw the marker
+				else if (item.options && item.options.marker && item.options.marker.enabled) {
+					legendSymbol = renderer.symbol(
+						item.symbol,
+						-symbolWidth / 2 - symbolPadding, 
+						-4, 
+						item.options.marker.radius
+					)
+					.attr(item.pointAttr[NORMAL_STATE])
+					.attr({ zIndex: 3 })
+					.add(legendGroup);
+				}
+				item.legendSymbol = legendSymbol;
+					
+				// colorize the items
+				colorizeItem(item, item.visible);
+				
+				
+				// add the HTML checkbox on top
+				if (item.options && item.options.showCheckbox) {
+					item.checkbox = createElement('input', {
+						type: 'checkbox',
+						checked: item.selected,
+						defaultChecked: item.selected // required by IE7						
+					}, options.itemCheckboxStyle, container);
+					
+					addEvent(item.checkbox, 'click', function(event) {
+						var target = event.target;
+						fireEvent (item, 'checkboxClick', { 
+								checked: target.checked 
+							}, 
+							function() {
+								item.select();
+							}
+						);
+					});
+				}
+			}
+			
+			
+			
+			// position the newly generated or reordered items
+			positionItem(item, itemX, itemY);
+			
+			// calculate the positions for the next line
+			bBox = li.getBBox();
+			lastItemY = itemY;
+			
+			item.legendItemWidth = itemWidth = 
+				options.itemWidth || symbolWidth + symbolPadding + bBox.width + rightPadding;
+			if (horizontal) {
+				itemX += itemWidth;
+				offsetWidth = widthOption || mathMax(itemX - initialItemX, offsetWidth);
+			
+				if (itemX - initialItemX + itemWidth > 
+						(widthOption || (chartWidth - 2 * padding - initialItemX))) { // new line
+					itemX = initialItemX;
+					itemY += lineHeight;
+				}
+				
+			} else {
+				itemY += lineHeight;
+				// the width of the widest item
+				offsetWidth = widthOption || mathMax(itemWidth, offsetWidth);			
+			}		
+			
+			// add it all to an array to use below
+			allItems.push(item);
+		}
+
+		/**
+		 * Render the legend. This method can be called both before and after
+		 * chart.render. If called after, it will only rearrange items instead
+		 * of creating new ones.
+		 */
+		function renderLegend() {
+			itemX = initialItemX;
+			itemY = y;
+			offsetWidth = 0;
+			lastItemY = 0;
+			
+			if (!legendGroup) {
+				legendGroup = renderer.g('legend')
+					.attr({ zIndex: 7 })
+					.add();
+			}
+			
+			
+			// add HTML for each series
+			if (reversedLegend) {
+				series.reverse();
+			}
+			each(series, function(serie) {
+				if (!serie.options.showInLegend) {
+					return;
+				}
+				
+				// use points or series for the legend item depending on legendType
+				var items = (serie.options.legendType == 'point') ?
+					serie.data : [serie];
+						
+				// render all items
+				each(items, renderItem);
+			});
+			if (reversedLegend) { // restore
+				series.reverse();
+			}
+			
+			
+			
+			// Draw the border
+			boxWidth = widthOption || offsetWidth;
+			boxHeight = lastItemY - y + lineHeight;
+			
+			if (legendBorderWidth || legendBackgroundColor) {
+				boxWidth += 2 * padding;
+				boxHeight += 2 * padding;
+				
+				if (!box) {
+					box = renderer.rect(
+						0, 
+						0,
+						boxWidth,
+						boxHeight,
+						options.borderRadius,
+						legendBorderWidth || 0
+					).attr({
+						stroke: options.borderColor,
+						'stroke-width': legendBorderWidth || 0,
+						fill: legendBackgroundColor || NONE
+					})
+					.add(legendGroup)
+					.shadow(options.shadow);
+				
+				} else {
+					box.attr({ 
+						height: boxHeight,
+						width: boxWidth
+					});
+				}
+			}
+			
+			// 1.x compatibility: positioning based on style
+			var props = ['left', 'right', 'top', 'bottom'],
+				prop,
+				i = 4;
+			while(i--) {
+				prop = props[i];
+				if (style[prop] && style[prop] != 'auto') {
+					options[i < 2 ? 'align' : 'verticalAlign'] = prop;
+					options[i < 2 ? 'x' : 'y'] = parseInt(style[prop], 10) * (i % 2 ? -1 : 1);
+				}
+			}
+
+			
+			var boxPos = getAlignment(extend({
+				width: boxWidth,
+				height: boxHeight
+			}, options));
+			legendGroup.translate(boxPos.x, boxPos.y);
+			
+			// Position the checkboxes after the width is determined 
+			each(allItems, function(item) {
+				var checkbox = item.checkbox;
+				if (checkbox) {
+					css(checkbox, {
+						left: (boxPos.x + item.legendItemWidth + checkbox.x - 40) +PX,
+						top: (boxPos.y + checkbox.y - 11) + PX 
+					});
+				}
+			});
+			
+		}
+		
+		// run legend
+		renderLegend();
+		
+		// expose 
+		return {
+			colorizeItem: colorizeItem,
+			destroyItem: destroyItem,
+			renderLegend: renderLegend
+		};
+	};
+	
+	
+	
+		
+	
+
+	/** 
+	 * Initialize an individual series, called internally before render time
+	 */
+	function initSeries(options) {
+		var type = options.type || optionsChart.defaultSeriesType,
+			typeClass = seriesTypes[type],
+			serie,
+			hasRendered = chart.hasRendered;
+			
+		// an inverted chart can't take a column series and vice versa
+		if (hasRendered) {
+			if (inverted && type == 'column') {
+				typeClass = seriesTypes.bar;
+			} else if (!inverted && type == 'bar') {
+				typeClass = seriesTypes.column;
+			}
