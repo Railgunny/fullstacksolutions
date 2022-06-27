@@ -3919,3 +3919,398 @@ function Chart (options, callback) {
 		/**
 		 * Fix JS round off float errors
 		 * @param {Number} num
+		 */
+		function correctFloat(num) {
+			var invMag = (magnitude < 1 ? mathRound(1 / magnitude) : 1) * 10;
+			return mathRound(num * invMag) / invMag;
+		}
+				
+		/**
+		 * Set the tick positions of a linear axis to round values like whole tens or every five.
+		 */
+		function setLinearTickPositions() {
+			
+			var i,
+				roundedMin = mathFloor(min / tickInterval) * tickInterval,
+				roundedMax = mathCeil(max / tickInterval) * tickInterval;
+				
+			tickPositions = [];
+			
+			// populate the intermediate values
+			i = correctFloat(roundedMin);
+			while (i <= roundedMax) {
+				tickPositions.push(i);
+				i = correctFloat(i + tickInterval);
+			}
+				
+			// pad categorised axis to nearest half unit
+			if (categories) {
+				 min -= 0.5;
+				 max += 0.5;
+			}
+
+			// dynamic label formatter 
+			/*if (!labelFormatter) { 
+				labelFormatter = function() {
+					return this.value;
+				};
+			}*/
+			
+		}
+		
+		/**
+		 * Set the tick positions to round values and optionally extend the extremes
+		 * to the nearest tick
+		 */
+		function setTickPositions() {
+			if (isDatetimeAxis)	{
+				setDateTimeTickPositions();
+			} else {
+				setLinearTickPositions();
+			}	
+			
+			// reset min/max or remove extremes based on start/end on tick
+			var roundedMin = tickPositions[0],
+				roundedMax = tickPositions[tickPositions.length - 1];
+					
+			
+			if (options.startOnTick) {
+				min = roundedMin;
+			} else if (min > roundedMin) {
+				tickPositions.shift();
+			}
+			
+			if (options.endOnTick) {
+				max = roundedMax;
+			} else if (max < roundedMax) {
+				tickPositions.pop();
+			}
+					
+		}
+		
+		/**
+		 * When using multiple axes, adjust the number of ticks to match the highest
+		 * number of ticks in that group
+		 */ 
+		function adjustTickAmount() {
+			if (!isDatetimeAxis && !categories) { // only apply to linear scale
+				var oldTickAmount = tickAmount,
+					calculatedTickAmount = tickPositions.length;
+					
+				// set the axis-level tickAmount to use below
+				tickAmount = maxTicks[xOrY];
+				
+					
+				if (calculatedTickAmount < tickAmount) {
+					while (tickPositions.length < tickAmount) {
+						tickPositions.push( correctFloat(
+							tickPositions[tickPositions.length - 1] + tickInterval
+						));
+					}
+					transA *= (calculatedTickAmount - 1) / (tickAmount - 1);
+				}
+				if (defined(oldTickAmount) && tickAmount != oldTickAmount) {
+					axis.isDirty = true;	
+				}
+			}
+		}
+	
+		/**
+		 * Set the scale based on data min and max, user set min and max or options
+		 */
+		function setScale() {
+			var length, 
+				type, 
+				i,
+				//total,
+				oldMin = min,
+				oldMax = max,
+				maxZoom = options.maxZoom,
+				zoomOffset;
+				
+			// get data extremes if needed
+			getSeriesExtremes();
+			
+			// initial min and max from the extreme data values
+			min = pick(userSetMin, options.min, dataMin);
+			max = pick(userSetMax, options.max, dataMax);
+			
+			// linked axis gets the extremes from the parent axis
+			if (isLinked) {
+				var linkedParent = chart[isXAxis ? 'xAxis' : 'yAxis'][options.linkedTo],
+					linkedParentExtremes = linkedParent.getExtremes();
+				min = pick(linkedParentExtremes.min, linkedParentExtremes.dataMin);
+				max = pick(linkedParentExtremes.max, linkedParentExtremes.dataMax);				
+			}
+			
+			// maxZoom exceeded, just center the selection
+			if (max - min < maxZoom) { 
+				zoomOffset = (maxZoom - max + min) / 2;
+				// if min and max options have been set, don't go beyond it
+				min = mathMax(min - zoomOffset, pick(options.min, min - zoomOffset));
+				max = mathMin(min + maxZoom, pick(options.max, min + maxZoom));
+			}
+				
+			// pad the values to get clear of the chart's edges
+			if (!categories && !usePercentage && !isLinked && defined(min) && defined(max)) {
+				length = (max - min) || 1;
+				if (!defined(options.min) && !defined(userSetMin) && minPadding && (dataMin < 0 || !ignoreMinPadding)) { 
+					min -= length * minPadding; 
+				}
+				if (!defined(options.max) && !defined(userSetMax)  && maxPadding && (dataMax > 0 || !ignoreMaxPadding)) { 
+					max += length * maxPadding;
+				}
+			}
+			
+			// tickInterval
+			if (categories || min == max) {
+				tickInterval = 1;
+			} else {
+				tickInterval = pick(
+						options.tickInterval,
+						(max - min) * options.tickPixelInterval / axisLength
+					);
+						
+			}
+			
+				
+			if (!isDatetimeAxis && !defined(options.tickInterval)) { // linear
+				tickInterval = normalizeTickInterval(tickInterval);
+			}
+			
+			// minorTickInterval
+			minorTickInterval = options.minorTickInterval === 'auto' && tickInterval ?
+					tickInterval / 5 : options.minorTickInterval;
+					
+			// get fixed positions based on tickInterval
+			setTickPositions();
+			
+			
+			// the translation factor used in translate function			
+			transA = axisLength / ((max - min) || 1);
+			
+			// record the greatest number of ticks for multi axis
+			if (!maxTicks) { // first call, or maxTicks have been reset after a zoom operation
+				maxTicks = {
+					x: 0,
+					y: 0
+				};
+			}
+			
+			
+			if (!isDatetimeAxis && tickPositions.length > maxTicks[xOrY]) {
+				maxTicks[xOrY] = tickPositions.length;
+			}
+				
+			// reset stacks
+			if (!isXAxis) {
+				for (type in stacks) {
+					for (i in stacks[type]) {
+						stacks[type][i].cum = stacks[type][i].total;
+					}
+				}
+			}
+
+			// mark as dirty if it is not already set to dirty and extremes have changed
+			if (!axis.isDirty) {
+				axis.isDirty = (min != oldMin || max != oldMax);
+			}
+			
+		}
+		
+		/**
+		 * Set the extremes and optionally redraw
+		 * @param {Number} newMin
+		 * @param {Number} newMax
+		 * @param {Boolean} redraw
+		 * 
+		 */
+		function setExtremes(newMin, newMax, redraw) {
+			redraw = pick(redraw, true); // defaults to true
+				
+			fireEvent(axis, 'setExtremes', { // fire an event to enable syncing of multiple charts
+				min: newMin,
+				max: newMax
+			}, function() { // the default event handler
+				// make sure categorized axes are not exceeded
+				if (categories) {
+					if (newMin < 0) {
+						newMin = 0;
+					}
+					if (newMax > categories.length - 1) {
+						newMax = categories.length - 1;
+					}
+				}
+				
+				userSetMin = newMin;
+				userSetMax = newMax;
+			
+				
+				// redraw
+				if (redraw) {
+					chart.redraw();
+				}
+			});
+			
+		}
+		
+		/**
+		 * Get the actual axis extremes
+		 */
+		function getExtremes() {
+			return {
+				min: min,
+				max: max,
+				dataMin: dataMin,
+				dataMax: dataMax
+			};
+		}
+		
+		/**
+		 * Get the zero plane either based on zero or on the min or max value.
+		 * Used in bar and area plots
+		 */
+		function getThreshold(threshold) {
+			if (min > threshold) {
+				threshold = min;
+			} else if (max < threshold) {
+				threshold = max;
+			}
+			
+			return translate(threshold, 0, 1);
+		}
+		
+		/**
+		 * Add a plot band or plot line after render time
+		 * 
+		 * @param item {Object} The plotBand or plotLine configuration object
+		 */
+		function addPlotBandOrLine(item) {
+			var isLine = item.width,
+				collection = isLine ? plotLines : plotBands;	
+
+			collection.push(item);
+			
+			if (isLine) {
+				drawPlotLine(item.value, item.color, item.width);
+			} else {
+				drawPlotBand(item.from, item.to, item.color);
+			}			
+		}
+		
+
+		
+		/**
+		 * Render the axis
+		 */
+		function render() {
+			var axisTitleOptions = options.title,
+				alternateGridColor = options.alternateGridColor,
+				minorTickWidth = options.minorTickWidth,
+				lineWidth = options.lineWidth,
+				lineLeft,
+				lineTop,
+				tickmarkPos,
+				hasData = associatedSeries.length && defined(min) && defined(max);
+			
+			if (!axisGroup) {
+				axisGroup = renderer.g('axis')
+					.attr({ zIndex: 7 })
+					.add();
+				gridGroup = renderer.g('grid')
+					.attr({ zIndex: 1 })
+					.add();
+			} else {
+				// clear the axis layers before new grid and ticks are drawn
+				axisGroup.empty();
+				gridGroup.empty();
+			}
+			
+			// If the series has data draw the ticks. Else only the line and title
+			if (hasData || isLinked) {
+				// alternate grid color
+				if (alternateGridColor) {
+					each(tickPositions, function(pos, i) {
+						if (i % 2 === 0 && pos < max) {
+							drawPlotBand(
+								pos, 
+								tickPositions[i + 1] !== UNDEFINED ? tickPositions[i + 1] : max, 
+								alternateGridColor
+							);
+						}
+					});
+				}
+				
+				// custom plot bands (behind grid lines)
+				each (plotBands, function(plotBand) {
+					drawPlotBand(plotBand.from, plotBand.to, plotBand.color);
+				});
+				
+				// minor grid lines
+				if (minorTickInterval && !categories) {
+					for (var i = min; i <= max; i += minorTickInterval) {
+						drawPlotLine(i, options.minorGridLineColor, options.minorGridLineWidth);
+						if (minorTickWidth) {
+							addTick(
+								i, 
+								options.minorTickPosition, 
+								options.minorTickColor, 
+								minorTickWidth, 
+								options.minorTickLength
+							);
+						}
+					}
+				}
+				// grid lines and tick marks
+				each(tickPositions, function(pos, index) {
+					tickmarkPos = pos + tickmarkOffset;
+					
+					// add the grid line
+					drawPlotLine(
+						tickmarkPos, 
+						options.gridLineColor, 
+						options.gridLineWidth
+					);
+					
+					// add the tick mark
+					addTick(
+						pos, 
+						options.tickPosition, 
+						options.tickColor, 
+						options.tickWidth, 
+						options.tickLength, 
+						!((pos == min && !options.showFirstLabel) || (pos == max && !options.showLastLabel)),
+						index
+					);
+				});
+			
+				
+				// custom plot lines (in front of grid lines)
+				each (plotLines, function(plotLine) {
+					drawPlotLine(plotLine.value, plotLine.color, plotLine.width);
+				});
+			
+			} // end if hasData
+			
+			
+			
+			// Static items. As the axis group is cleared on subsequent calls
+			// to render, these items are added outside the group.	
+			// axis line
+			if (!axis.hasRenderedLine && lineWidth) {
+				lineLeft = plotLeft + (opposite ? plotWidth : 0) + offset;
+				lineTop = chartHeight - marginBottom - (opposite ? plotHeight : 0) + offset;
+				
+				renderer.path(renderer.crispLine([
+						M,
+						horiz ? 
+							plotLeft: 
+							lineLeft,
+						horiz ? 
+							lineTop: 
+							plotTop,
+						L, 
+						horiz ? 
+							chartWidth - marginRight : 
+							lineLeft,
+						horiz ? 
