@@ -6638,3 +6638,350 @@ Series.prototype = {
 		// set the data
 		series.setData(options.data, false);
 			
+	},
+	
+	
+	/**
+	 * Return an auto incremented x value based on the pointStart and pointInterval options. 
+	 * This is only used if an x value is not given for the point that calls autoIncrement.
+	 */
+	autoIncrement: function() {
+		var series = this,
+			options = series.options,
+			xIncrement = series.xIncrement;
+			
+		xIncrement = pick(xIncrement, options.pointStart, 0);
+		
+		series.pointInterval = pick(series.pointInterval, options.pointInterval, 1);
+		
+		series.xIncrement = xIncrement + series.pointInterval;
+		return xIncrement;
+	},
+	
+	/**
+	 * Sort the data and remove duplicates 
+	 */
+	cleanData: function() {
+		var series = this,
+			data = series.data,
+			i;
+			
+		// sort the data points
+		data.sort(function(a, b){
+			return (a.x - b.x);
+		});
+		
+		// remove points with equal x values
+		// record the closest distance for calculation of column widths
+		for (i = data.length - 1; i >= 0; i--) {
+			if (data[i - 1]) {
+				if (data[i - 1].x == data[i].x)	{
+					data.splice(i - 1, 1); // remove the duplicate
+				}
+				
+			}
+		}
+	},		
+		
+	/**
+	 * Divide the series data into segments divided by null values. Also sort
+	 * the data points and delete duplicate values.
+	 */
+	getSegments: function() {
+		var lastNull = -1,
+			segments = [],
+			data = this.data;
+		
+		// create the segments
+		each (data, function(point, i) {
+			if (point.y === null) {
+				if (i > lastNull + 1) {
+					segments.push(data.slice(lastNull + 1, i));
+				}
+				lastNull = i;	
+			} else if (i == data.length - 1) { // last value
+				segments.push(data.slice(lastNull + 1, i + 1));
+			}
+		});
+		this.segments = segments;
+		
+		
+	},
+	/**
+	 * Set the series options by merging from the options tree
+	 * @param {Object} itemOptions
+	 */
+	setOptions: function(itemOptions) {
+		var plotOptions = this.chart.options.plotOptions,
+			options = merge(
+				plotOptions[this.type],
+				plotOptions.series,
+				itemOptions
+			);
+		
+		return options;
+		
+	},
+	/**
+	 * Get the series' color
+	 */
+	getColor: function(){
+		var defaultColors = this.chart.options.colors;
+		this.color = this.options.color || defaultColors[colorCounter++] || '#0000ff';
+		if (colorCounter >= defaultColors.length) {
+			colorCounter = 0;
+		}
+	},
+	/**
+	 * Get the series' symbol
+	 */
+	getSymbol: function(){
+		var defaultSymbols = this.chart.options.symbols,
+			symbol = this.options.marker.symbol || defaultSymbols[symbolCounter++];
+		this.symbol = symbol;
+		if (symbolCounter >= defaultSymbols.length) { 
+			symbolCounter = 0;
+		}
+	},
+	
+	/**
+	 * Add a point dynamically after chart load time
+	 * @param {Object} options Point options as given in series.data
+	 * @param {Boolean} redraw Whether to redraw the chart or wait for an explicit call
+	 * @param {Boolean} shift If shift is true, a point is shifted off the start 
+	 *    of the series as one is appended to the end.
+	 */
+	addPoint: function(options, redraw, shift) {
+		var series = this,
+			data = series.data,
+			point = (new series.pointClass()).init(series, options);
+			
+		redraw = pick(redraw, true);
+			
+		data.push(point);
+		if (shift) {
+			data[0].remove(false);
+		}
+		
+		
+		// redraw
+		series.isDirty = true;
+		if (redraw) {
+			series.chart.redraw();
+		}
+	},
+	
+	/**
+	 * Replace the series data with a new set of data
+	 * @param {Object} data
+	 * @param {Object} redraw
+	 */
+	setData: function(data, redraw) {
+		var series = this,
+			oldData = series.data,
+			initialColor = series.initialColor,
+			i = oldData && oldData.length || 0;
+		
+		series.xIncrement = null; // reset for new data
+		if (defined(initialColor)) { // reset colors for pie
+			colorCounter = initialColor;
+		}
+		data = map(splat(data || []), function(pointOptions) {
+			return (new series.pointClass()).init(series, pointOptions);
+		});
+		
+		// destroy old points
+		while (i--) {
+			oldData[i].destroy();
+		}
+		
+		// set the data
+		series.data = data;
+	
+		series.cleanData();	
+		series.getSegments();
+		
+		// redraw
+		series.isDirty = true;
+		if (pick(redraw, true)) {
+			series.chart.redraw();
+		}
+	},
+	
+	/**
+	 * Remove a series and optionally redraw the chart
+	 * 
+	 * @param {Boolean} redraw Whether to redraw the chart or wait for an explicit call
+	 */
+	
+	remove: function(redraw) {
+		var series = this,
+			chart = series.chart;
+			
+		redraw = pick(redraw, true);
+		
+		if (!series.isRemoving) {  /* prevent triggering native event in jQuery
+				(calling the remove function from the remove event) */ 
+			series.isRemoving = true;
+
+			// fire the event with a default handler of removing the point			
+			fireEvent(series, 'remove', null, function() {
+				
+						
+				// destroy elements
+				series.destroy();
+			
+				
+				// redraw
+				chart.isDirty = true;
+				if (redraw) {
+					chart.redraw();
+				}
+			});
+			
+		} 
+		series.isRemoving = false;
+	},
+	
+	/**
+	 * Translate data points from raw data values to chart specific positioning data
+	 * needed later in drawPoints, drawGraph and drawTracker. 
+	 */
+	translate: function() {
+		var series = this, 
+			chart = series.chart, 
+			stacking = series.options.stacking,
+			categories = series.xAxis.categories,
+			yAxis = series.yAxis,
+			stack = yAxis.stacks[series.type],
+			data = series.data,
+			i = data.length;
+			
+		// do the translation
+		while (i--) {
+			var point = data[i],
+				xValue = point.x, 
+				yValue = point.y, 
+				yBottom, 
+				pointStack,
+				pointStackTotal;
+			point.plotX = series.xAxis.translate(xValue);
+			
+			// calculate the bottom y value for stacked series
+			if (stacking && series.visible && stack[xValue]) {
+				pointStack = stack[xValue];
+				pointStackTotal = pointStack.total;
+				pointStack.cum = yBottom = pointStack.cum - yValue; // start from top
+				yValue = yBottom + yValue;
+				
+				if (stacking == 'percent') {
+					yBottom = pointStackTotal ? yBottom * 100 / pointStackTotal : 0;
+					yValue = pointStackTotal ? yValue * 100 / pointStackTotal : 0;
+				}
+
+				point.percentage = pointStackTotal ? point.y * 100 / pointStackTotal : 0;
+				point.stackTotal = pointStackTotal;
+				point.yBottom = yAxis.translate(yBottom, 0, 1);				
+			}
+			
+			// set the y value
+			if (yValue !== null) {
+				point.plotY = yAxis.translate(yValue, 0, 1);
+			}
+			
+			// set client related positions for mouse tracking
+			point.clientX = chart.inverted ? 
+				chart.plotHeight - point.plotX : 
+				point.plotX; // for mouse tracking
+				
+			// some API data
+			point.category = categories && categories[point.x] !== UNDEFINED ? 
+				categories[point.x] : point.x;
+				
+		}
+	},
+	/**
+	 * Memoize tooltip texts and positions
+	 */
+	setTooltipPoints: function (renew) {
+		var series = this,
+			chart = series.chart,
+			inverted = chart.inverted,
+			data = [],
+			plotSize = (inverted ? chart.plotTop : chart.plotLeft) + chart.plotSizeX,
+			low,
+			high,
+			tooltipPoints = []; // a lookup array for each pixel in the x dimension
+			
+		// renew
+		if (renew) {
+			series.tooltipPoints = null;
+		}
+			
+		// concat segments to overcome null values
+		each (series.segments, function(segment){
+			data = data.concat(segment);
+		});
+		
+		// loop the concatenated data and apply each point to all the closest
+		// pixel positions
+		if (series.xAxis && series.xAxis.reversed) {
+			data = data.reverse();//reverseArray(data);
+		}
+		each (data, function(point, i) {
+			
+			
+			if (!series.tooltipPoints) { // only create the text the first time, not on zoom
+				point.setTooltipText();
+			}
+			
+			low = data[i - 1] ? data [i - 1].high + 1 : 0;
+			high = point.high = data[i + 1] ? (
+				mathFloor((point.plotX + (data[i + 1] ? 
+					data[i + 1].plotX : plotSize)) / 2)) :
+					plotSize;
+			
+			while (low <= high) {
+				tooltipPoints[inverted ? plotSize - low++ : low++] = point;
+			}
+		});
+		series.tooltipPoints = tooltipPoints;
+	},
+	
+	
+
+	
+	/**
+	 * Series mouse over handler
+	 */
+	onMouseOver: function() {
+		var series = this,
+			chart = series.chart,
+			hoverSeries = chart.hoverSeries,
+			stateMarkerGraphic = series.stateMarkerGraphic;
+			
+		if (chart.mouseIsDown) {
+			return;
+		}
+		
+		if (stateMarkerGraphic) {
+			stateMarkerGraphic.show();
+		}
+		
+		// set normal state to previous series
+		if (hoverSeries && hoverSeries != series) {
+			hoverSeries.onMouseOut();
+		}
+		
+		// trigger the event, but to save processing time, 
+		// only if defined
+		if (series.options.events.mouseOver) { 
+			fireEvent(series, 'mouseOver');
+		}
+		
+		
+		// bring to front
+		// Todo: optimize. This is one of two operations slowing down the tooltip in Firefox.
+		// Can the tracking be done otherwise?
+		if (series.tracker) {
+			series.tracker.toFront();
