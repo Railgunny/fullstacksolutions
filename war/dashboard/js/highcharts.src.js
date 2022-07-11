@@ -8460,3 +8460,266 @@ var PiePoint = extendClass(Point, {
 		addEvent(point, 'unselect', toggleSlice);
 		
 		return point;
+	},
+	
+	/**
+	 * Toggle the visibility of the pie slice
+	 * @param {Boolean} vis Whether to show the slice or not. If undefined, the
+	 *    visibility is toggled
+	 */
+	setVisible: function(vis) {
+	
+		var point = this, 
+			chart = point.series.chart,
+			method;
+		
+		// if called without an argument, toggle visibility
+		point.visible = vis = vis === UNDEFINED ? !point.visible : vis;
+		
+		method = vis ? 'show' : 'hide';
+		
+		point.group[method]();
+		if (point.tracker) {
+			point.tracker[method]();
+		}
+		if (point.dataLabel) {
+			point.dataLabel[method]();
+		}
+		
+		if (point.legendItem) {
+			chart.legend.colorizeItem(point, vis);
+		}
+	},
+	
+	/**
+	 * Set or toggle whether the slice is cut out from the pie
+	 * @param {Boolean} sliced When undefined, the slice state is toggled 
+	 * @param {Boolean} redraw Whether to redraw the chart. True by default.
+	 */
+	slice: function(sliced, redraw) {
+		var point = this,
+			series = point.series,
+			chart = series.chart,
+			slicedTranslation = point.slicedTranslation;
+		
+		// redraw is true by default
+		redraw = pick(redraw, true);
+			
+		// if called without an argument, toggle
+		sliced = point.sliced = defined(sliced) ? sliced : !point.sliced;
+		
+		point.group.animate({
+			translateX: (sliced ? slicedTranslation[0] : chart.plotLeft),
+			translateY: (sliced ? slicedTranslation[1] : chart.plotTop)
+		}, 100);
+		
+	}
+});
+
+/**
+ * The Pie series class
+ */
+var PieSeries = extendClass(Series, {
+	type: 'pie',
+	isCartesian: false,
+	pointClass: PiePoint,
+	pointAttrToOptions: { // mapping between SVG attributes and the corresponding options
+		stroke: 'borderColor',
+		'stroke-width': 'borderWidth',
+		fill: 'color'
+	},
+	
+	/**
+	 * Pies have one color each point
+	 */
+	getColor: function() {
+		// record first color for use in setData
+		this.initialColor = colorCounter;
+	},
+	
+	
+	translate: function() {
+		var total = 0,
+			series = this,
+			cumulative = -0.25, // start at top
+			options = series.options,
+			slicedOffset = options.slicedOffset,
+			positions = options.center,
+			chart = series.chart,
+			plotWidth = chart.plotWidth,
+			plotHeight = chart.plotHeight,
+			start,
+			end,
+			angle,
+			data = series.data,
+			circ = 2 * math.PI,
+			fraction,
+			smallestSize = mathMin(plotWidth, plotHeight),
+			isPercent;
+			
+		// get positions - either an integer or a percentage string must be given
+		positions.push(options.size, options.innerSize || 0);
+		positions = map (positions, function(length, i) {
+			
+			isPercent = /%$/.test(length);			
+			return isPercent ? 
+				// i == 0: centerX, relative to width
+				// i == 1: centerY, relative to height
+				// i == 2: size, relative to height
+				[plotWidth, plotHeight, smallestSize, smallestSize][i] *
+					parseInt(length, 10) / 100:
+				length;
+		});
+					
+		// get the total sum
+		each (data, function(point) {
+			total += point.y;
+		});
+		
+		each (data, function(point) {
+			// set start and end angle
+			fraction = total ? point.y / total : 0;
+			start = cumulative * circ;
+			cumulative += fraction;
+			end = cumulative * circ;
+			
+			
+			// set the shape
+			point.shapeType = 'arc';
+			point.shapeArgs = {
+				x: positions[0],
+				y: positions[1],
+				r: positions[2] / 2,
+				innerR: positions[3] / 2,
+				start: start,
+				end: end
+			};
+			
+			// center for the sliced out slice
+			angle = (end + start) / 2;
+			point.slicedTranslation = map([
+				mathCos(angle) * slicedOffset + chart.plotLeft, 
+				mathSin(angle) * slicedOffset + chart.plotTop
+			], mathRound);
+			
+			
+			// set the anchor point for tooltips
+			point.tooltipPos = [
+				positions[0] + mathCos(angle) * positions[2] * 0.35,
+				positions[1] + mathSin(angle) * positions[2] * 0.35
+			];
+			
+			// API properties
+			point.percentage = fraction * 100;
+			point.total = total;
+			
+		});
+		
+		this.setTooltipPoints();
+	},
+	
+	/**
+	 * Render the slices
+	 */
+	render: function() {
+		var series = this;
+		// cache attributes for shapes
+		series.getAttribs();
+
+		this.drawPoints();
+		
+		// draw the mouse tracking area
+		if (series.options.enableMouseTracking !== false) {
+			series.drawTracker();
+		}
+		
+		this.drawDataLabels();
+		
+		series.isDirty = false; // means data is in accordance with what you see
+	},
+	
+	/**
+	 * Draw the data points
+	 */
+	drawPoints: function() {
+		var series = this,
+			chart = series.chart,
+			renderer = chart.renderer,
+			groupTranslation,
+			//center,
+			graphic,
+			shapeArgs;
+		
+		// draw the slices
+		each (series.data, function(point) {
+			graphic = point.graphic;
+			shapeArgs = point.shapeArgs;
+
+			// create the group the first time
+			if (!point.group) {
+				// if the point is sliced, use special translation, else use plot area traslation
+				groupTranslation = point.sliced ? point.slicedTranslation : [chart.plotLeft, chart.plotTop];
+				point.group = renderer.g('point')
+					.attr({ zIndex: 3 })
+					.add()
+					.translate(groupTranslation[0], groupTranslation[1]);
+			}
+			
+			// draw the slice
+			if (graphic) {
+				graphic.attr(shapeArgs);
+			} else {
+				point.graphic = 
+					renderer.arc(shapeArgs)
+					.attr(point.pointAttr[NORMAL_STATE])
+					.add(point.group);
+			}
+			
+			// detect point specific visibility
+			if (point.visible === false) {
+				point.setVisible(false);
+			}
+					
+		});
+		
+	},
+	
+	/**
+	 * Draw point specific tracker objects. Inherit directly from column series.
+	 */
+	drawTracker: ColumnSeries.prototype.drawTracker,
+	
+	/**
+	 * Pies don't have point marker symbols
+	 */
+	getSymbol: function() {}
+	
+});
+seriesTypes.pie = PieSeries;
+
+
+// global variables
+win.Highcharts = {
+	Chart: Chart,
+	dateFormat: dateFormat,
+	getOptions: getOptions,
+	numberFormat: numberFormat,
+	Point: Point,
+	Renderer: Renderer,
+	seriesTypes: seriesTypes,
+	setOptions: setOptions,
+	Series: Series,
+		
+	// Expose utility funcitons for modules
+	addEvent: addEvent,
+	createElement: createElement,
+	discardElement: discardElement,
+	css: css,
+	each: each,
+	extend: extend,
+	map: map,
+	merge: merge,
+	pick: pick,
+	extendClass: extendClass
+};
+})();
