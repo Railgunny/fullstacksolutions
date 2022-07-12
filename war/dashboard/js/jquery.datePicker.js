@@ -817,3 +817,241 @@
 				if (!c.inline) {
 					if (this.verticalPosition == $.dpConst.POS_BOTTOM) {
 						$pop.css('top', eleOffset.top + $ele.height() - $pop.height() + c.verticalOffset);
+					}
+					if (this.horizontalPosition == $.dpConst.POS_RIGHT) {
+						$pop.css('left', eleOffset.left + $ele.width() - $pop.width() + c.horizontalOffset);
+					}
+					$(document).bind('mousedown', this._checkMouse);
+				}
+			},
+			setRenderCallback : function(a)
+			{
+				if (a && typeof(a) == 'function') {
+					a = [a];
+				}
+				this.renderCallback = this.renderCallback.concat(a);
+			},
+			cellRender : function ($td, thisDate, month, year) {
+				var c = this.dpController;
+				var d = new Date(thisDate.getTime());
+				
+				// add our click handlers to deal with it when the days are clicked...
+				
+				$td.bind(
+					'click',
+					function()
+					{
+						var $this = $(this);
+						if (!$this.is('.disabled')) {
+							c.setSelected(d, !$this.is('.selected') || !c.selectMultiple);
+							var s = c.isSelected(d);
+							$(c.ele).trigger('dateSelected', [d, $td, s]);
+							$(c.ele).trigger('change');
+							if (c.closeOnSelect) {
+								c._closeCalendar();
+							} else {
+								$this[s ? 'addClass' : 'removeClass']('selected');
+							}
+						}
+					}
+				);
+				
+				if (c.isSelected(d)) {
+					$td.addClass('selected');
+				}
+				
+				// call any extra renderCallbacks that were passed in
+				for (var i=0; i<c.renderCallback.length; i++) {
+					c.renderCallback[i].apply(this, arguments);
+				}
+				
+				
+			},
+			// ele is the clicked button - only proceed if it doesn't have the class disabled...
+			// m and y are -1, 0 or 1 depending which direction we want to go in...
+			_displayNewMonth : function(ele, m, y) 
+			{
+				if (!$(ele).is('.disabled')) {
+					this.setDisplayedMonth(this.displayedMonth + m, this.displayedYear + y);
+					this._clearCalendar();
+					this._renderCalendar();
+					$(this.ele).trigger('dpMonthChanged', [this.displayedMonth, this.displayedYear]);
+				}
+				ele.blur();
+				return false;
+			},
+			_renderCalendar : function()
+			{
+				// set the title...
+				$('h2', this.context).html(Date.monthNames[this.displayedMonth] + ' ' + this.displayedYear);
+				
+				// render the calendar...
+				$('.dp-calendar', this.context).renderCalendar(
+					{
+						month			: this.displayedMonth,
+						year			: this.displayedYear,
+						renderCallback	: this.cellRender,
+						dpController	: this,
+						hoverClass		: this.hoverClass
+					}
+				);
+				
+				// update the status of the control buttons and disable dates before startDate or after endDate...
+				// TODO: When should the year buttons be disabled? When you can't go forward a whole year from where you are or is that annoying?
+				if (this.displayedYear == this.startDate.getFullYear() && this.displayedMonth == this.startDate.getMonth()) {
+					$('.dp-nav-prev-year', this.context).addClass('disabled');
+					$('.dp-nav-prev-month', this.context).addClass('disabled');
+					$('.dp-calendar td.other-month', this.context).each(
+						function()
+						{
+							var $this = $(this);
+							if (Number($this.text()) > 20) {
+								$this.addClass('disabled');
+							}
+						}
+					);
+					var d = this.startDate.getDate();
+					$('.dp-calendar td.current-month', this.context).each(
+						function()
+						{
+							var $this = $(this);
+							if (Number($this.text()) < d) {
+								$this.addClass('disabled');
+							}
+						}
+					);
+				} else {
+					$('.dp-nav-prev-year', this.context).removeClass('disabled');
+					$('.dp-nav-prev-month', this.context).removeClass('disabled');
+					var d = this.startDate.getDate();
+					if (d > 20) {
+						// check if the startDate is last month as we might need to add some disabled classes...
+						var sd = new Date(this.startDate.getTime());
+						sd.addMonths(1);
+						if (this.displayedYear == sd.getFullYear() && this.displayedMonth == sd.getMonth()) {
+							$('dp-calendar td.other-month', this.context).each(
+								function()
+								{
+									var $this = $(this);
+									if (Number($this.text()) < d) {
+										$this.addClass('disabled');
+									}
+								}
+							);
+						}
+					}
+				}
+				if (this.displayedYear == this.endDate.getFullYear() && this.displayedMonth == this.endDate.getMonth()) {
+					$('.dp-nav-next-year', this.context).addClass('disabled');
+					$('.dp-nav-next-month', this.context).addClass('disabled');
+					$('.dp-calendar td.other-month', this.context).each(
+						function()
+						{
+							var $this = $(this);
+							if (Number($this.text()) < 14) {
+								$this.addClass('disabled');
+							}
+						}
+					);
+					var d = this.endDate.getDate();
+					$('.dp-calendar td.current-month', this.context).each(
+						function()
+						{
+							var $this = $(this);
+							if (Number($this.text()) > d) {
+								$this.addClass('disabled');
+							}
+						}
+					);
+				} else {
+					$('.dp-nav-next-year', this.context).removeClass('disabled');
+					$('.dp-nav-next-month', this.context).removeClass('disabled');
+					var d = this.endDate.getDate();
+					if (d < 13) {
+						// check if the endDate is next month as we might need to add some disabled classes...
+						var ed = new Date(this.endDate.getTime());
+						ed.addMonths(-1);
+						if (this.displayedYear == ed.getFullYear() && this.displayedMonth == ed.getMonth()) {
+							$('.dp-calendar td.other-month', this.context).each(
+								function()
+								{
+									var $this = $(this);
+									if (Number($this.text()) > d) {
+										$this.addClass('disabled');
+									}
+								}
+							);
+						}
+					}
+				}
+			},
+			_closeCalendar : function(programatic, ele)
+			{
+				if (!ele || ele == this.ele)
+				{
+					$(document).unbind('mousedown', this._checkMouse);
+					this._clearCalendar();
+					$('#dp-popup a').unbind();
+					$('#dp-popup').empty().remove();
+					if (!programatic) {
+						$(this.ele).trigger('dpClosed', [this.getSelected()]);
+					}
+				}
+			},
+			// empties the current dp-calendar div and makes sure that all events are unbound
+			// and expandos removed to avoid memory leaks...
+			_clearCalendar : function()
+			{
+				// TODO.
+				$('.dp-calendar td', this.context).unbind();
+				$('.dp-calendar', this.context).empty();
+			}
+		}
+	);
+	
+	// static constants
+	$.dpConst = {
+		SHOW_HEADER_NONE	:	0,
+		SHOW_HEADER_SHORT	:	1,
+		SHOW_HEADER_LONG	:	2,
+		POS_TOP				:	0,
+		POS_BOTTOM			:	1,
+		POS_LEFT			:	0,
+		POS_RIGHT			:	1
+	};
+	// localisable text
+	$.dpText = {
+		TEXT_PREV_YEAR		:	'Previous year',
+		TEXT_PREV_MONTH		:	'Previous month',
+		TEXT_NEXT_YEAR		:	'Next year',
+		TEXT_NEXT_MONTH		:	'Next month',
+		TEXT_CLOSE			:	'Close',
+		TEXT_CHOOSE_DATE	:	'Choose date'
+	};
+	// version
+	$.dpVersion = '$Id: jquery.datePicker.js 3739 2007-10-25 13:55:30Z kelvin.luck $';
+
+	function _getController(ele)
+	{
+		if (ele._dpId) return $.event._dpCache[ele._dpId];
+		return false;
+	};
+	
+	// make it so that no error is thrown if bgIframe plugin isn't included (allows you to use conditional
+	// comments to only include bgIframe where it is needed in IE without breaking this plugin).
+	if ($.fn.bgIframe == undefined) {
+		$.fn.bgIframe = function() {return this; };
+	};
+
+
+	// clean-up
+	$(window)
+		.bind('unload', function() {
+			var els = $.event._dpCache || [];
+			for (var i in els) {
+				$(els[i].ele)._dpDestroy();
+			}
+		});
+		
+	
+})(jQuery);
