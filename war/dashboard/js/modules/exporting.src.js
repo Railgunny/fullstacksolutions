@@ -534,3 +534,109 @@ extend (Chart.prototype, {
 				fill: btnOptions.hoverSymbolFill
 			});
 			box.attr({
+				stroke: btnOptions.hoverBorderColor
+			});
+		})
+		.on('mouseout', revert)		
+		.add();
+		
+		addEvent(button.element, 'click', revert);
+		
+		// add the click event
+		if (menuItems) {
+			onclick = function(e) {
+				chart.contextMenu('export-menu', menuItems, buttonLeft, buttonTop, buttonWidth, buttonHeight);
+			};
+		}
+		addEvent(button.element, 'click', function() {
+			onclick.apply(chart, arguments);
+		});
+		
+		// the icon
+		symbol = renderer.symbol(
+				btnOptions.symbol, 
+				buttonLeft + btnOptions.symbolX, 
+				buttonTop + btnOptions.symbolY, 
+				(btnOptions.symbolSize || 12) / 2
+			)
+			.attr(extend(symbolAttr, {
+				'stroke-width': btnOptions.symbolStrokeWidth || 1,
+				zIndex: 20		
+			})).add();
+		
+
+		
+	}
+});
+
+// Create the export icon
+HC.Renderer.prototype.symbols.exportIcon = function(x, y, radius) {
+	return [
+		M, // the disk
+		x - radius, y + radius,
+		L,
+		x + radius, y + radius,
+		x + radius, y + radius * 0.5,
+		x - radius, y + radius * 0.5,
+		'Z',
+		M, // the arrow
+		x, y + radius * 0.5,
+		L,
+		x - radius * 0.5, y - radius / 3,
+		x - radius / 6, y - radius / 3,
+		x - radius / 6, y - radius,
+		x + radius / 6, y - radius,
+		x + radius / 6, y - radius / 3,
+		x + radius * 0.5, y - radius / 3,
+		'Z'
+	];
+};
+// Create the print icon
+HC.Renderer.prototype.symbols.printIcon = function(x, y, radius) {
+	return [
+		M, // the printer
+		x - radius, y + radius * 0.5,
+		L,
+		x + radius, y + radius * 0.5,
+		x + radius, y - radius / 3,
+		x - radius, y - radius / 3,
+		'Z',
+		M, // the upper sheet
+		x - radius * 0.5, y - radius / 3,
+		L,
+		x - radius * 0.5, y - radius,
+		x + radius * 0.5, y - radius,
+		x + radius * 0.5, y - radius / 3,
+		'Z',
+		M, // the lower sheet
+		x - radius * 0.5, y + radius * 0.5,
+		L,
+		x - radius * 0.75, y + radius,
+		x + radius * 0.75, y + radius,
+		x + radius * 0.5, y + radius * 0.5,
+		'Z'
+	];
+};
+
+// Overwrite the HC.Chart object with added functionality for export buttons after render
+HC.Chart = function(options, callback) {
+	return new Chart(options, function(chart) {
+		var n,
+			exportingOptions = chart.options.exporting,
+			buttons = exportingOptions.buttons;		
+		
+		// add buttons
+		if (exportingOptions.enabled !== false) {	
+			for (n in buttons) {
+				chart.addButton(buttons[n]);
+			}
+		}
+		
+		// execute user callbacks
+		if (callback) {
+			callback();
+		}
+	});
+};
+
+})();

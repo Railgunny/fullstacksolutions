@@ -1,0 +1,1 @@
+//MooTools, <http://mootools.net>, My Object Oriented (JavaScript) Tools. Copyright (c)
