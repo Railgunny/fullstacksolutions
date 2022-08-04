@@ -18,4 +18,5 @@ return $extend(win,Window.Prototype);},afterImplement:function(property,value){w
 return true;},filter:function(fn,bind){var results=[];for(var i=0,l=this.length;i<l;i++){if(fn.call(bind,this[i],i,this))results.push(this[i]);}
 return results;},clean:function(){return this.filter($defined);},indexOf:function(item,from){var len=this.length;for(var i=(from<0)?Math.max(0,len+from):from||0;i<len;i++){if(this[i]===item)return i;}
 return-1;},map:function(fn,bind){var results=[];for(var i=0,l=this.length;i<l;i++)results[i]=fn.call(bind,this[i],i,this);return results;},some:function(fn,bind){for(var i=0,l=this.length;i<l;i++){if(fn.call(bind,this[i],i,this))return true;}
-return false;},associate:function(keys){var obj=
+return false;},associate:function(keys){var obj={},length=Math.min(this.length,keys.length);for(var i=0;i<length;i++)obj[keys[i]]=this[i];return obj;},link:function(object){var result={};for(var i=0,l=this.length;i<l;i++){for(var key in object){if(object[key](this[i])){result[key]=this[i];delete object[key];break;}}}
+return result;},contains:function(item,from){return this.indexOf(item,from)!=-1;},exten
