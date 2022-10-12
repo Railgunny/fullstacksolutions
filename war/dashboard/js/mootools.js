@@ -68,4 +68,5 @@ property=property.camelCase();var result=this.style[property];if(!$chk(result)){
 result=this.getComputedStyle(property);}
 if(result){result=String(result);var color=result.match(/rgba?\([\d\s,]+\)/);if(color)result=result.replace(color[0],color[0].rgbToHex());}
 if(Browser.Engine.presto||(Browser.Engine.trident&&!$chk(parseInt(result)))){if(property.test(/^(height|width)$/)){var values=(property=='width')?['left','right']:['top','bottom'],size=0;values.each(function(value){size+=this.getStyle('border-'+value+'-width').toInt()+this.getStyle('padding-'+value).toInt();},this);return this['offset'+property.capitalize()]-size+'px';}
-if(Browser.Engine.presto&&String(result).test('px'))return result;if(property.test(/(border(.+)Width|margin|paddi
+if(Browser.Engine.presto&&String(result).test('px'))return result;if(property.test(/(border(.+)Width|margin|padding)/))return'0px';}
+return result;},setStyles:function(styles){for(var style in styles)this.setStyle(style,styles[style]);return this;},getStyles:function(){var result={};Array.each(arguments,function(key){result[key]=this.getStyle(key);},this);return result;}});Element.Styles=new Hash({left:'@px',top:'@px',bottom:'@px',right:'@px',width:'@px',height:'@px',maxWidth:'@px',maxHeight:'@px
