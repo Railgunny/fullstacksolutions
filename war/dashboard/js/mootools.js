@@ -74,4 +74,6 @@ return this;},getSize:function(){if(isBody(this))return this.getWindow().getSize
 return position;},getOffsetParent:function(){var element=this;if(isBody(element))return null;if(!Browser.Engine.trident)return element.offsetParent;while((element=element.parentNode)&&!isBody(element)){if(styleString(element,'position')!='static')return element;}
 return null;},getOffsets:function(){var element=this,position={x:0,y:0};if(isBody(this))return position;while(element&&!isBody(element)){position.x+=element.offsetLeft;position.y+=element.offsetTop;if(Browser.Engine.gecko){if(!borderBox(element)){position.x+=leftBorder(element);position.y+=topBorder(element);}
 var parent=element.parentNode;if(parent&&styleString(parent,'overflow')!='visible'){position.x+=leftBorder(parent);position.y+=topBorder(parent);}}else if(element!=this&&(Browser.Engine.trident||Browser.Engine.webkit)){position.x+=leftBorder(element);position.y+=topBorder(element);}
-element=eleme
+element=element.offsetParent;if(Browser.Engine.trident){while(element&&!element.currentStyle.hasLayout)element=element.offsetParent;}}
+if(Browser.Engine.gecko&&!borderBox(this)){position.x-=leftBorder(this);position.y-=topBorder(this);}
+return position;},getPosition:function(relative){if(isBody(this))return{x:0,y:0};var offset=this.getOffsets(),scroll=this.getScrolls();var position={x:offset.x-sc
