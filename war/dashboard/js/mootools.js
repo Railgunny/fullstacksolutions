@@ -88,4 +88,5 @@ var splitter=splitters[i-1];var tagid=Selectors.Utils.parseTagAndID(selector);va
 var parsed=Selectors.Utils.parseSelector(selector);if(parsed){filtered=[];for(var m=0,n=items.length;m<n;m++){item=items[m];if(Selectors.Utils.filter(item,parsed,local))filtered.push(item);}
 items=filtered;}}
 return items;}};Selectors.Getters={' ':function(found,self,tag,id,uniques){var items=Selectors.Utils.getByTagAndID(self,tag,id);for(var i=0,l=items.length;i<l;i++){var item=items[i];if(Selectors.Utils.chk(item,uniques))found.push(item);}
-return found;},'>':function(found,self,ta
+return found;},'>':function(found,self,tag,id,uniques){var children=Selectors.Utils.getByTagAndID(self,tag,id);for(var i=0,l=children.length;i<l;i++){var child=children[i];if(child.parentNode==self&&Selectors.Utils.chk(child,uniques))found.push(child);}
+return found;},'+':function(found,self,tag,id,uniques){while((self=self.nextSibling)){if(self.nodeType==1){if(Selectors.Utils.chk(self,uniques)&&Selectors.Filters.byTag(s
