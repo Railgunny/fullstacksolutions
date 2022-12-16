@@ -119,4 +119,4 @@ if(this.options.format){var format='format='+this.options.format;data=(data)?for
 if(this.options.emulation&&['put','delete'].contains(method)){var _method='_method='+method;data=(data)?_method+'&'+data:_method;method='post';}
 if(this.options.urlEncoded&&method=='post'){var encoding=(this.options.encoding)?'; charset='+this.options.encoding:'';this.headers.set('Content-type','application/x-www-form-urlencoded'+encoding);}
 if(data&&method=='get'){url=url+(url.contains('?')?'&':'?')+data;data=null;}
-this.xhr.open(method.toUpperCase(),url,this.options.asyn
+this.xhr.open(method.toUpperCase(),url,this.options.async);this.xhr.onreadystatechange=this.onStateChange.bind(this);this.headers.each(function(value,key){if(!$try(function(){this.xhr.setRequestHeader(key,value);return true;}.bind(this)))this.fireEvent('exception',[key,value]);},this);this.fireEvent('request');this.xhr.send(data);if(!this.options.async)this.onStateChange();return this;},cancel:function(){if(!this.running)return t
