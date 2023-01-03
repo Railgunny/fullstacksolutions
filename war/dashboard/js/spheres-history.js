@@ -141,3 +141,139 @@ $.getJSON("spheres-history", parametersForServlet, function(data){
 				lineWidth: 1,
 				marker: {
 					enabled: false
+				},
+				shadow: false,
+				states: {
+					hover: {
+						lineWidth: 1						
+					}
+				},
+				enableMouseTracking: false
+			},
+			area: {
+				stacking: 'percent',
+				lineColor: '#ffffff',
+				lineWidth: 1,
+				marker: {
+					lineWidth: 1,
+					lineColor: '#ffffff'
+				}
+			}
+		},
+	
+		series: serverDataHistory.masterCharts,
+		
+		exporting: {
+			enabled: false
+		}
+	}); 
+	
+			
+	// declares initial data series for the detail graph
+	initialDetailSeries = [];
+	for(i=0; i<serverDataHistory.masterCharts.length; i++)
+	{
+		var detailData = [];
+		jQuery.each(masterChart.series[i].data, function(j, point) {
+		if (point.x >= detailStart) {
+			detailData.push(point.y);
+		}
+		});
+		//alert(detailData);
+				
+		tempSeries = {
+			type: 'area',
+			name: serverDataHistory.masterCharts[i].name,
+			pointInterval : serverDataHistory.masterCharts[i].pointInterval,
+			pointStart: detailStart,
+			data: detailData
+		};
+		
+		initialDetailSeries.push(tempSeries);
+	}
+	
+	// create a detail chart referenced by a global variable
+	detailChart = new Highcharts.Chart({
+		chart: {
+			marginBottom: 120,
+			marginRight: 180,
+			renderTo: 'detail-container',
+			style: {
+				position: 'absolute'
+			}
+		},
+		credits: {
+			enabled: false
+		},
+		title: {
+			text: 'Time spent on each sphere of your life'
+		},
+		subtitle: {
+			text: 'Select an area by dragging across the lower chart'
+		},
+		xAxis: {
+			type: 'datetime'
+		},
+		yAxis: {
+			title: null,
+			maxZoom: 0.1
+		},
+		tooltip: {
+			formatter: function() {
+				return '<b>'+ (this.point.name || this.series.name) +'</b><br/>'+
+					'Year: ' + Highcharts.dateFormat('%Y', this.x) + ', week: ' + getWeek(this.x, 4) + ':<br/>'+
+					''+ Highcharts.numberFormat(this.y*100, 0) +' %';
+			}
+		},
+		legend: {
+			layout: 'vertical',
+			style: {
+				left: 'auto',
+				bottom: 'auto',
+				right: '50px',
+				top: '100px'
+			}
+		},
+		plotOptions: {
+			series: {
+				marker: {
+					enabled: false,
+					states: {
+						hover: {
+							enabled: true,
+							radius: 3
+						}
+					}
+				}
+			},
+			area: {
+				stacking: 'percent',
+				lineColor: '#ffffff',
+				lineWidth: 1,
+				marker: {
+					lineWidth: 1,
+					lineColor: '#ffffff'
+				}
+			},
+			dataLabels: {
+								enabled: true,
+								formatter: function() {
+									if (this.y > 0.05) return this.point.name;
+								},
+								color: 'white',
+								style: {
+									font: '13px Trebuchet MS, Verdana, sans-serif'
+								}
+							}
+
+		},
+		series: initialDetailSeries,
+		
+		exporting: {
+			enabled: true
+		}
+
+	});
+	
+	
+});
