@@ -32,4 +32,12 @@
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     
     <script type="text/javascript" src="../js/jquery.easing.1.3.js"></script>
-    <script
+    <script type="text/javascript" src="../js/jquery.lavalamp-1.3.4b2.js"></script>
+    <script type="text/javascript" src="js/drawer.js"></script>
+	
+	<!--  Highcharts libraries: -->
+	<script type="text/javascript" src="js/highcharts.js"></script>
+	<script type="text/javascript" src="js/modules/exporting.js"></script>
+
+    <script type="text/javascript">
+      //jQuery.noConfli
