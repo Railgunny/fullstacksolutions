@@ -40,4 +40,15 @@
 	<script type="text/javascript" src="js/modules/exporting.js"></script>
 
     <script type="text/javascript">
-      //jQuery.noConfli
+      //jQuery.noConflict();
+      jQuery(function() {
+        jQuery("#lavaLampMenu").lavaLamp({fx: "swing", speed: 200, startItem: 2});
+      });
+    </script>
+	
+	<script type="text/javascript" src="js/dateFunctions.js"></script>
+	<script type="text/javascript" src="js/highcharts-options.js"></script>
+	
+	<script type="text/javascript">
+		// the following 2 lines to be deleted
+		//var parametersForS
