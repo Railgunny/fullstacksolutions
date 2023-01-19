@@ -51,4 +51,11 @@
 	
 	<script type="text/javascript">
 		// the following 2 lines to be deleted
-		//var parametersForS
+		//var parametersForServlet = {"userName": "kac08"};
+		//var parametersForServlet = {"userName": "<%= request.getUserPrincipal().getName() %>"};
+		var parametersForServlet = {"userName": "<%= userService.getCurrentUser().getUserId() %>"};
+	</script>
+	
+	<!-- Loads historic chart -->
+	<script type="text/javascript" src="js/chosen-priorities.js"></script>
+	<script type="text/javascript" src="js/spheres-history.js"></scrip
