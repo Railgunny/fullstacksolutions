@@ -58,4 +58,18 @@
 	
 	<!-- Loads historic chart -->
 	<script type="text/javascript" src="js/chosen-priorities.js"></script>
-	<script type="text/javascript" src="js/spheres-history.js"></scrip
+	<script type="text/javascript" src="js/spheres-history.js"></script>
+	
+	<script type="text/javascript" src="js/plan-achievement.js"></script>
+	
+	</head>
+	<body>
+		<div id="main">
+			<div id="header-long">
+				<div id="strip"></div>
+				<div id="header">
+					<div id="header-top">
+						<div id="logo"><div id="bg"></div><h1><%= request.getUserPrincipal().getName() %></h1></div>
+						<div id="menu">
+							<ul class="lamp" id="lavaLampMenu">
+			
