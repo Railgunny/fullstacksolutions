@@ -72,4 +72,17 @@
 						<div id="logo"><div id="bg"></div><h1><%= request.getUserPrincipal().getName() %></h1></div>
 						<div id="menu">
 							<ul class="lamp" id="lavaLampMenu">
-			
+								<li><a href="index.jsp">Dashboard</a></li>
+								<li><a href="settings.jsp">Settings</a></li>
+								<li><a href="">Stats</a></li>
+								<li><a href="<%= userService.createLogoutURL("/") %>">Logout</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+     
+			<div id="body">
+				<br /><br />
+				
+				<div id="priorities-chart" style="widt
