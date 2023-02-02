@@ -89,4 +89,11 @@
 				<div id="historicChart" style="width: 800px; height: 400px; margin: 0 auto"></div><br /><br /><br /><br /><br /><br />
 				<!-- Buttons for holding spheres are kept in here -->
 				<div id="sphereButtonsHolder"></div><br /><br />
-				<div id="plan-achievement" style="width: 800px; height: 400px; mar
+				<div id="plan-achievement" style="width: 800px; height: 400px; margin: 0 auto"></div><br /><br />
+			   
+			</div>
+			<div id="footer">
+			</div>
+		</div>
+  </body> 
+</html>
