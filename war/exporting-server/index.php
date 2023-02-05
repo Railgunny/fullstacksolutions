@@ -54,4 +54,15 @@ if ($typeString) {
 	
 	// size
 	if ($_POST['width']) {
-		$widt
+		$width = (int)$_POST['width'];
+		if ($width) $width = "-w $width";
+	}
+
+	// generate the temporary file
+	if (!file_put_contents("temp/$tempName.svg", $svg)) { 
+		die("Couldn't create temporary file. Check that the directory permissions for
+			the /temp directory are set to 777.");
+	}
+	
+	// do the conversion
+	$output = shell_exec("java -jar ". BATIK_PATH ." $typeString -d $outfile $width tem
