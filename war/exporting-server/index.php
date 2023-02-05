@@ -34,4 +34,24 @@ $tempName = md5(rand());
 
 // allow no other than predefined types
 if ($type == 'image/png') {
-	$typ
+	$typeString = '-m image/png';
+	$ext = 'png';
+	
+} elseif ($type == 'image/jpeg') {
+	$typeString = '-m image/jpeg';
+	$ext = 'jpg';
+
+} elseif ($type == 'application/pdf') {
+	$typeString = '-m application/pdf';
+	$ext = 'pdf';
+
+} elseif ($type == 'image/svg+xml') {
+	$ext = 'svg';	
+}
+$outfile = "temp/$tempName.$ext";
+
+if ($typeString) {
+	
+	// size
+	if ($_POST['width']) {
+		$widt
