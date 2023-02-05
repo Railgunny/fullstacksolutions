@@ -16,4 +16,22 @@
 // Options
 define ('BATIK_PATH', 'batik-rasterizer.jar');
 
-////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+$type = $_POST['type'];
+$svg = (string) $_POST['svg'];
+$filename = (string) $_POST['filename'];
+
+// prepare variables
+if (!$filename) $filename = 'chart';
+if (get_magic_quotes_gpc()) {
+	$svg = stripslashes($svg);	
+}
+
+
+
+$tempName = md5(rand());
+
+// allow no other than predefined types
+if ($type == 'image/png') {
+	$typ
