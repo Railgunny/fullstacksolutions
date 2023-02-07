@@ -65,4 +65,21 @@ if ($typeString) {
 	}
 	
 	// do the conversion
-	$output = shell_exec("java -jar ". BATIK_PATH ." $typeString -d $outfile $width tem
+	$output = shell_exec("java -jar ". BATIK_PATH ." $typeString -d $outfile $width temp/$tempName.svg");
+	
+	// catch error
+	if (!is_file($outfile) || filesize($outfile) < 10) {
+		echo "<pre>$output</pre>";
+		echo "Error while converting SVG";		
+	} 
+	
+	// stream it
+	else {
+		header("Content-Disposition: attachment; filename=$filename.$ext");
+		header("Content-Type: $type");
+		echo file_get_contents($outfile);
+	}
+	
+	// delete it
+	unlink("temp/$tempName.svg");
+	unlink($ou
