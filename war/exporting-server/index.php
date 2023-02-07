@@ -82,4 +82,15 @@ if ($typeString) {
 	
 	// delete it
 	unlink("temp/$tempName.svg");
-	unlink($ou
+	unlink($outfile);
+
+// SVG can be streamed directly back
+} else if ($ext == 'svg') {
+	header("Content-Disposition: attachment; filename=$filename.$ext");
+	header("Content-Type: $type");
+	echo $svg;
+	
+} else {
+	echo "Invalid type";
+}
+?>
