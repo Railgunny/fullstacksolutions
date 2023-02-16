@@ -26,3 +26,8 @@
     <script src="js/jquery-1.2.6.min.js" type="text/javascript"></script>
     
     <script type="text/javascript" src="js/jquery.easing.1.3.js"></script>
+    <script type="text/javascript" src="js/jquery.lavalamp-1.3.4b2.js"></script>
+    
+    <script src="js/jquery.scrollTo-1.4.2-min.js" type="text/javascript"></script>
+    <script src="js/jquery.localscroll-1.2.7-min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/jquery.serialScroll-1.2.2-min.js" type="text/javascript" charset="utf-8"><
