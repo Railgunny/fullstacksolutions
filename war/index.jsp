@@ -30,4 +30,18 @@
     
     <script src="js/jquery.scrollTo-1.4.2-min.js" type="text/javascript"></script>
     <script src="js/jquery.localscroll-1.2.7-min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="js/jquery.serialScroll-1.2.2-min.js" type="text/javascript" charset="utf-8"><
+    <script src="js/jquery.serialScroll-1.2.2-min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/coda-slider.js" type="text/javascript" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      $(function() {
+        $("#lavaLampMenu").lavaLamp({fx: "swing", speed: 200});
+      });
+    </script>
+  </head>
+  <body>
+    <div id="main">
+      <div id="header-long">
+        <div id="strip"></div>
+        <div id="header">
+          <div id
