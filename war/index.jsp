@@ -52,3 +52,9 @@
                   <li><a href="#help">Help</a></li>
                   <li><a href="#step1">Tour</a></li>
                   <li><a href="<%= signupUrl %>">Login</a></li>
+              </ul>
+            </div>
+          </div>
+          <div id="header-bottom">
+            <div id="header-text">
+The development of mobile devices and e-mail has spread work into areas of time and space it did not previously occupy, to the detriment of family, domestic and social life (“the Blackberry curse”). The Life Planning counteracts this by allowing you to specify the balance you 
