@@ -44,4 +44,11 @@
       <div id="header-long">
         <div id="strip"></div>
         <div id="header">
-          <div id
+          <div id="header-top">
+            <div id="logo"><div id="bg"></div><h1>Life Planning.</h1></div>
+            <div id="menu">
+              <ul class="lamp" id="lavaLampMenu">
+                  <li><a href="#home">Home</a></li>
+                  <li><a href="#help">Help</a></li>
+                  <li><a href="#step1">Tour</a></li>
+                  <li><a href="<%= signupUrl %>">Login</a></li>
