@@ -57,4 +57,12 @@
           </div>
           <div id="header-bottom">
             <div id="header-text">
-The development of mobile devices and e-mail has spread work into areas of time and space it did not previously occupy, to the detriment of family, domestic and social life (“the Blackberry curse”). The Life Planning counteracts this by allowing you to specify the balance you 
+The development of mobile devices and e-mail has spread work into areas of time and space it did not previously occupy, to the detriment of family, domestic and social life (“the Blackberry curse”). The Life Planning counteracts this by allowing you to specify the balance you would like to achieve between all aspects of you life!
+            </div>
+            <div id="header-box">
+              <div id="slogan">
+                We <span class="i">plan</span>. You <span class="i">live</span>.
+              </div>
+              <div class="definition">
+                <h1>life <span class="trans">\`līf\</span></h1>
+          
