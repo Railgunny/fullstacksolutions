@@ -85,4 +85,15 @@ The development of mobile devices and e-mail has spread work into areas of time 
               <li><a href="#step1">Step 1</a></li>
               <li><a href="#step2">Step 2</a></li>
               <li><a href="#step2">Step 3</a></li>
-              <li><a href="#step2">Step 4</a></l
+              <li><a href="#step2">Step 4</a></li>
+              <li><a href="#step2">Step 5</a></li>
+              <li><a href="#help">Help</a></li>
+            </ul>
+
+            <div class="scroll">
+              <div class="scrollContainer">
+                
+                <!-- Pane that is shown first when the page loads -->
+                <div class="panel" id="home">
+                  <div id="signup-bar">
+            
