@@ -96,4 +96,8 @@ The development of mobile devices and e-mail has spread work into areas of time 
                 <!-- Pane that is shown first when the page loads -->
                 <div class="panel" id="home">
                   <div id="signup-bar">
-            
+                    <div id="signup-text">
+To start using the service all you need is a Google account with Google Calendar. Simply sign in using the button on the right and authorise our application to access your data. We do not store your password! If you need assistance, please check the <a href="#step1">tour</a> section of the website.
+                    </div>
+                    <div id="signup">
+ 
