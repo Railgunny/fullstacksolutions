@@ -65,4 +65,14 @@ The development of mobile devices and e-mail has spread work into areas of time 
               </div>
               <div class="definition">
                 <h1>life <span class="trans">\`līf\</span></h1>
-          
+                <p>a mode of manner of existence, as in the world of affairs of society.</p>
+              </div>
+              <div class="definition">
+                <h1>planning <span class="trans">\`planning\</span></h1>
+                <p>the act or process of making a plan or plans.</p>
+              </div>
+            </div>
+          </div>  
+        </div>
+      </div>
+      <div
