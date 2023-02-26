@@ -100,4 +100,12 @@ The development of mobile devices and e-mail has spread work into areas of time 
 To start using the service all you need is a Google account with Google Calendar. Simply sign in using the button on the right and authorise our application to access your data. We do not store your password! If you need assistance, please check the <a href="#step1">tour</a> section of the website.
                     </div>
                     <div id="signup">
- 
+                      <a href="<%= signupUrl %>">Sign up with your Google Account</a>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Steps of the Tour -->
+                <div class="panel" id="step1">
+                  <span class="tour-step">1. Sign up with your Google Account</span>
+                  <img src="img/tour/
