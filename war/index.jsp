@@ -108,4 +108,11 @@ To start using the service all you need is a Google account with Google Calendar
                 <!-- Steps of the Tour -->
                 <div class="panel" id="step1">
                   <span class="tour-step">1. Sign up with your Google Account</span>
-                  <img src="img/tour/
+                  <img src="img/tour/01-sign.png" />
+                  <a href="#step2" class="tour-next">Next</a>
+                  <a href="#home" class="tour-prev">Prev</a>
+                </div>
+                
+                <div class="panel" id="step2">
+                  <span class="tour-step">2. Authorise our application to access your calendar</span>
+                  <img src="img/tou
