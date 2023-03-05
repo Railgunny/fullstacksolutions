@@ -123,4 +123,12 @@ To start using the service all you need is a Google account with Google Calendar
                 <div class="panel" id="step3">
                   <span class="tour-step">3. Set the desired life balance</span>
                   <img src="img/tour/03-settings.png" />
-                  <a href="#step4" class=
+                  <a href="#step4" class="tour-next">Next</a>
+                  <a href="#step2" class="tour-prev">Prev</a>
+                </div>
+                
+                <div class="panel" id="step4">
+                  <span class="tour-step">4. Optimise your life</span>
+                  <img src="img/tour/04-optimise.png" />
+                  <a href="#step5" class="tour-next">Next</a>
+                  <a hr
