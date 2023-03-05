@@ -131,4 +131,12 @@ To start using the service all you need is a Google account with Google Calendar
                   <span class="tour-step">4. Optimise your life</span>
                   <img src="img/tour/04-optimise.png" />
                   <a href="#step5" class="tour-next">Next</a>
-                  <a hr
+                  <a href="#step3" class="tour-prev">Prev</a>
+                </div>
+                
+                <div class="panel" id="step5">
+                  <span class="tour-step">5. See the results!</span>
+                  <img src="img/tour/05-stats.png" />
+                  <a href="#home" class="tour-next">Sign up!</a>
+                  <a href="#step4" class="tour-prev">Prev</a>
+ 
