@@ -145,4 +145,10 @@ To start using the service all you need is a Google account with Google Calendar
                   <ul>
                     <li>
                       <span class="question">Is my data safe?</span>
-                      <span class="answer">Yes! We do not store your Google login nor your password and do not copy any data from your calendar. The only data we store i
+                      <span class="answer">Yes! We do not store your Google login nor your password and do not copy any data from your calendar. The only data we store is the data directly connected to using our service.</span>
+                    </li>
+                    <li>
+                      <span class="question">How does it work?</span>
+                      <span class="answer">By using some fancy AI, a little bit of magic and lots of stochastic analysis.</span>
+                    </li>
+ 
