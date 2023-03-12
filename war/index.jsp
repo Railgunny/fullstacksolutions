@@ -151,4 +151,10 @@ To start using the service all you need is a Google account with Google Calendar
                       <span class="question">How does it work?</span>
                       <span class="answer">By using some fancy AI, a little bit of magic and lots of stochastic analysis.</span>
                     </li>
- 
+                    <li>
+                      <span class="question">Is it good?</span>
+                      <span class="answer">Yes, very!</span>
+                    </li>
+                    <li>
+                      <span class="question">Will it make me happy?</span>
+                      <span class="answer">There is only one way to find out. But for the money we charge ($0), it is definitely 
