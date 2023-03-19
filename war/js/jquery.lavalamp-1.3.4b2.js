@@ -370,3 +370,14 @@ jQuery.fn.lavaLamp = function(o) {
 			if (!$el) $el = $selected;
 
 			$back.stop()
+			.animate({
+				left: $el.position().left,
+				top: $el.position().top,
+				width: $el.outerWidth()-bx,
+				height: $el.outerHeight()-by
+			}, o.speed, o.fx);
+		};
+	});
+	
+};
+})(jQuery);
